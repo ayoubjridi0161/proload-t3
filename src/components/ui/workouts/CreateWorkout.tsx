@@ -19,11 +19,10 @@ export default function CreateWorkout({}: Props) {
     <section className='m-5'>
      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <h2 className="mb-4 text-xl font-semibold">Workout Plan</h2>
-        <Accordion className="space-y-4">
-          
+          <div className='space-y-4'>
           {days}
+          </div>
         
-        </Accordion>
         <Button onClick={()=>{setDaysID(prev => prev+1) ; setDays(Prev => [...Prev, <AddDay remove={removeDay} id={daysID} key={daysID} muscles='legs,arms,chest' />])}} className="mt-4" size="sm" variant="outline">
           Add Workout Day
         </Button>
