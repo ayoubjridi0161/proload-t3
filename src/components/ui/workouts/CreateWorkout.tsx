@@ -6,9 +6,8 @@ import { Label } from '../label'
 import AddDay from './AddDay'
 import { DeleteIcon, GrabIcon, TrashIcon } from 'lucide-react'
 import { Accordion } from '../accordion'
-type Props = {}
 
-export default function CreateWorkout({}: Props) {
+export default function CreateWorkout() {
     const [daysID, setDaysID] = React.useState(1)
     const [days, setDays] = React.useState([<AddDay remove = {removeDay}   id={daysID} key={daysID} muscles='legs,arms,chest' />,])
     function removeDay(id:number){

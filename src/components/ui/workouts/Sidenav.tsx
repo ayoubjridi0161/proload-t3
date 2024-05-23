@@ -1,8 +1,6 @@
 import React from 'react'
 
-type Props = {}
-
-export default function Sidenav({}: Props) {
+export default function Sidenav() {
   return (
     <div>Sidenav</div>
     
