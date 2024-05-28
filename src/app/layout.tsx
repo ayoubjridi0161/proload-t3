@@ -1,6 +1,7 @@
 import "~/styles/globals.css";
 
 import { GeistSans } from "geist/font/sans";
+import '~/styles/bgPattern.css'
 import { Button } from "~/components/ui/button";
 
 export const metadata = {
@@ -16,12 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
-      <body>
-        <nav className="flex justify-between p-5">
-          <h1 className="text-3xl">Create T3 App</h1>
-          <Button className="">hello world</Button>
-
-        </nav>
+      <body className="">
         {children}
         </body>
     </html>

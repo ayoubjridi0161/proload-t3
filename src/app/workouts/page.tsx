@@ -1,7 +1,9 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import CreateWorkout from '~/components/ui/workouts/CreateWorkout'
+import WorkoutsPage from '~/components/ui/workouts/WorkoutsPage'
 
-export default function page() {
+export default async function page() {
+  
   return (
     <div className='h-full'>
       <CreateWorkout />
