@@ -11,6 +11,7 @@ import {
   timestamp,
   primaryKey,
   varchar,
+  uuid,
 } from "drizzle-orm/pg-core";
 
 /**
@@ -39,9 +40,15 @@ export const workouts = pgTable("workouts",{
   id: serial('id').primaryKey(),
   name: varchar('name',{length:256}).notNull(),
   createdAt: timestamp("created_at",{withTimezone:true}).default(sql`CURRENT_TIMESTAMP`).notNull(),
+  userId: uuid('user_id').notNull().references(()=>t3Users.uuid1)
 })
 
-export const workoutsRelations = relations(workouts,({many})=>({days : many(days),}));
+export const workoutsRelations = relations(workouts,({many,one})=>({days : many(days),
+  t3Users : one(t3Users,{
+    fields : [workouts.userId],
+    references:[t3Users.uuid1]
+  })
+}));
 
 export const days = pgTable("days",{
   id:serial('id').primaryKey(),
@@ -82,4 +89,11 @@ export const daysToExercicesRelations = relations(daysToExercices,({one})=>({
     references:[days.id]
   })
 }))*/
+export const t3Users = pgTable('t3-users',{
+  uuid1: uuid('uuid1').defaultRandom().primaryKey(),
+  email: varchar('email',{length:64}).notNull(),
+  password:varchar('password',{length:256}).notNull(),
+  userName:varchar('user-name',{length:64})
+})
 
+export const t3UsersRelations = relations(t3Users,({many})=>({workouts : many(workouts)}))

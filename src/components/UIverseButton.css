@@ -2,6 +2,7 @@
     position: relative;
     margin-top: 20px;
     width: 200px;
+
   }
   
   .input-container input[type="text"] {
@@ -10,7 +11,7 @@
     border: none;
     border-bottom: 2px solid #ccc;
     padding: 5px 0;
-    background-color: transparent;
+    background-color: white;
     outline: none;
   }
   

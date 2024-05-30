@@ -1,7 +1,14 @@
-import { days, exercices, workouts } from '~/server/db/schema'
+import { days, exercices, t3Users, workouts } from '~/server/db/schema'
 import {db} from '../server/db/index'
+import { sql } from '@vercel/postgres'
 import * as types from './types'
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
+type user = {
+    email:string
+    password:string
+    uuid:string
+    userName:string
+}
 export const fetchAllWorkouts = async()=>{
     const result = await db.query.workouts.findMany({
         with:{
@@ -11,6 +18,14 @@ export const fetchAllWorkouts = async()=>{
         }
     })
     return result
+}
+export const fetchUserByEmail = async(email:string)=>{
+    const user = await db.query.t3Users.findFirst({where : eq(t3Users.email,email)})
+    return user
+}
+export async function getUserFromDb(email:string,password:string){
+    const user = await db.select().from(t3Users).where(and(eq(t3Users.email,email),eq(t3Users.password,password)))
+    return user[0]
 }
 export async function fetchWorkoutById(id:number){
     const result = await db.query.workouts.findFirst({

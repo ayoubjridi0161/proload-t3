@@ -18,8 +18,8 @@ export default function CreateWorkout() {
     }
   
   return (
-    <section className='h-full'>
-     <form className="h-full rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800 space-y-2" action={addWorkout}>
+    <section className='h-full w-full'>
+     <form className="h-full rounded-lg border-4 border-black border-double  p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800 space-y-2" action={addWorkout}>
         <h2 className="mb-4 text-xl font-semibold">Workout Split</h2>
           <div className='flex items-center  px-1'>
           <UIverseButton placeHolder='name' name='workoutName' />

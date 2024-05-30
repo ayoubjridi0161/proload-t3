@@ -10,3 +10,9 @@ export type day ={
 export type workout = {
     name:string,
 }
+export type t3User = {
+    uuid1 : string
+    email:string
+    password:string
+    userName:string
+}

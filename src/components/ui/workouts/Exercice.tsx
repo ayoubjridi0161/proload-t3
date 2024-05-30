@@ -37,4 +37,4 @@ export default function ExerciceCard(props: Props) {
               </div>
             </CardContent>
           </Card>
-  )
+  )}
