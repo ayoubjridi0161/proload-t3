@@ -1,6 +1,8 @@
 "use client"
 import React, { ReactElement, useRef } from 'react'
 import { Label } from '../label'
+import { Button } from '../button'
+import { TrashIcon } from 'lucide-react'
 
 
 type Props = {
@@ -22,6 +24,7 @@ export default function AddRestDay(props : Props) {
                 <div className='flex items-center mb-2'>
                 <Label className='pr-3 text-xl'>Day {props.id} : Rest</Label>
                 </div>
+                <Button className='justify-self-end' size="sm" variant="outline"><TrashIcon className="h-4 w-4" /></Button>
             </div>            
         </div>
     </div>        

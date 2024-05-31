@@ -13,6 +13,7 @@ type Props = {
     muscles: string,
     id: number,
     remove: (id:number)=>void
+    editDayName: (id:number,name:string)=>void
 
 }
 type exercice = {
@@ -47,7 +48,7 @@ export default function AddDay(props : Props) {
               <Label className='pr-3 text-xl'>Day {props.id} :</Label>
             <input required ref={dayNameProps} className={cn("p-2 border rounded-lg h-full", dayName? "bg-gray-50 text-lg font-semibold" : "text-lg font-semibold ")} name="dayName" readOnly={dayName} placeholder='add Name'/> 
               {/* <Input name="dayName" readonly={dayName} refprop={dayNameProps} placeholder='day name' />  */}
-               <Button className='h-full' type='button' onClick={()=>{setDayName(prev => !prev)}}>{dayName ? <Edit /> : <Check />}</Button>  
+               <Button className='h-full' type='button' onClick={()=>{setDayName(prev => !prev);if(dayName){props.editDayName(props.id,dayNameProps.current?.value || "")}}}>{dayName ? <Edit /> : <Check />}</Button>  
             </div>
             <p className=" px-1 text-sm text-gray-500 dark:text-gray-400">Muscles Targeted: {props.muscles}</p>  
             
@@ -58,7 +59,7 @@ export default function AddDay(props : Props) {
               <Button type='button' onClick={()=>{setIsEdit(prev => !prev)}} size="sm" variant="outline">
                 <Pencil className="h-4 w-4" />
               </Button>
-              <Button type='button' onClick={()=>{props.remove(props.id   )}} size="sm" variant="outline">
+              <Button type='button' onClick={()=>{props.remove(props.id)}} size="sm" variant="outline">
                 <TrashIcon className="h-4 w-4" />
               </Button>
             </div>

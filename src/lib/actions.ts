@@ -4,7 +4,7 @@ import { InsertDay, InsertExercice, InsertWorkout, fetchAllWorkouts } from "./da
 
 export default async function addWorkout(formData : FormData) {
   console.log(formData)
-  const workoutID =  await  InsertWorkout({name:formData.get('workoutName') as string})
+  const workoutID =  await  InsertWorkout({name:formData.get('workoutName') as string })
   if(typeof workoutID !== 'number'){
     return workoutID
   }
