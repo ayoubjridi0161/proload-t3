@@ -2,6 +2,7 @@ import React from 'react'
 import { Button } from '../button'
 import { TrashIcon } from 'lucide-react'
 import ExerciceCard from './Exercice'
+import { ButtonBlack } from '../UIverse/Buttons'
 
 type Props = {
     id : string
@@ -74,9 +75,9 @@ export default function AddExercice(props: Props) {
         />
       </div>
     </div>
-    <Button type='button' className='mt-5' onClick={()=>{setShowExercice(prev => !prev)}} size="sm" variant="outline">
+    <ButtonBlack type='button' className='mt-5' onClick={()=>{setShowExercice(prev => !prev)}} size="sm" variant="outline">
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" stroke-linecap="round" strokeLinejoin="round" className="lucide lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>   
-     </Button>
+     </ButtonBlack>
   </div>}
   </>
   )

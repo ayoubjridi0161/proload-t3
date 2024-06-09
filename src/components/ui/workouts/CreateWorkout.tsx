@@ -1,6 +1,7 @@
 "use client"
 import React, { ReactElement } from 'react'
 import { Input } from '../input'
+import {ButtonBlack,ButtonWhite} from '~/components/ui/UIverse/Buttons'
 import { Button } from '../button'
 import { Label } from '../label'
 import AddDay from './AddDay'
@@ -9,52 +10,64 @@ import { Accordion } from '../accordion'
 import addWorkout from '~/lib/actions'
 import UIverseButton from '~/components/UIverseButton'
 import AddRestDay from './AddRestDay'
+import Container from '../Container'
 
 export default function CreateWorkout() {
+    const [newKey, setNewKey] = React.useState(0) 
     
     const [days, setDays] = React.useState<ReactElement[]>([])
     const [order,setOrder] = React.useState<{index:number,dayName:string,action:"train"|"rest"}[]>([])
-    function reOrderDays(id:number){
-      setOrder([...order]?.map((day)=> {day.index>id?day.index--:day.index;return day}))
-    }
+    const [removedDay,setRemovedDay] = React.useState<number>()
     function removeDay(id:number){
-        setOrder(order?.filter((day)=>day.index !== id))
-        reOrderDays(id)
+        // setDays([...days]?.filter((day)=> day.key || 1 != id))
+        setRemovedDay(id)
     }
+    //remove Day
+    React.useEffect(()=>{
+      if(removedDay){
+        // setDays([...days]?.filter(day => day.key != removedDay))
+        console.log(days)
+        setDays([...days]?.filter(day => Number(day.key) != removedDay))
+      }
+    },[removedDay])
     function editDayName(id:number,name:string){
-        setOrder([...order]?.map((day)=>{if(day.index === id){day.dayName = name}return day}))
+        // setOrder([...order]?.map((day)=>{if(day.index === id){day.dayName = name}return day}))
     }
-
-  return (
-    <section className='h-full'>
-     <form className="h-full rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800 space-y-2" action={addWorkout}>
+    //add Day
+    React.useEffect(()=>{
+      if(newKey)
+        setDays(days => [...days , <AddDay editDayName={editDayName} remove={removeDay} id={newKey} key={newKey} muscles='legs,arms,chest'  />])
+    },[newKey])
+    // console.log(days)
+    return (
+    <Container className='h-full'>
+     <form className="h-full rounded-lg border border-gray-200  p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800 space-y-2" action={addWorkout}>
         <input type="hidden" name='order' value={JSON.stringify(order)} />
-        <h2 className="mb-4 text-xl font-semibold">Workout Split</h2>
-          <div className='flex items-center  px-1'>
-          <UIverseButton placeHolder='name' name='workoutName' />
+          <div className='pt-1 flex items-center'>
+          <UIverseButton  name='workoutName' placeHolder="Workout name..." />
           </div>
           <div className='space-y-4'>
           {days}
           </div>  
         <div className='flex justify-between'>
           <div className='space-x-4'>
-          <Button type='button' onClick={(e)=>{setOrder(prev => [...prev,{index:prev.length+1,dayName:"",action:"train"}]); setDays(days => [...days , <AddDay editDayName={editDayName} remove={removeDay} id={order[order.length]?.index || 1} key={order[order.length]?.index || 1} muscles='legs,arms,chest' />])}} className="mt-4" size="sm" variant="destructive">
+          <Button type='button' onClick={()=>{setNewKey(prev => prev+1);}} className="mt-4" size="sm" variant="default">
           Add Workout Day
         </Button>
         
-        <Button type='button' onClick={(e)=>{setOrder(prev => [...prev,{index:prev.length+1,dayName:"",action:"rest"}]);setDays(days => [...days , <AddRestDay id={order[order.length]?.index || 1} key={order[order.length]?.index || 1}/>])}} className="mt-4" size="sm" variant="destructive">
+        <Button type='button' onClick={()=>{setNewKey(prev => prev+1)}} className="mt-4" size="sm" variant="default">
           Add Rest Day
         </Button>
         
         </div>
-        <Button type='submit' className="mt-4" size="sm" variant="outline">
+        <ButtonWhite type='submit' className="mt-4" size="sm" >
           Save workout
-          </Button>
+          </ButtonWhite>
         </div>
       </form>
   
   
-    </section>
+    </Container>
 
   )
 }

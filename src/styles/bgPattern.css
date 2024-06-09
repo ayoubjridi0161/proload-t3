@@ -1,44 +1,27 @@
-/*.container {
-    width: 100%;
-    height: 100%;
-    --color: rgba(0, 115, 19, 0.3);
-    background-color: #191a1a;
-    background-image: linear-gradient(
-        180deg,
-        transparent 24%,
-        var(--color) 25%,
-        var(--color) 26%,
-        transparent 27%,
-        transparent 74%,
-        var(--color) 75%,
-        var(--color) 76%,
-        transparent 77%,
-        transparent
-      ),
-      linear-gradient(
-        45deg,
-        transparent 24%,
-        var(--color) 35%,
-        var(--color) 26%,
-        transparent 17%,
-        transparent 74%,
-        var(--color) 75%,
-        var(--color) 76%,
-        transparent 77%,
-        transparent
-      );
-    background-size: 55px 55px;
-  }*/
-  .container {
-    width: 100%;
-    height: 100%;
-    background-color: #111111;
-    background-image: linear-gradient(
-      32deg,
-      rgba(8, 8, 8, 0.74) 30px,
-      transparent
+.bgPattern {
+  width: 100%;
+  height: 100%;
+  --s: 82px;
+  --c1: #b2b2b2;
+  --c2: #ffffff;
+  --c3: #d9d9d9;
+
+  --_g: var(--c3) 0 120deg, #0000 0;
+  background: conic-gradient(from -60deg at 50% calc(100% / 3), var(--_g)),
+    conic-gradient(from 120deg at 50% calc(200% / 3), var(--_g)),
+    conic-gradient(
+      from 60deg at calc(200% / 3),
+      var(--c3) 60deg,
+      var(--c2) 0 120deg,
+      #0000 0
+    ),
+    conic-gradient(from 180deg at calc(100% / 3), var(--c1) 60deg, var(--_g)),
+    linear-gradient(
+      90deg,
+      var(--c1) calc(100% / 6),
+      var(--c2) 0 50%,
+      var(--c1) 0 calc(500% / 6),
+      var(--c2) 0
     );
-    background-size: 60px 60px;
-    background-position: -5px -5px;
-  }
-  
+  background-size: calc(1.732 * var(--s)) var(--s);
+}

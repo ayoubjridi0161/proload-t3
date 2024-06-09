@@ -2,6 +2,7 @@ import { days, exercices, workouts } from '~/server/db/schema'
 import {db} from '../server/db/index'
 import * as types from './types'
 import { eq } from 'drizzle-orm'
+import { unstable_noStore as noStore } from 'next/cache'
 export const fetchAllWorkouts = async()=>{
     const result = await db.query.workouts.findMany({
         with:{
@@ -13,8 +14,9 @@ export const fetchAllWorkouts = async()=>{
     return result
 }
 export async function fetchWorkoutById(id:number){
+    noStore();
     const result = await db.query.workouts.findFirst({
-        where : eq(workouts.id,19),
+        where : eq(workouts.id,id),
         with : {days : {
             with : {exercices : true}
         }}

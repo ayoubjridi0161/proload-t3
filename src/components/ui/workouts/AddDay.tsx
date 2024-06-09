@@ -7,6 +7,8 @@ import { Pencil, GrabIcon, TrashIcon, Dumbbell, Check, Plus, Edit } from 'lucide
 import { AccordionItem, AccordionTrigger, AccordionContent } from '../accordion'
 import AddExercice from './AddExercice'
 import { cn } from '~/lib/utils'
+import Container from '../Container'
+import { ButtonBlack, ButtonWhite } from '../UIverse/Buttons'
 
 
 type Props = {
@@ -38,7 +40,7 @@ export default function AddDay(props : Props) {
 
 
   return (
-    <div className='space-y-4 border rounded-lg '>
+    <Container >
         <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
             <div className="flex items-center space-x-4">
             {/*dumbbell*/}
@@ -48,7 +50,7 @@ export default function AddDay(props : Props) {
               <Label className='pr-3 text-xl'>Day {props.id} :</Label>
             <input required ref={dayNameProps} className={cn("p-2 border rounded-lg h-full", dayName? "bg-gray-50 text-lg font-semibold" : "text-lg font-semibold ")} name="dayName" readOnly={dayName} placeholder='add Name'/> 
               {/* <Input name="dayName" readonly={dayName} refprop={dayNameProps} placeholder='day name' />  */}
-               <Button className='h-full' type='button' onClick={()=>{setDayName(prev => !prev);if(dayName){props.editDayName(props.id,dayNameProps.current?.value || "")}}}>{dayName ? <Edit /> : <Check />}</Button>  
+               <Button variant="ghost" className='h-full' type='button' onClick={()=>{setDayName(prev => !prev);if(dayName){props.editDayName(props.id,dayNameProps.current?.value || "")}}}>{dayName ? <Edit /> : <Check />}</Button>  
             </div>
             <p className=" px-1 text-sm text-gray-500 dark:text-gray-400">Muscles Targeted: {props.muscles}</p>  
             
@@ -56,23 +58,23 @@ export default function AddDay(props : Props) {
             </div>
             {/*Edit and Delete buttons*/}
             <div className="flex items-center space-x-2">
-              <Button type='button' onClick={()=>{setIsEdit(prev => !prev)}} size="sm" variant="outline">
+              <ButtonBlack type='button' onClick={()=>{setIsEdit(prev => !prev)}} size="sm" variant="outline">
                 <Pencil className="h-4 w-4" />
-              </Button>
-              <Button type='button' onClick={()=>{props.remove(props.id)}} size="sm" variant="outline">
+              </ButtonBlack>
+              <ButtonBlack type='button' onClick={()=>{props.remove(props.id)}} size="sm" variant="outline">
                 <TrashIcon className="h-4 w-4" />
-              </Button>
+              </ButtonBlack>
             </div>
           </div>
           <div>
-          <div className={isEdit ?  "flex flex-wrap gap-2  px-3 pb-1   w-full" : "hidden"}>
+          <div className={isEdit ?  "flex flex-wrap gap-2  px-3 pb-1 pt-3 w-full" : "hidden"}>
             {exercices }
           </div>{isEdit &&
-          <Button className='m-3' type='button' onClick={()=>{setNbrExercices(prev => prev+1);setExercices(prev => [...prev,<AddExercice  dayName={dayNameProps.current?.value} key={`day${props.id}-exercice${nbrExercices}`} id={`day${props.id}-exercice${nbrExercices}`}/> ])}}>Add exercice</Button>
+          <ButtonWhite className='m-3' type='button' onClick={()=>{setNbrExercices(prev => prev+1);setExercices(prev => [...prev,<AddExercice  dayName={dayNameProps.current?.value} key={`day${props.id}-exercice${nbrExercices}`} id={`day${props.id}-exercice${nbrExercices}`}/> ])}}>Add exercice</ButtonWhite>
           }
           </div>
         
           
-          </div>
+          </Container>
   )
 }

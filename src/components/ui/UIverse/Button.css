@@ -1,0 +1,38 @@
+.btnwhite:active, .button-confirm:active {
+    box-shadow: 0px 0px #111;
+    transform: translate(3px, 3px);
+  }
+  
+  .btnwhite {
+    margin: 20px 0 20px 0;
+    width: fit-content;
+    height: 40px;
+    border-radius: 5px;
+    border: 2px solid #111;
+    background-color: #fefefe;
+    box-shadow: 4px 4px #111;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--font-color);
+    cursor: pointer;
+    padding-inline: 10px;
+  } 
+  .btnblack{
+    padding-inline: 10px;
+    margin: 20px 0 20px 0;
+    width: fit-content;
+    height: 40px;
+    border-radius: 5px;
+    border: 2px solid #fefefe;
+    background-color: #111;
+    box-shadow: 4px 4px #fefefe;
+    font-size: 17px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+  } 
+  
+.btnblack:active, .button-confirm:active {
+    box-shadow: 0px 0px var(--main-color);
+    transform: translate(3px, 3px);
+  }
