@@ -1,4 +1,4 @@
-import { days, exercices, workouts } from '~/server/db/schema'
+import { days, exercices, users, workouts } from '~/server/db/schema'
 import {db} from '../server/db/index'
 import * as types from './types'
 import { eq } from 'drizzle-orm'
@@ -43,9 +43,21 @@ export const InsertDay = async (day:types.day,idOfWorkout:number)=>{
 }
 export const InsertWorkout = async (workout:types.workout)  =>{
     try{
-        const workoutId  = await db.insert(workouts).values({name:workout.name}).returning({id : workouts.id})
+        const workoutId  = await db.insert(workouts).values({name:workout.name,userId:workout.userId}).returning({id : workouts.id})
         return workoutId[0]?.id
     }catch(err){
         return{message:"failed to insert Workout"}
     }
+}
+
+export const InsertUser = async (user:{username:string,password:string,email:string})=>{
+    try{
+        await db.insert(users).values({username:user.username,password:user.password,email:user.email})
+    }catch(err){
+        return {message:"failed to insert user"}
+    }
+}
+export const getUserByEmail = async (email:string)=>{
+    const user = await db.query.users.findFirst({where : eq(users.email,email)})
+    return user?.id
 }

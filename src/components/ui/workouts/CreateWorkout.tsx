@@ -12,11 +12,12 @@ import UIverseButton from '~/components/UIverseButton'
 import AddRestDay from './AddRestDay'
 import Container from '../Container'
 
-export default function CreateWorkout() {
+export default function CreateWorkout({user}:{user:string | undefined | null}) {
     const [newKey, setNewKey] = React.useState(0) 
     
     const [days, setDays] = React.useState<ReactElement[]>([])
     const [order,setOrder] = React.useState<{index:number,dayName:string,action:"train"|"rest"}[]>([])
+    const email = user || 'none'
     const [removedDay,setRemovedDay] = React.useState<number>()
     function removeDay(id:number){
         // setDays([...days]?.filter((day)=> day.key || 1 != id))
@@ -43,6 +44,7 @@ export default function CreateWorkout() {
     <Container className='h-full'>
      <form className="h-full rounded-lg border border-gray-200  p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800 space-y-2" action={addWorkout}>
         <input type="hidden" name='order' value={JSON.stringify(order)} />
+        <input type="hidden" name='email' value={email} />
           <div className='pt-1 flex items-center'>
           <UIverseButton  name='workoutName' placeHolder="Workout name..." />
           </div>

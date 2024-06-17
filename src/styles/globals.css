@@ -2,6 +2,25 @@
   @tailwind components;
   @tailwind utilities;
 body{
+  
+}
+/* Custom scrollbar for webkit browsers */
+::-webkit-scrollbar {
+  width: 7px; /* Adjust the width of the scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background:transparent; /* Background of the scrollbar track */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: transparent; /* Color of the scrollbar thumb */
+  border-radius: 6px; /* Rounded corners of the scrollbar thumb */
+  border: 1px solid gray; /* Creates a border around the scrollbar thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  border: 1px solid black; /* Color of the scrollbar thumb on hover */
 }
 @layer base {
   :root {

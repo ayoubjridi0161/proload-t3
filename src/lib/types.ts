@@ -9,4 +9,5 @@ export type day ={
 }
 export type workout = {
     name:string,
+    userId:string
 }

@@ -11,6 +11,7 @@ import {
   timestamp,
   primaryKey,
   varchar,
+  uuid,
 } from "drizzle-orm/pg-core";
 
 /**
@@ -38,10 +39,14 @@ export const posts = createTable(
 export const workouts = pgTable("workouts",{
   id: serial('id').primaryKey(),
   name: varchar('name',{length:256}).notNull(),
+  userId: uuid('user_id').references(()=>users.id),
   createdAt: timestamp("created_at",{withTimezone:true}).default(sql`CURRENT_TIMESTAMP`).notNull(),
 })
 
-export const workoutsRelations = relations(workouts,({many})=>({days : many(days),}));
+export const workoutsRelations = relations(workouts,({many,one})=>({days : many(days),
+  users: one(users,{fields:[workouts.userId],references:[users.id]})
+
+}));
 
 export const days = pgTable("days",{
   id:serial('id').primaryKey(),
@@ -66,20 +71,11 @@ export const exercicesRelations= relations(exercices, ({one}) => ({days : one(da
   fields:[exercices.dayId],
   references:[days.id],
 })})  );
-/*export const daysToExercices = pgTable('days_to_exercices',{
-  dayId : integer('day_id').notNull().references(()=> days.id),
-  exerciceId : integer('exercice_id').notNull().references(()=>exercices.id)},
-  (t) => ({
-    pk: primaryKey({ columns: [t.dayId, t.exerciceId] }),
-  }),)
-export const daysToExercicesRelations = relations(daysToExercices,({one})=>({
-  exercices : one(exercices,{
-    fields : [daysToExercices.exerciceId],
-    references:[exercices.id]
-  }),
-  days : one(days , {
-    fields:[daysToExercices.dayId],
-    references:[days.id]
-  })
-}))*/
 
+export const users = pgTable("users",{
+  id:uuid('uuid').defaultRandom().primaryKey(),
+  username:varchar('username',{length:256}).notNull(),
+  email:varchar('email',{length:256}).notNull().unique(),
+  password:varchar('password',{length:256}).notNull()
+})
+export const usersRelations = relations(users,({many})=>({workouts:many(workouts)}));

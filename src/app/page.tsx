@@ -6,10 +6,15 @@ import WorkoutSkeleton from "~/components/ui/workoutShowCase/skeleton/workoutSke
 import UserDeatails from "~/components/ui/workoutShowCase/UserDetails";
 import {tooltipV0} from "~/components/component/tooltip-v0"
 import Comments from "~/components/component/Comments";
+import Sidenav from "~/components/ui/workouts/Sidenav";
 
 export default function HomePage() {
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center  text-white">
+      <div className="w-1/2 m-5 text-black font-bold">
+      <Sidenav username={"poroof"} />
+      </div>
       <div className="flex gap-5">
       <Container>
       <Suspense fallback={<WorkoutSkeleton/>}>
