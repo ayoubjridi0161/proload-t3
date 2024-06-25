@@ -21,6 +21,7 @@ import { Button } from "~/components/ui/button"
 import { TooltipTrigger, TooltipContent, Tooltip, TooltipProvider } from "~/components/ui/tooltip"
 import { PopoverTrigger, PopoverContent, Popover } from "~/components/ui/popover"
 import { ArrowBigDownDash, ArrowBigUpDash } from "lucide-react"
+import { JSX, SVGProps } from "react"
 
 export function tooltipV0() {
   return (
@@ -103,7 +104,7 @@ export function tooltipV0() {
   )
 }
 
-function ArrowDownIcon(props) {
+function ArrowDownIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -124,7 +125,7 @@ function ArrowDownIcon(props) {
 }
 
 
-function ArrowUpIcon(props) {
+function ArrowUpIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -145,7 +146,7 @@ function ArrowUpIcon(props) {
 }
 
 
-function CopyIcon(props) {
+function CopyIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -166,7 +167,7 @@ function CopyIcon(props) {
 }
 
 
-function FacebookIcon(props) {
+function FacebookIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -186,7 +187,7 @@ function FacebookIcon(props) {
 }
 
 
-function InstagramIcon(props) {
+function InstagramIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -208,7 +209,7 @@ function InstagramIcon(props) {
 }
 
 
-function LinkedinIcon(props) {
+function LinkedinIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -230,7 +231,7 @@ function LinkedinIcon(props) {
 }
 
 
-function MoveHorizontalIcon(props) {
+function MoveHorizontalIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -252,7 +253,7 @@ function MoveHorizontalIcon(props) {
 }
 
 
-function ShareIcon(props) {
+function ShareIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -274,7 +275,7 @@ function ShareIcon(props) {
 }
 
 
-function TwitterIcon(props) {
+function TwitterIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
