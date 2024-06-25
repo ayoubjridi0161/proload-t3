@@ -38,3 +38,4 @@ export default function ExerciceCard(props: Props) {
             </CardContent>
           </Card>
   )
+}
