@@ -1,41 +1,53 @@
 "use server"
-
 import { signIn } from "auth"
 import { InsertDay, InsertExercice, InsertUser, InsertWorkout, fetchAllWorkouts, getUserByEmail } from "./data"
 import { redirect } from "next/navigation"
 import { AuthError } from "next-auth"
 import { user } from "./zodValidation"
-
 export default async function addWorkout(formData : FormData) {
-  console.log(formData)
   const user = await getUserByEmail(formData.get('email') as string)
   if(!user){
     return {message:"user not found"}
   }
-  const workoutID =  await  InsertWorkout({name:formData.get('workoutName') as string,userId:user })
+  // for now workouts don't have descroption
+  // const description = formData.get('description') as string || '';  
+  const workoutID =  await  InsertWorkout({name:formData.get('workoutName') as string,userId:user,description: '' })
   if(typeof workoutID !== 'number'){
     return workoutID
   }
 
-  const days = formData.getAll('dayName')
-  for(const day of days){
-    const dayID = await InsertDay({name:day as string},workoutID)
+  const days = formData.getAll('day')
+
+  const parsedDays = days.map((day)=>JSON.parse(day as string))
+  //cast the indexes to integers
+  for(let day of parsedDays){
+    day.index = parseInt(day.index)
+  }
+  const sortedDaysIndexes = parsedDays.map(day=>day.index).sort((a,b)=>a-b)
+  const sortedDays = []
+  for(let index of sortedDaysIndexes){
+    sortedDays.push(parsedDays.filter((day)=>day.index===index)[0].name) 
+  }
+
+  for(let i =0 ; i<sortedDays.length ; i++){
+    if(sortedDays[i] === 'rest') continue;
+    const dayID = await InsertDay({name:sortedDays[i] as string,index:i+1},workoutID)
     if(typeof dayID !== 'number'){
       return dayID
     }
-    const exercices = formData.getAll(day as string)
+    
+    const exercices = formData.getAll(sortedDays[i] as string)
     // console.log(exercices)
     for(let exercice of exercices){
       let parsed = JSON.parse(exercice as string)
       await InsertExercice({name:parsed.exName,sets:parsed.sets,reps:parsed.reps},dayID)
-
     }
   }
 }
 export const login = async (formData : FormData)=>{
   // console.log(formData)
   try {
-    await signIn('credentials',formData as FormData);
+    await signIn('credentials',formData );
   } catch (error) {
     if (error instanceof AuthError) {
       // return redirect(`/workouts`)//later redirect to error page

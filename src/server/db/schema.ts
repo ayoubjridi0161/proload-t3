@@ -1,7 +1,8 @@
 // Example model schema from the Drizzle docs
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
-import { relations, sql } from "drizzle-orm";
+import { desc, relations, sql } from "drizzle-orm";
+import { boolean } from "drizzle-orm/mysql-core";
 import {
   index,
   integer,
@@ -12,6 +13,8 @@ import {
   primaryKey,
   varchar,
   uuid,
+  pgEnum,
+  boolean as pgBoolean,
 } from "drizzle-orm/pg-core";
 
 /**
@@ -22,35 +25,28 @@ import {
  */
 export const createTable = pgTableCreator((name) => `proload-t3_${name}`);
 
-export const posts = createTable(
-  "post",
-  {
-    id: serial("id").primaryKey(),
-    name: varchar("name", { length: 256 }),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: timestamp("updatedAt", { withTimezone: true }),
-  },
-  (example) => ({
-    nameIndex: index("name_idx").on(example.name),
-  })
-);
 export const workouts = pgTable("workouts",{
   id: serial('id').primaryKey(),
   name: varchar('name',{length:256}).notNull(),
   userId: uuid('user_id').references(()=>users.id),
   createdAt: timestamp("created_at",{withTimezone:true}).default(sql`CURRENT_TIMESTAMP`).notNull(),
+  description:varchar('description',{length:1000}).notNull(),
+  upvotes:integer('upvotes').default(0).notNull(),
+  downvotes:integer('downvotes').default(0).notNull(),
+  clones:integer('clones').default(0).notNull(),
+  published:pgBoolean('published').default(false).notNull()
 })
 
 export const workoutsRelations = relations(workouts,({many,one})=>({days : many(days),
-  users: one(users,{fields:[workouts.userId],references:[users.id]})
+  users: one(users,{fields:[workouts.userId],references:[users.id]}),
+  comments:many(comments),
 
 }));
 
 export const days = pgTable("days",{
   id:serial('id').primaryKey(),
   name:varchar("name",{length:256}).notNull(),
+  dayIndex:integer('day_index').notNull(),
   workoutId: integer("workout_id").references(()=>workouts.id)
 });
 export const daysRelations = relations(days,({one,many})=> ({
@@ -78,4 +74,31 @@ export const users = pgTable("users",{
   email:varchar('email',{length:256}).notNull().unique(),
   password:varchar('password',{length:256}).notNull()
 })
-export const usersRelations = relations(users,({many})=>({workouts:many(workouts)}));
+export const usersRelations = relations(users,({many})=>({workouts:many(workouts),comments:many(comments),replys:many(replys)}));
+export const stateEnum = pgEnum('state', ['comment', 'reply']);
+export const comments = pgTable("comments",{
+  id:serial('id').primaryKey(),
+  content:varchar('content',{length:1000}).notNull(),
+  userId:uuid('user_id').references(()=>users.id),
+  userName:varchar('user_name',{length:256}).notNull(),
+  workoutId:integer('workout_id').references(()=>workouts.id),
+  createdAt:timestamp('created_at',{withTimezone:true}).default(sql`CURRENT_TIMESTAMP`).notNull()
+})
+export const replys = pgTable("replys",{
+  id:serial('id').primaryKey(),
+  content:varchar('content',{length:1000}).notNull(),
+  userId:uuid('user_id').references(()=>users.id),
+  userName:varchar('user_name',{length:256}).notNull(),
+  commentId:integer('comment_id').references(()=>comments.id),
+  createdAt:timestamp('created_at',{withTimezone:true}).default(sql`CURRENT_TIMESTAMP`).notNull()
+})
+export const commentsRelations = relations(comments,({many,one})=>({
+  users:one(users,{fields:[comments.userId],references:[users.id]}),
+  workouts:one(workouts,{fields:[comments.workoutId],references:[workouts.id]}),
+  replys:many(replys)
+}))
+export const replysRelations = relations(replys,({one})=>({
+  users:one(users,{fields:[replys.userId],references:[users.id]}),
+  comments:one(comments,{fields:[replys.commentId],references:[comments.id]})
+}) )
+

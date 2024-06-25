@@ -5,9 +5,11 @@ export type exercice = {
 }
 export type day ={
     name:string,
+    index:number
     
 }
 export type workout = {
     name:string,
     userId:string
+    description:string
 }

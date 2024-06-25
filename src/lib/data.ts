@@ -35,7 +35,7 @@ catch(err){
 }
 export const InsertDay = async (day:types.day,idOfWorkout:number)=>{
     try{
-        const dayID = await db.insert(days).values({name:day.name,workoutId:idOfWorkout}).returning({id:days.id})
+        const dayID = await db.insert(days).values({name:day.name,workoutId:idOfWorkout,dayIndex:day.index}).returning({id:days.id})
         return dayID[0]?.id
     }catch(err){
         return{message:"failed to insert Day"}
@@ -43,7 +43,7 @@ export const InsertDay = async (day:types.day,idOfWorkout:number)=>{
 }
 export const InsertWorkout = async (workout:types.workout)  =>{
     try{
-        const workoutId  = await db.insert(workouts).values({name:workout.name,userId:workout.userId}).returning({id : workouts.id})
+        const workoutId  = await db.insert(workouts).values({name:workout.name,userId:workout.userId,description:workout.description}).returning({id : workouts.id})
         return workoutId[0]?.id
     }catch(err){
         return{message:"failed to insert Workout"}
