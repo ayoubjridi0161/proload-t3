@@ -13,17 +13,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Credentials({
         async authorize(credentials) {
             const parsedCredentials = z
-              .object({ email: z.string().email(), password: z.string().min(2) })
-              .safeParse(credentials);
-              if(parsedCredentials.success){
-                console.log(parsedCredentials.data)
-                const {email,password} = parsedCredentials.data;
+              .object({ email: z.string().email(), password: z.string().min(2)  })
+              .parse(credentials);
+              if(!parsedCredentials)
+              throw new Error("zod :Invalid credentials")
+
+                console.log(parsedCredentials)
+                const {email,password} = parsedCredentials;
                 const user = await db.query.users.findFirst({where:eq(users.email,email)})
-                 if(!user) return null;
+                 if(!user) throw new Error("User not found");
                 const passwordMatch = password === user.password
-                if(passwordMatch) return {email, name: user.username, id: user.id}
-                }
-            throw new Error("invalid credentials");
+                if(!passwordMatch) throw new Error("wrong passwrd")
+                 return {email, name: user.username, id: user.id}
+                
         }
     }),Github,Google
   ],

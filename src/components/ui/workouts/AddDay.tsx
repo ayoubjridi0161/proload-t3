@@ -1,7 +1,6 @@
 "use client"
 import React, { ReactElement, useRef } from 'react'
 import { Label } from '../label'
-import Input from '~/components/ui/UIverse/Input'
 import { Button } from '../button'
 import { Pencil, GrabIcon, TrashIcon, Dumbbell, Check, Plus, Edit } from 'lucide-react'
 import { AccordionItem, AccordionTrigger, AccordionContent } from '../accordion'
@@ -9,6 +8,7 @@ import AddExercice from './AddExercice'
 import { cn } from '~/lib/utils'
 import Container from '../Container'
 import { ButtonBlack, ButtonWhite } from '../UIverse/Buttons'
+import { Input } from '../input'
 
 
 type Props = {
@@ -37,15 +37,15 @@ export default function AddDay(props : Props) {
       setIsExercice(false)
     }*/
   return (
-    <Container >
-        <div className="flex items-center justify-between rounded-lg border border-gray-600  opacity-90 bg-gray-50 px-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+    <div className='bg-primary-foreground rounded-lg'>
+        <div className="flex items-center justify-between rounded-lg border border-border   px-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
             <div className="flex items-center space-x-4">
             {/*dumbbell*/}
             <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-dumbbell"><path d="M14.4 14.4 9.6 9.6"/><path d="M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z"/><path d="m21.5 21.5-1.4-1.4"/><path d="M3.9 3.9 2.5 2.5"/><path d="M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z"/></svg>              <div>
             {/*dayName */}
             <div className='flex items-center mb-2'>
               <input type="hidden" name="day" value={JSON.stringify({name:dayNameProps.current?.value,index:props.id})} />
-            <input  required ref={dayNameProps} className={cn("p-2 border rounded-lg h-full", dayName? "bg-gray-50 text-lg font-semibold" : "text-lg font-semibold ")} readOnly={dayName} placeholder='add Name'/> 
+            <Input  required={true} ref={dayNameProps} className={cn("p-2 border rounded-lg h-full", dayName? "bg-gray-50 text-lg font-semibold" : "text-lg font-semibold ")} readOnly={dayName} placeholder='add Name'/> 
               {/* <Input name="dayName" readonly={dayName} refprop={dayNameProps} placeholder='day name' />  */}
                <Button variant="ghost" className='h-full' type='button' onClick={()=>{setDayName(prev => !prev)}}>{dayName ? <Edit /> : <Check />}</Button>  
             </div>
@@ -71,6 +71,6 @@ export default function AddDay(props : Props) {
           </div>
         
           
-          </Container>
+          </div>
   )
 }

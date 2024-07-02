@@ -1,15 +1,23 @@
 import { days, exercices, users, workouts } from '~/server/db/schema'
 import {db} from '../server/db/index'
 import * as types from './types'
-import { eq } from 'drizzle-orm'
+import { DrizzleError, asc, eq } from 'drizzle-orm'
 import { unstable_noStore as noStore } from 'next/cache'
 export const fetchAllWorkouts = async()=>{
     const result = await db.query.workouts.findMany({
+        columns: {name : true,id:true},
         with:{
+            users :{
+                columns : {username : true}
+            },
             days : {
-                with : {exercices : true}
+                columns : {name : true},
+                with : {exercices : {
+                    columns: {name : true}
+                }}
             }
-        }
+        },
+        orderBy: (workouts, { desc }) => [desc(workouts.id)],
     })
     return result
 }
@@ -43,7 +51,7 @@ export const InsertDay = async (day:types.day,idOfWorkout:number)=>{
 }
 export const InsertWorkout = async (workout:types.workout)  =>{
     try{
-        const workoutId  = await db.insert(workouts).values({name:workout.name,userId:workout.userId,description:workout.description}).returning({id : workouts.id})
+        const workoutId  = await db.insert(workouts).values({name:workout.name,userId:workout.userId,description:workout.description,numberOfDays:workout.numberOfDays,published:workout.published}).returning({id : workouts.id})
         return workoutId[0]?.id
     }catch(err){
         return{message:"failed to insert Workout"}
@@ -53,8 +61,12 @@ export const InsertWorkout = async (workout:types.workout)  =>{
 export const InsertUser = async (user:{username:string,password:string,email:string})=>{
     try{
         await db.insert(users).values({username:user.username,password:user.password,email:user.email})
+        return true
+        
     }catch(err){
-        return {message:"failed to insert user"}
+        
+        console.log(err)
+        throw new DrizzleError({message:"failed to insert user",cause:err})
     }
 }
 export const getUserByEmail = async (email:string)=>{

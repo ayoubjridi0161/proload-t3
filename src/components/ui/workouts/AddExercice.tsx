@@ -26,9 +26,9 @@ export default function AddExercice(props: Props) {
     {showExercice ? 
     <div className=' items-center flex justify-between '>
       <input type="hidden" disabled={deleteEx} name={`${props.dayName}`} value={JSON.stringify(Exercice)} /> 
-      <ExerciceCard className={deleteEx ? "hidden" : ""} delete={()=>{setDeleteEx(true)}}  name={Exercice.exName} sets={Exercice.sets} reps={Exercice.reps} edit={()=>{setShowExercice(prev => !prev)}} />
+      <ExerciceCard className={deleteEx ? "hidden" : " bg-primary border-border opacity-80"} delete={()=>{setDeleteEx(true)}}  name={Exercice.exName} sets={Exercice.sets} reps={Exercice.reps} edit={()=>{setShowExercice(prev => !prev)}} />
     </div> :   
-<div className="flex items-center justify-between h-fit rounded-lg w-full border border-gray-200 bg-gray-50 p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+<div className="flex items-center justify-between h-fit rounded-lg w-full border border-border bg-primary p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
  <div className="flex items-center space-x-4 ">
       <div>
         <label

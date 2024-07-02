@@ -19,7 +19,7 @@ export default function ExerciceCard(props: Props) {
   return (
     <Card className={props.className}>
             <CardHeader>
-              <CardTitle>{props.name}</CardTitle>
+              <CardTitle className='min-h-8'>{props.name}</CardTitle>
               <CardDescription>Back, Biceps</CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">

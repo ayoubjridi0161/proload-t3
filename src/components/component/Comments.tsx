@@ -26,7 +26,7 @@ import { Textarea } from '../ui/textarea'
                       <div className="text-xs text-gray-500 dark:text-gray-400">2 days ago</div>
                     </div>
                     <p className="text-gray-500 dark:text-gray-400">
-                      Great product! I\'ve been using it for a week and it\'s been a game-changer. Highly recommend.
+                      Great product! Ive been using it for a week and its been a game-changer. Highly recommend.
                     </p>
                     <div className="flex items-center gap-2">
                       <Button variant="ghost" size="icon">
@@ -72,8 +72,8 @@ import { Textarea } from '../ui/textarea'
                       <div className="text-xs text-gray-500 dark:text-gray-400">3 days ago</div>
                     </div>
                     <p className="text-gray-500 dark:text-gray-400">
-                      I\'m on the fence about this product. It seems to work well, but I\'m not sure it\'s worth the price
-                      tag. I\'ll have to think about it some more.
+                      Im on the fence about this product. It seems to work well, but Im not sure its worth the price
+                      tag. Ill have to think about it some more.
                     </p>
                     <div className="flex items-center gap-2">
                       <Button variant="ghost" size="icon">

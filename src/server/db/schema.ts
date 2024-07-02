@@ -16,6 +16,7 @@ import {
   pgEnum,
   boolean as pgBoolean,
 } from "drizzle-orm/pg-core";
+import { number } from "zod";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -34,7 +35,8 @@ export const workouts = pgTable("workouts",{
   upvotes:integer('upvotes').default(0).notNull(),
   downvotes:integer('downvotes').default(0).notNull(),
   clones:integer('clones').default(0).notNull(),
-  published:pgBoolean('published').default(false).notNull()
+  published:pgBoolean('published').default(false).notNull(),
+  numberOfDays:integer('number_of_days')
 })
 
 export const workoutsRelations = relations(workouts,({many,one})=>({days : many(days),
@@ -70,7 +72,7 @@ export const exercicesRelations= relations(exercices, ({one}) => ({days : one(da
 
 export const users = pgTable("users",{
   id:uuid('uuid').defaultRandom().primaryKey(),
-  username:varchar('username',{length:256}).notNull(),
+  username:varchar('username',{length:256}).notNull().unique(),
   email:varchar('email',{length:256}).notNull().unique(),
   password:varchar('password',{length:256}).notNull()
 })

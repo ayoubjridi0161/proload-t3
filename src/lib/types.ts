@@ -10,6 +10,8 @@ export type day ={
 }
 export type workout = {
     name:string,
-    userId:string
-    description:string
+    userId:string,
+    description:string,
+    numberOfDays:number,
+    published:boolean
 }
