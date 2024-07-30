@@ -74,8 +74,10 @@ export const users = pgTable("users",{
   id:uuid('uuid').defaultRandom().primaryKey(),
   username:varchar('username',{length:256}).notNull().unique(),
   email:varchar('email',{length:256}).notNull().unique(),
-  password:varchar('password',{length:256}).notNull()
-})
+  password:varchar('password',{length:256}).notNull(),
+  createdAt:timestamp('created_at',{withTimezone:true}).default(sql`CURRENT_TIMESTAMP`),
+
+})  
 export const usersRelations = relations(users,({many})=>({workouts:many(workouts),comments:many(comments),replys:many(replys)}));
 export const stateEnum = pgEnum('state', ['comment', 'reply']);
 export const comments = pgTable("comments",{
@@ -103,4 +105,31 @@ export const replysRelations = relations(replys,({one})=>({
   users:one(users,{fields:[replys.userId],references:[users.id]}),
   comments:one(comments,{fields:[replys.commentId],references:[comments.id]})
 }) )
+export const Reactions = pgTable(
+  'Reactions',
+  {
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id),
+    workoutId: integer('workout_id')
+      .notNull()
+      .references(() => workouts.id),
+      clones:integer('clones').default(0).notNull(),
+    upvote: pgBoolean('upvote').default(false).notNull(),
+    downvote: pgBoolean('downvote').default(false).notNull(),
 
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.userId, t.workoutId] }),
+  }),
+);
+export const ReactionsRelations = relations(Reactions, ({ one }) => ({
+  workout: one(workouts, {
+    fields: [Reactions.workoutId],
+    references: [workouts.id],
+  }),
+  user: one(users, {
+    fields: [Reactions.userId],
+    references: [users.id],
+  }),
+}));

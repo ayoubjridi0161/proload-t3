@@ -16,7 +16,7 @@ const page = async () => {
     
      
     return (
-        <div className=" grid place-items-center h-screen">
+        <div className="bg-white grid place-items-center h-screen">
             <div className="flex flex-wrap gap-3 px-4 w-full ">
                 {
                     colors.map((color,index) => (

@@ -4,37 +4,15 @@ import Container from "~/components/ui/Container";
 import Workout from "~/components/ui/workoutShowCase/Workout";
 import WorkoutSkeleton from "~/components/ui/workoutShowCase/skeleton/workoutSkeleton";
 import UserDeatails from "~/components/ui/workoutShowCase/UserDetails";
-import {tooltipV0} from "~/components/component/tooltip-v0"
 import Comments from "~/components/component/Comments";
 import Sidenav from "~/components/ui/workouts/Sidenav";
 import { auth } from "auth";
+import TooltipBox from "~/components/component/tooltipV0";
+import { Home } from "~/components/ui/homePage/Home";
 
 export default async function HomePage() {
-  const session = await auth();
-  const user = session?.user;
+  
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center  text-white">
-      <div className="w-1/2 m-5 text-black font-bold">
-      <Sidenav username={user?.name} />
-      </div>
-      <div className="flex gap-5">
-      <Container>
-      <Suspense fallback={<WorkoutSkeleton/>}>
-          <Workout />
-      </Suspense>
-      </Container>
-      <div className="space-y-5">
-      <Container>
-      <UserDeatails />
-      </Container>
-      <Container>
-      {tooltipV0()}
-      </Container>
-      <Container>
-        <Comments />
-      </Container>
-      </div>
-      </div>
-    </main>
+    <Home />
   );
 }

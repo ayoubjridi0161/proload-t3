@@ -1,9 +1,17 @@
 'use client'
-import { login } from "~/lib/actions"
-import './login.css'
+import { githubSignIn, login } from "~/lib/actions"
+
 import { useFormState, useFormStatus } from "react-dom"
 import { useActionState } from "react"
 import { useRouter } from "next/navigation"
+import { Button } from "../button" 
+import Input from "../UIverse/Input"
+import LoginInput from "../UIverse/loginInput"
+import Link from "next/link"
+import LockIcon from "../svg/lockIcon"
+import MailIcon from "../svg/mailIcon"
+import { signIn } from "auth"
+// import { MailIcon } from "lucide-react"
 export const Login =  ()=>{
     // const [error,action,isPending] = useActionState(login,null);
     const [error,action] = useFormState(login,null)
@@ -12,20 +20,27 @@ export const Login =  ()=>{
         router.push('/workouts')
     }
     return (
-        <form action={action} className="form">
-  <div className="title">Welcome,<br/><span>sign up to continue</span></div>
-  <input className="input" name="email" placeholder="Email" type="email"/>
-  <input className="input" name="password" placeholder="Password" type="password"/>
-  <Button />
-  <p className="text-white">Dont have an account <a className="text-white font-semibold underline" href="/signup">Sign Up Here!</a></p>
-   <p className="text-white">{error && error.message}</p>
-</form>
+        <div>
+        <form action={action} className="flex flex-col w-9/12 mx-auto    items-stretch gap-4 h-[60vh]">
+  <div className="text-3xl font-bold text-center mb-16">Sign In</div>
+  <LoginInput Icon={<MailIcon/>}  name="email" placeholder="Email" type="email"/>
+  <LoginInput  name="password" placeholder="Password" type="password"/>
+  <Link href={"/"}  className=" self-end font-medium">Forgot password</Link >
+  <LocalButton />
+  <p className="text-black text-center">Dont have an account <a className="text-black font-semibold underline" href="/signup">Register!</a></p>
+   <p className="text-red-950">{error && error.message}</p>
+ </form>
+<form action={githubSignIn}>
+      <button type="submit">Signin with GitHub</button>
+    </form>
+</div> 
+
     )
 }
-const Button = ()=>{
+const LocalButton = ()=>{
     const {pending} = useFormStatus()
     return(
-  <button  className={pending ? "bg-white button-confirm" :"button-confirm"}>Let`s go →</button>
+  <Button variant={"default"}  className={pending ? "bg-gray " :  " "}>Sign in</Button>
 
     )
 }

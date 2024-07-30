@@ -70,7 +70,7 @@ export default function CreateWorkout({user}:{user:string | undefined | null}) {
     console.log("isPublished",isPublished)
 
     return (
-    <div className='bg-background rounded-lg h-full'>
+    <div className='bg-primary-foreground rounded-lg h-full'>
      <form ref={formRef} className="h-full rounded-lg border border-border  p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800 space-y-2" action={addWorkout}>
         <input type="hidden" name='email' value={email} />
         <input type="hidden" name='NoD' value={days.length}  />

@@ -45,7 +45,7 @@ export default function AddDay(props : Props) {
             {/*dayName */}
             <div className='flex items-center mb-2'>
               <input type="hidden" name="day" value={JSON.stringify({name:dayNameProps.current?.value,index:props.id})} />
-            <Input  required={true} ref={dayNameProps} className={cn("p-2 border rounded-lg h-full", dayName? "bg-gray-50 text-lg font-semibold" : "text-lg font-semibold ")} readOnly={dayName} placeholder='add Name'/> 
+            <Input  required={true} ref={dayNameProps} className={cn("p-2 text-2xl border rounded-lg h-full transition-all ease-in ", dayName? " font-semibold bg-transparent cursor-default focus-visible:ring-0 focus-visible:ring-offset-0 text-white " : "bg-gray-50  text-lg font-semibold ")} readOnly={dayName} placeholder='add Name'/> 
               {/* <Input name="dayName" readonly={dayName} refprop={dayNameProps} placeholder='day name' />  */}
                <Button variant="ghost" className='h-full' type='button' onClick={()=>{setDayName(prev => !prev)}}>{dayName ? <Edit /> : <Check />}</Button>  
             </div>

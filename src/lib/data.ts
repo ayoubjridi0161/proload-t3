@@ -1,4 +1,4 @@
-import { days, exercices, users, workouts } from '~/server/db/schema'
+import { Reactions, days, exercices, users, workouts } from '~/server/db/schema'
 import {db} from '../server/db/index'
 import * as types from './types'
 import { DrizzleError, asc, eq } from 'drizzle-orm'
@@ -73,3 +73,26 @@ export const getUserByEmail = async (email:string)=>{
     const user = await db.query.users.findFirst({where : eq(users.email,email)})
     return user?.id
 }
+
+export const updateUpvotes = async (userName:string,workoutId:number,formData:FormData)=>{
+    "use server"    
+    console.log(userName,workoutId,formData.get("pressed"))
+
+    
+    const userID = db.query.users.findFirst({where:eq(users.username,userName),columns:{id:true}})
+    
+    const pressed = formData.get("pressed") === "true"
+        const reaction = await db.query.Reactions.findFirst({where : eq(Reactions.userId,userId)})
+        if(reaction){
+            await db.update(Reactions)
+            .set({upvote:pressed})
+            .where(eq(Reactions.userId,userId))
+        }else{
+            await db.insert(Reactions).values({userId:userId,workoutId:workoutId,upvote:pressed})
+        
+        
+    }
+        console.log("error")
+        return {message:"success"}
+}
+

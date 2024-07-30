@@ -75,6 +75,7 @@ export const login = async (previous : any , formData : FormData)=>{
 
 export const signup = async (prev : any ,formData : FormData)=>{
   try{
+    console.log(formData)
    const parsed = user.safeParse({username:formData.get('username') as string,email:formData.get('email') as string,password:formData.get('password') as string})
   if(parsed.success){
     const response = await InsertUser(parsed.data)
@@ -83,6 +84,7 @@ export const signup = async (prev : any ,formData : FormData)=>{
   }
   }catch(err){
     if(err instanceof DrizzleError){
+      console.log(err)
     return {message:err.cause?.constraint }
   }
   }
@@ -100,4 +102,9 @@ export const postWorkouts = async (prev : any , formData : FormData) =>{
     return {}
   }
 
+}
+export const githubSignIn = async ()=> {
+  
+        await signIn("github")
+     
 }

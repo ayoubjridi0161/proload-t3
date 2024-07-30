@@ -1,5 +1,7 @@
 import { auth } from "auth";
 import Sidenav from "~/components/ui/workouts/Sidenav";
+import { Suspense } from "react";
+import Loader1 from "~/components/ui/loadingScreen/loader1";
 export default async function RootLayout({
     children,
   }: {
@@ -9,6 +11,7 @@ export default async function RootLayout({
     
     const user  = session?.user;
     return (
+      <Suspense fallback={<Loader1/>}>
       <div className="border-collapse h-screen grid grid-cols-8 grid-row-6 place-content-stretch">
         <div className="border-x-4 p-5 row-span-1 col-span-6 col-start-2">
           <Sidenav username={user?.name}/>
@@ -24,6 +27,6 @@ export default async function RootLayout({
         </div>
 
       </div>
-    );
+      </Suspense>  );
   }
   

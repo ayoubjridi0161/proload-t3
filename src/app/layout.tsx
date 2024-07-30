@@ -3,6 +3,8 @@ import "~/styles/globals.css";
 import { GeistSans } from "geist/font/sans";
 import '~/styles/bgPattern.css'
 import { Button } from "~/components/ui/button";
+import { inter } from "~/components/ui/font";
+import Footer from "~/components/ui/footer";
 
 export const metadata = {
   title: "ProloadT3",
@@ -17,7 +19,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
-      <body className="bg-muted-foreground">
+      <body className={`${inter.className} bg-white`} >
         {children}
         </body>
     </html>
