@@ -5,98 +5,98 @@ import { fetchWorkoutById } from '~/lib/data'
 const Workout = async ({id}:{id:number}) => {
     const fetchedWorkout = await fetchWorkoutById(id);
 
-    const Split = {
-        title: "Push/Pull/Legs",
-        days:[
-            {
-                name : "push",
-                exercices:[
-                    {
-                        name : "Bench Press",
-                        sets: 4,
-                        reps: 8,
-                        weight: 60
-                    },
-                    {
-                        name : "Dumbell Press",
-                        sets: 4,
-                        reps: 8,
-                        weight: 60
-                    },
-                    {
-                        name : "Tricep Extension",
-                        sets: 4,
-                        reps: 8,
-                        weight: 60
-                    },
-                    {
-                        name : "Shoulder Press",
-                        sets: 4,
-                        reps: 8,
-                        weight: 60
-                    }
-                ]
-            },
-            {
-                name : "pull",
-                exercices:[
-                    {
-                        name : "Deadlift",
-                        sets: 4,
-                        reps: 8,
-                        weight: 60
-                    },
-                    {
-                        name : "Pullups",
-                        sets: 4,
-                        reps: 8,
-                        weight: 60
-                    },
-                    {
-                        name : "Bicep Curl",
-                        sets: 4,
-                        reps: 8,
-                        weight: 60
-                    },
-                    {
-                        name : "Face Pull",
-                        sets: 4,
-                        reps: 8,
-                        weight: 60
-                    }
-                ]
-            },
-            {
-                name : "legs",
-                exercices:[
-                    {
-                        name : "Squat",
-                        sets: 4,
-                        reps: 8,
-                        weight: 60
-                    },
-                    {
-                        name : "Leg Press",
-                        sets: 4,
-                        reps: 8,
-                        weight: 60
-                    },
-                    {
-                        name : "Leg Curl",
-                        sets: 4,
-                        reps: 8,
-                        weight: 60
-                    },
-                    {
-                        name : "Calf Raise",
-                        sets: 4,
-                        reps: 8,
-                        weight: 60
-                    }
-                ]
-            }
-        ]
-    }
+    // const Split = {
+    //     title: "Push/Pull/Legs",
+    //     days:[
+    //         {
+    //             name : "push",
+    //             exercices:[
+    //                 {
+    //                     name : "Bench Press",
+    //                     sets: 4,
+    //                     reps: 8,
+    //                     weight: 60
+    //                 },
+    //                 {
+    //                     name : "Dumbell Press",
+    //                     sets: 4,
+    //                     reps: 8,
+    //                     weight: 60
+    //                 },
+    //                 {
+    //                     name : "Tricep Extension",
+    //                     sets: 4,
+    //                     reps: 8,
+    //                     weight: 60
+    //                 },
+    //                 {
+    //                     name : "Shoulder Press",
+    //                     sets: 4,
+    //                     reps: 8,
+    //                     weight: 60
+    //                 }
+    //             ]
+    //         },
+    //         {
+    //             name : "pull",
+    //             exercices:[
+    //                 {
+    //                     name : "Deadlift",
+    //                     sets: 4,
+    //                     reps: 8,
+    //                     weight: 60
+    //                 },
+    //                 {
+    //                     name : "Pullups",
+    //                     sets: 4,
+    //                     reps: 8,
+    //                     weight: 60
+    //                 },
+    //                 {
+    //                     name : "Bicep Curl",
+    //                     sets: 4,
+    //                     reps: 8,
+    //                     weight: 60
+    //                 },
+    //                 {
+    //                     name : "Face Pull",
+    //                     sets: 4,
+    //                     reps: 8,
+    //                     weight: 60
+    //                 }
+    //             ]
+    //         },
+    //         {
+    //             name : "legs",
+    //             exercices:[
+    //                 {
+    //                     name : "Squat",
+    //                     sets: 4,
+    //                     reps: 8,
+    //                     weight: 60
+    //                 },
+    //                 {
+    //                     name : "Leg Press",
+    //                     sets: 4,
+    //                     reps: 8,
+    //                     weight: 60
+    //                 },
+    //                 {
+    //                     name : "Leg Curl",
+    //                     sets: 4,
+    //                     reps: 8,
+    //                     weight: 60
+    //                 },
+    //                 {
+    //                     name : "Calf Raise",
+    //                     sets: 4,
+    //                     reps: 8,
+    //                     weight: 60
+    //                 }
+    //             ]
+    //         }
+    //     ]
+    // }
     type dayDetails = {
         dayIndex:number,
         name : string,

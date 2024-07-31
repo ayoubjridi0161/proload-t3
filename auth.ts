@@ -24,8 +24,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                  if(!user) throw new Error("User not found");
                 const passwordMatch = password === user.password
                 if(!passwordMatch) throw new Error("wrong passwrd")
-                 return {email, name: user.username, id: user.id}
-                
+                 return {email:user.email , date: user.createdAt}     
         }
     }),Github,Google
   ],

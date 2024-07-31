@@ -4,17 +4,21 @@ import { Label } from '../label'
 import { Button } from '../button'
 import { Pencil, GrabIcon, TrashIcon, Dumbbell, Check, Plus, Edit } from 'lucide-react'
 import { AccordionItem, AccordionTrigger, AccordionContent } from '../accordion'
+import AddEditExercice from './AddEditExercice'
 import AddExercice from './AddExercice'
 import { cn } from '~/lib/utils'
 import Container from '../Container'
 import { ButtonBlack, ButtonWhite } from '../UIverse/Buttons'
 import { Input } from '../input'
+import { dayDetails } from '~/lib/types'
 
 
 type Props = {
+  
+   dayDetails?: dayDetails,
     muscles: string,
     id: number,
-    remove: (id:number)=>void
+    remove: (id:number)=>void,
 
 }
 type exercice = {
@@ -24,12 +28,12 @@ type exercice = {
 }
 
 export default function AddDay(props : Props) {
-    const [dayName,setDayName] = React.useState(false)
-    const [isDay,setIsDay] = React.useState(false)
-    const [isEdit,setIsEdit] = React.useState(false)
-    const [exercices,setExercices] = React.useState<ReactElement[]>([]) // Change the type to an array of ReactElement
-    const [nbrExercices,setNbrExercices] = React.useState(0)
     const dayNameProps = useRef<HTMLInputElement>(null)
+    const [dayName,setDayName] = React.useState(true)
+    const [isDay,setIsDay] = React.useState(false)
+    const [nbrExercices,setNbrExercices] = React.useState(props.dayDetails?.exercices.length || 0)
+    const [isEdit,setIsEdit] = React.useState(false)
+    const [exercices,setExercices] = React.useState<ReactElement[]>(props.dayDetails?.exercices.map(ex => (<AddEditExercice exercice={ex}  dayName={dayNameProps.current?.value} key={`day${props.id}-exercice${nbrExercices}`} id={`day${props.id}-exercice${nbrExercices}`}  />)) || [] ) // Change the type to an array of ReactElement
     /*function addExercice (item : exercice){
       setExercices(prev => [...prev,<div key={JSON.stringify(item)}>
         <h1><span>{item.exName}</span> : <span>{item.sets}</span> : <span>{item.reps}</span></h1>
@@ -45,7 +49,7 @@ export default function AddDay(props : Props) {
             {/*dayName */}
             <div className='flex items-center mb-2'>
               <input type="hidden" name="day" value={JSON.stringify({name:dayNameProps.current?.value,index:props.id})} />
-            <Input  required={true} ref={dayNameProps} className={cn("p-2 text-2xl border rounded-lg h-full transition-all ease-in ", dayName? " font-semibold bg-transparent cursor-default focus-visible:ring-0 focus-visible:ring-offset-0 text-white " : "bg-gray-50  text-lg font-semibold ")} readOnly={dayName} placeholder='add Name'/> 
+            <Input  required={true} ref={dayNameProps} defaultValue={props.dayDetails?.name} className={cn("p-2 text-2xl border rounded-lg h-full transition-all ease-in ", dayName? " font-semibold bg-transparent cursor-default focus-visible:ring-0 focus-visible:ring-offset-0 text-white " : "bg-gray-50  text-lg font-semibold ")} readOnly={dayName} placeholder='add Name'/> 
               {/* <Input name="dayName" readonly={dayName} refprop={dayNameProps} placeholder='day name' />  */}
                <Button variant="ghost" className='h-full' type='button' onClick={()=>{setDayName(prev => !prev)}}>{dayName ? <Edit /> : <Check />}</Button>  
             </div>
@@ -66,7 +70,7 @@ export default function AddDay(props : Props) {
           <div className={isEdit ?  "flex flex-wrap gap-2  px-3 pb-1 pt-3 w-full" : "hidden"}>
             {exercices }
           </div>{isEdit &&
-          <ButtonWhite className='m-3' type='button' onClick={()=>{setNbrExercices(prev => prev+1);setExercices(prev => [...prev,<AddExercice  dayName={dayNameProps.current?.value} key={`day${props.id}-exercice${nbrExercices}`} id={`day${props.id}-exercice${nbrExercices}`}/> ])}}>Add exercice</ButtonWhite>
+          <ButtonWhite className='m-3' type='button' onClick={()=>{setNbrExercices(prev => prev+1);setExercices(prev => [...prev,<AddExercice  dayName={dayNameProps.current?.value} key={`day${props.id}-exercice${nbrExercices}`} id={`day${props.id}-exercice${nbrExercices}`}  /> ])}}>Add exercice</ButtonWhite>
           }
           </div>
         

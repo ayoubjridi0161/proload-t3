@@ -96,3 +96,9 @@ export const updateUpvotes = async (userName:string,workoutId:number,formData:Fo
         return {message:"success"}
 }
 
+export const getWorkoutsByUser = async (email:string)=>{
+    // const workoutID = await db.query.workouts.findMany({where : eq(workouts.userId, userId) , columns : {id:true}})
+    // const workoutIDs = await db.select().from(workouts).innerJoin(users,eq(workouts.userId,users.id)).where(eq(users.email,email))
+    const workoutIDs = await db.select({id:workouts.id}).from(users).where(eq(users.email,email)).innerJoin(workouts,eq(workouts.userId,users.id))
+    return workoutIDs
+}
