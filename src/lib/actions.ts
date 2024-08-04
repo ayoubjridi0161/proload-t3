@@ -108,3 +108,6 @@ export const githubSignIn = async ()=> {
         await signIn("github")
      
 }
+export const editWorkout = async (formData : FormData)=>{
+  console.log(formData)
+}

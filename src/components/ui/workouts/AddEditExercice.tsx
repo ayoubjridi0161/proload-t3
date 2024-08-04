@@ -20,7 +20,6 @@ type exercice = {
 
 export default function AddEditExercice(props: Props) {
     const [Exercice,setExercice] = React.useState<exercice>({name:props.exercice.name,sets:props.exercice.sets,reps:props.exercice.reps})
-    console.log(Exercice)
     const [showExercice,setShowExercice] = React.useState(true)  
     const [deleteEx,setDeleteEx] = React.useState(false)
 

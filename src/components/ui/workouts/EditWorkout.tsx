@@ -6,10 +6,13 @@ import '~/components/ui/UIverse/Button.css'
 
 import { Button } from '../button'
 import { Label } from '../label'
-import AddDay from './AddEditDay'
+import AddDay from './AddDay'
+import AddEditDay from './AddEditDay'
+
 import { DeleteIcon, GrabIcon, TrashIcon } from 'lucide-react'
 import { Accordion } from '../accordion'
 import addWorkout from '~/lib/actions'
+import { editWorkout } from '~/lib/actions'
 import UIverseButton from '~/components/UIverseButton'
 import AddRestDay from './AddRestDay'
 import Container from '../Container'
@@ -43,7 +46,7 @@ export default function EditWorkout(props : Props ) {
       const numberOfDays = props.NoD || 1
       for(let i = 1,j=1 ; i <= numberOfDays ; i++){
         if(props.days[j-1]?.dayIndex === i){
-          days.push(<AddDay dayDetails={props.days[j-1] } remove={removeDay} id={i} key={i} muscles='legs,arms,chest'  />)
+          days.push(<AddEditDay dayDetails={props.days[j-1] } remove={removeDay} id={i} key={i} muscles='legs,arms,chest'  />)
           j++;
         }
         else{ days.push(<AddRestDay remove={removeDay} id={i} key={i} />)
@@ -91,7 +94,7 @@ export default function EditWorkout(props : Props ) {
 
     return (
     <div className='bg-primary-foreground rounded-lg h-full'>
-     <form  className="h-full rounded-lg border border-border  p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800 space-y-2" >
+     <form action={editWorkout}  className="h-full rounded-lg border border-border  p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800 space-y-2" >
         <input type="hidden" name='email' value={email} />
         <input type="hidden" name='NoD' value={days.length}  />
         {/* <input type="hidden" name='published' value={isPublished?.toString()} /> */}
