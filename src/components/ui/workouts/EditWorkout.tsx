@@ -42,16 +42,16 @@ export default function EditWorkout(props : Props ) {
     const [newKey, setNewKey] = React.useState(props.NoD || 99) 
     const [dayRest, setDayRest] = React.useState<{day: string ,change:number}>()
     function addDays(){
+      const sortedDays = props.days.sort((a,b)=>a.dayIndex - b.dayIndex)
       const days : ReactElement[] = [] 
       const numberOfDays = props.NoD || 1
       for(let i = 1,j=1 ; i <= numberOfDays ; i++){
-        if(props.days[j-1]?.dayIndex === i){
-          days.push(<AddEditDay dayDetails={props.days[j-1] } remove={removeDay} id={i} key={i} muscles='legs,arms,chest'  />)
+        if(sortedDays[j-1]?.dayIndex === i){
+          days.push(<AddEditDay dayDetails={sortedDays[j-1] } remove={removeDay} id={i} key={i} muscles='legs,arms,chest'  />)
           j++;
         }
         else{ days.push(<AddRestDay remove={removeDay} id={i} key={i} />)
         }
-        console.log(props.days[i-1]?.dayIndex , i)
 
       }
       return days
@@ -97,6 +97,7 @@ export default function EditWorkout(props : Props ) {
      <form action={editWorkout}  className="h-full rounded-lg border border-border  p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800 space-y-2" >
         <input type="hidden" name='email' value={email} />
         <input type="hidden" name='NoD' value={days.length}  />
+        <input type="hidden" name='workoutID' value={props.id} />
         {/* <input type="hidden" name='published' value={isPublished?.toString()} /> */}
           <div className='pt-1 flex items-center'>
           <UIverseButton defaultval={props.name}  name='workoutName' placeHolder="Workout name..." />

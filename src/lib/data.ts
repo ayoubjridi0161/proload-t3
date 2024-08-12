@@ -96,9 +96,46 @@ export const updateUpvotes = async (userName:string,workoutId:number,formData:Fo
         return {message:"success"}
 }
 
-export const getWorkoutsByUser = async (email:string)=>{
+export const getWorkoutsByUser = async (email:string,uuid : null | string = null)=>{
     // const workoutID = await db.query.workouts.findMany({where : eq(workouts.userId, userId) , columns : {id:true}})
     // const workoutIDs = await db.select().from(workouts).innerJoin(users,eq(workouts.userId,users.id)).where(eq(users.email,email))
+    if(uuid){
+        const workoutsByUser = await db.select({workouts}).from(users).where(eq(users.id,uuid)).innerJoin(workouts,eq(workouts.userId,users.id))
+        return workoutsByUser
+    }
     const workoutIDs = await db.select({id:workouts.id}).from(users).where(eq(users.email,email)).innerJoin(workouts,eq(workouts.userId,users.id))
     return workoutIDs
+}
+export const updateWorkout = async (data:{numberOfDays:number,name:string,description:string},workoutId:number)=>{
+    try{
+    const updatedID = await db.update(workouts)
+    .set(data).where(eq(workouts.id,workoutId))
+    .returning({id:workouts.id})
+    return updatedID[0]?.id
+}catch(err){
+    console.log(err)
+    throw err
+}
+}
+export const updateDay = async (data:{name:string,dayIndex:number},dayId:number)=>{
+    if(dayId === -1) throw new Error("no dayID provided!")
+    console.log(data,dayId)
+    try{
+    const updatedID = await db.update(days)
+    .set(data).where(eq(days.id,dayId)).returning({id:days.id})
+    
+    return updatedID[0]?.id
+    }catch(err){
+        return {message:"failed to update day"}
+    }
+}
+export const updateExercice = async (data:{name:string,sets:number,reps:number},exerciceId:number)=>{
+    if(exerciceId === -1) throw new Error("no dayID provided!")
+        try{  
+        const updatedID = await db.update(exercices).set(data).where(eq(exercices.id,exerciceId)).returning({id:exercices.id})
+        return updatedID[0]?.id
+    }catch(err){
+        console.log("error in updateing exercice \n",err)
+        throw err
+    }
 }

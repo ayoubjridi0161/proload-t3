@@ -6,6 +6,7 @@ import { ButtonBlack } from '../UIverse/Buttons'
 
 type Props = {
     id : string
+    dayIndex : number | undefined
     dayName : string | undefined
     exercice : exercice
 }
@@ -28,7 +29,7 @@ export default function AddEditExercice(props: Props) {
      <>
     {showExercice ? 
     <div className=' items-center flex justify-between '>
-      <input type="hidden" disabled={deleteEx} name={`${props.dayName}`} value={JSON.stringify(Exercice)} /> 
+      <input type="hidden" disabled={deleteEx} name={`${props.dayIndex}`} value={JSON.stringify({...Exercice,id:props.exercice.id})} /> 
       <ExerciceCard className={deleteEx ? "hidden" : " bg-primary border-border opacity-80"} delete={()=>{setDeleteEx(true)}}  name={Exercice.name} sets={Exercice.sets} reps={Exercice.reps} edit={()=>{setShowExercice(prev => !prev)}} />
     </div> :   
 <div className="flex items-center justify-between h-fit rounded-lg w-full border border-border bg-primary p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
@@ -46,8 +47,8 @@ export default function AddEditExercice(props: Props) {
           id="exerciseName"
           placeholder="e.g. Deadlifts"
           type="text"
-          defaultValue={Exercice?.name}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setExercice((prev) => ({ ...prev, exName: e.target.value }))}
+          value={Exercice.name}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setExercice((prev) => ({ ...prev, name: e.target.value }))}
         />
       </div>
       <div>
@@ -59,7 +60,7 @@ export default function AddEditExercice(props: Props) {
           id="sets"
           placeholder="4"
           type="number"
-          defaultValue={Exercice.sets.toString()}
+          value={Exercice.sets}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setExercice((prev) => ({ ...prev, sets: parseInt(e.target.value) }))}
         />
       </div>
@@ -72,7 +73,7 @@ export default function AddEditExercice(props: Props) {
           id="reps"
           placeholder="8"
           type="number"
-          defaultValue={Exercice.reps.toString()}
+          value={Exercice.reps}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setExercice((prev) => ({ ...prev, reps: parseInt(e.target.value) }))}
 
         />
