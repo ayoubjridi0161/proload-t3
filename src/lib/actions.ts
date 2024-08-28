@@ -1,6 +1,6 @@
 "use server"
-import { signIn , signOut } from "auth"
-import { InsertDay, InsertExercice, InsertUser, InsertWorkout, fetchAllWorkouts, getUserByEmail, updateDay, updateExercice, updateWorkout } from "./data"
+import { auth, signIn , signOut } from "auth"
+import { InsertDay, InsertExercice, InsertUser, InsertWorkout, addNewReaction, deleteDay, deleteRemovedExercices, fetchAllWorkouts, getDaysByWorkout, getUserByEmail, updateDay, updateExercice,  updateReactions,  updateWorkout } from "./data"
 import { redirect } from "next/navigation"
 import { AuthError } from "next-auth"
 import { user } from "./zodValidation"
@@ -8,7 +8,6 @@ import { ZodError, any } from "zod"
 import { revalidatePath } from "next/cache"
 import { DrizzleError } from "drizzle-orm"
 export async function editWorkout (formData : FormData){
-  console.log(formData)
   
   const user = await getUserByEmail(formData.get('email') as string)
   if(!user){
@@ -19,25 +18,39 @@ export async function editWorkout (formData : FormData){
   if(!updatedWorkoutID){
     throw new DrizzleError({message:"failed to update workout"})
   }
-  let days = formData.getAll('day')  
-  let ParsedDays : {name:string,index:number,dayID?:number}[] = days.map(day =>{
+  
+  
+  let days = formData.getAll('day') 
+  let ParsedDays : {name:string,index:number,dayID:number}[] = days.map(day =>{
     return JSON.parse(day as string)
   })
   ParsedDays =ParsedDays.filter(day => day.name !== 'rest')
   console.log(ParsedDays)
+  //get rid of removed days
+  const existingDays = await getDaysByWorkout(updatedWorkoutID);
+  const daysIds = ParsedDays.map(day => day.dayID)
+  for(const id of existingDays){
+    if(!daysIds.includes(id))
+
+      await deleteDay(id);
+  }
+  //end of block
   ParsedDays.map(async day=>{
     let dayID : number | {message:string} ;
     
-    if(day.hasOwnProperty('dayID')){
-        dayID = await updateDay({name:day.name,dayIndex:day.index},(day.dayID || -1)) || {message:"failed"}
+    if(day.dayID!==-1){
+        dayID = await updateDay({name:day.name,dayIndex:day.index},day.dayID ) || {message:"failed"}
       }else{
         dayID = await InsertDay(day,updatedWorkoutID) || {message:"failed"}
       }
     if(typeof dayID !== "number") throw new Error("updating day failed!")
   const exercices  = formData.getAll(day.index.toString())
+
   const parsedExercices : {name:string,sets:number,reps:number,id:number}[] = exercices.map(exercice => JSON.parse(exercice as string))
+  //get rid of removed exercices
+  await deleteRemovedExercices(parsedExercices.map(ex => ex.id),dayID)  
   parsedExercices.map(async ex =>{
-    if(ex.hasOwnProperty('id')){
+    if(ex.id!==-1){
       updateExercice({name:ex.name,sets:ex.sets,reps:ex.reps},ex.id)
     }else{
       await InsertExercice({name:ex.name,sets:ex.sets,reps:ex.reps},dayID)
@@ -65,30 +78,26 @@ export default async function addWorkout(formData : FormData) {
   }
 
   const days = formData.getAll('day')
+  console.log(days)
+  
 
-  const parsedDays = days.map((day)=>JSON.parse(day as string))
+  const parsedDays : {name:string,index:number,dayID:number}[]= days.map((day)=>JSON.parse(day as string))
   //cast the indexes to integers
-  for(let day of parsedDays){
-    day.index = parseInt(day.index)
-  }
-  const sortedDaysIndexes = parsedDays.map(day=>day.index).sort((a,b)=>a-b)
-  const sortedDays = []
-  for(let index of sortedDaysIndexes){
-    sortedDays.push(parsedDays.filter((day)=>day.index===index)[0].name) 
-  }
+  
+  const sortedDays = parsedDays.sort((a, b) => (a.index - b.index)).filter(day => day.name !== "rest")
+  
 
-  for(let i =0 ; i<sortedDays.length ; i++){
-    if(sortedDays[i] === 'rest') continue;
-    const dayID = await InsertDay({name:sortedDays[i] as string,index:i+1},workoutID)
+  for(const eachDay of sortedDays){
+    const dayID = await InsertDay({name:eachDay.name,index:eachDay.index},workoutID)
     if(typeof dayID !== 'number'){
       return dayID
     }
     
-    const exercices = formData.getAll(sortedDays[i] as string)
+    const exercices = formData.getAll(eachDay.index.toString())
     // console.log(exercices)
     for(let exercice of exercices){
-      const parsed : {exName:string,sets:number,reps:number} = JSON.parse(exercice as string)
-      await InsertExercice({name:parsed.exName,sets:parsed.sets,reps:parsed.reps},dayID)
+      const parsed : {name:string,sets:number,reps:number,id:number} = JSON.parse(exercice as string)
+      await InsertExercice({name:parsed.name,sets:parsed.sets,reps:parsed.reps},dayID)
     }
   }
 }
@@ -107,12 +116,6 @@ export const login = async (previous : any , formData : FormData)=>{
     } 
     
   }
-    // Otherwise if a redirects happens NextJS can handle it
-    // so you can just re-thrown the error and let NextJS handle it.
-    // Docs:
-    // https://nextjs.org/docs/app/api-reference/functions/redirect#server-component
-    
-  
 }
 export const signup = async (prev : any ,formData : FormData)=>{
   try{
@@ -148,4 +151,18 @@ export const githubSignIn = async ()=> {
   
         await signIn("github")
      
+}
+export const newsLetter = async ()=>{
+  console.log("hello")
+}
+export const addUserReaction = async (workoutID:number,EUR:boolean,action:{type:"upvote"|"downvote"|"clone",payload:boolean})=>{
+  const session = await auth();
+  const id = session?.user?.id;
+  if(!id) {throw new Error ("no user authenticated")}
+    if(!EUR) {const res = await addNewReaction(id,workoutID);
+      if(res.message !== "success" ) throw new Error(res.message)
+    }
+  const res = await updateReactions(id,workoutID,action)
+  revalidatePath(`workouts/${workoutID}`)
+  return res
 }

@@ -1,7 +1,7 @@
 // Example model schema from the Drizzle docs
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
-import { desc, relations, sql } from "drizzle-orm";
+import { desc, Many, relations, sql } from "drizzle-orm";
 import { boolean } from "drizzle-orm/mysql-core";
 import {
   index,
@@ -15,6 +15,7 @@ import {
   uuid,
   pgEnum,
   boolean as pgBoolean,
+  text,
 } from "drizzle-orm/pg-core";
 import { number } from "zod";
 
@@ -114,10 +115,8 @@ export const Reactions = pgTable(
     workoutId: integer('workout_id')
       .notNull()
       .references(() => workouts.id),
-      clones:integer('clones').default(0).notNull(),
     upvote: pgBoolean('upvote').default(false).notNull(),
     downvote: pgBoolean('downvote').default(false).notNull(),
-
   },
   (t) => ({
     pk: primaryKey({ columns: [t.userId, t.workoutId] }),
@@ -133,3 +132,17 @@ export const ReactionsRelations = relations(Reactions, ({ one }) => ({
     references: [users.id],
   }),
 }));
+// export const Posts = pgTable(
+//   'Posts',{
+//     id:serial('id').primaryKey(),
+//     title: varchar('title',{length:250}).notNull(),
+//     content:varchar('content',{length:3000}).notNull(),
+//     resources: text('resources').array().notNull()
+//     .default(sql`ARRAY[]::text[]`),
+//     userId : uuid('user_id').notNull().references(()=> users.id),
+    
+//   }
+// )
+// export const PostsRelations(Posts,({one,many})=>{
+//   users:one(users,{fields:[Posts.userId],references:[users.id]}),
+// })

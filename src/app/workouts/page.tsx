@@ -14,8 +14,8 @@ export default async function page() {
   
   
   return (
-    <div className='h-full'>
-      <div className="flex flex-wrap gap-1">
+    <div className='h-full w-full grid'>
+      <div className="flex flex-wrap gap-5 justify-center ">
             {
                 workoutSummaryList.map((workoutSummary, index) => (
                     <WorkoutBox key={index} workoutSummary={workoutSummary} />

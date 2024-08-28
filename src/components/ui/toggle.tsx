@@ -36,7 +36,6 @@ const Toggle = React.forwardRef<
   const [pressed, setPressed] = React.useState("")
   return(
   <TogglePrimitive.Root
-    onPressedChange={(pressed) => {pressed ? setPressed("bg-muted text-muted-foreground") : setPressed("")}}
     ref={ref}
     className={cn(toggleVariants({ variant, size, className , }),pressed)}
     {...props}

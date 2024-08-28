@@ -4,6 +4,8 @@ import { Button } from '../button'
 import { roboto } from "~/components/ui/font";
 import { Input } from '../input';
 import HeaderNav from './HeaderNav';
+import { TextGenerateEffectDemo } from './Generate-hero-Text';
+import { newsLetter } from '~/lib/actions';
 
 export const Home = () => {
   return (
@@ -11,8 +13,11 @@ export const Home = () => {
     <header className=' bg-hero-image text-card-foreground bg-no-repeat bg-center bg-cover bg-muted-foreground' >
         <HeaderNav />
         <section className='w-[50%] mx-auto pt-36'>
-            <h1 className='text-5xl text-center font-semibold'>Upgrade your fitness program for a better future</h1>
-            <p className='pt-3 text-center text-xl font-light'>Our mission is to empower individuals to lead healthier, happier lives through personalized fitness solutions.</p>
+            <h1 className='text-5xl text-center font-semibold'></h1>
+            <TextGenerateEffectDemo  text='Upgrade your fitness program for a better future' />
+            <p className='pt-3 text-center text-xl font-light'>
+            Our mission is to unite the gym community by offering a platform where lifters can share their workouts and exchange ideas with one another.
+            </p>
             <div className='flex gap-8 mx-auto justify-center mt-5 pb-20'>
             <Button variant="outline" className='hover:bg-slate-50/80 rounded-[30px] text-black '>get started</Button >
             <Button className='rounded-[30px] border-white border-2 bg-transparent hover:bg-slate-50/80 hover:border-transparent hover:text-black' >Learn more</Button>
@@ -27,7 +32,10 @@ export const Home = () => {
     <div className='w-[48%] my-16'>
         <h1 className='mb-2 text-sm'>Enter your email</h1>
         <Input type="email" placeholder='exemple@mail.com' />
-        <Button className='mt-16'>Subscribe</Button>
+        <Button formAction={async ()=>{
+            "use server"
+            console.log("hello")
+        }} className='mt-16'>Subscribe</Button>
     </div>
     {/*start journey modal */}
     

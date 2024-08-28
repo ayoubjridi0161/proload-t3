@@ -24,6 +24,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog"
+import { ShootingStars } from '../UIverse/shootingStarBackground/shooting-stars'
+import { StarsBackground } from '../UIverse/shootingStarBackground/stars-background'
 
 
 export default function CreateWorkout({user}:{user:string | undefined | null}) {
@@ -70,40 +72,31 @@ export default function CreateWorkout({user}:{user:string | undefined | null}) {
     console.log("isPublished",isPublished)
 
     return (
-    <div className='bg-primary-foreground rounded-lg h-full'>
-     <form ref={formRef} className="h-full rounded-lg border border-border  p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800 space-y-2" action={addWorkout}>
+    <div className=' h-full w-full relative rounded-md bg-slate-100 shadow-sm  mx-auto'>
+      <form ref={formRef} className=" h-full  rounded-lg border border-border p-4 sm:p-6 shadow-sm space-y-4" action={addWorkout}>
+        {/* ... existing hidden inputs ... */}
         <input type="hidden" name='email' value={email} />
         <input type="hidden" name='NoD' value={days.length}  />
         <input type="hidden" name='published' value={isPublished?.toString()} />
-          <div className='pt-1 flex items-center'>
-          <UIverseButton  name='workoutName' placeHolder="Workout name..." />
-          </div>
-          <div className='space-y-4'>
-          {days}
-          </div>  
-        <div className='flex justify-between'>
-          <div className='space-x-4'>
-          <Button type='button' onClick={()=>{setDayRest( prev  =>  prev ? {day:"train",change:prev.change+1} : {day:'train',change:1}  ) } } className="mt-4" size="sm" variant="default">
-          Add Workout Day
-          </Button>
-        
-          <Button type='button' onClick={()=>{setDayRest( prev  =>  prev ? {day:"rest",change:prev.change+1} : {day:'rest',change:1}  ) }} className="mt-4" size="sm" variant="default">
-          Add Rest Day
-          </Button>
-        
+        <div className='pt-1 flex items-center'>
+          <UIverseButton name='workoutName' placeHolder="Workout name..."  />
         </div>
-        
-        
-        {/* dialog*/}
-        <Dialog setPubslished={setIsPublished} />
-        {/* dialog*/}
-
-</div>
+        <div className='space-y-4 '>
+          {days}
+        </div>  
+        <div className='flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0'>
+          <div className='flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4'>
+            <Button type='button' onClick={()=>{setDayRest( prev  =>  prev ? {day:"train",change:prev.change+1} : {day:'train',change:1}  ) } } className="z-50 w-full sm:w-auto" size="sm" variant="default">
+              Add Workout Day
+            </Button>
+            <Button type='button' onClick={()=>{setDayRest( prev  =>  prev ? {day:"rest",change:prev.change+1} : {day:'rest',change:1}  ) }} className=" z-50 w-full sm:w-auto" size="sm" variant="default">
+              Add Rest Day
+            </Button>
+          </div>
+          <Dialog setPubslished={setIsPublished} />
+        </div>
       </form>
-  
-  
     </div>
-    
 
   )
 }

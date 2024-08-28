@@ -22,17 +22,26 @@ import { PopoverTrigger, PopoverContent, Popover } from "~/components/ui/popover
 import { ArrowBigDownDash, ArrowBigUpDash } from "lucide-react"
 import { JSX, SVGProps } from "react"
 import { Toggle } from "~/components/ui/toggle"
-import Upvote from "./Upvote"
+import {Downvote, Upvote} from "./Reactions"
+import { getUserReactions } from "~/lib/data"
+type Props = {
+  userId:string,workoutId:number,
+  Reactions : {upvotes:number,downvotes:number,clones:number}
+}
 
+async function TooltipBox(props:Props) {
+  let UserReactions = await getUserReactions(props.workoutId,props.userId) 
 
-function TooltipBox({userId,workoutId}:{userId:string,workoutId:number}) {
+  
+  console.log("reactions:",props.Reactions)
+  if(!props.Reactions) return <div>failed to fetch reactions</div>
   return (
     <div className="grid grid-cols-5 place-items-center gap-x-2 ">
       <TooltipProvider>
         
       <Tooltip>
           <TooltipTrigger asChild>
-            <form action="">
+            <form >
             <Button className="text-black" size="icon" variant="ghost">
               <CopyIcon className="h-5 w-5" />
               <span className="sr-only">Clone</span>
@@ -41,25 +50,18 @@ function TooltipBox({userId,workoutId}:{userId:string,workoutId:number}) {
           </TooltipTrigger>
           <TooltipContent>Clone</TooltipContent>
         </Tooltip>
-        <div className="row-start-2 col-start-1 text-sm text-gray-500 dark:text-gray-400">12</div>
+        <div className="row-start-2 col-start-1 text-sm text-gray-500 dark:text-gray-400">{props.Reactions.clones }</div>
 
-        <Tooltip>
-            <Upvote  workoutId = {workoutId}  />
+        
+            <Upvote EUR= {!!UserReactions} pressed = { UserReactions?.upvote || false } workoutId = {props.workoutId}  />
             {/* <h1>hello</h1> */}  
-          <TooltipContent>Upvote</TooltipContent>
           
-        </Tooltip>
-        <div className="row-start-2 col-start-2 text-sm text-gray-500 dark:text-gray-400">12</div>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Toggle  >
-            <ArrowBigDownDash  className="h-5 w-5"/>
-              <span className="sr-only">Downvote</span>
-            </Toggle>
-          </TooltipTrigger>
-          <TooltipContent>Downvote</TooltipContent>
-        </Tooltip>
-        <div className="row-start-2 col-start-3 text-sm text-gray-500 dark:text-gray-400">5</div>
+          
+        
+        <div className="row-start-2 col-start-2 text-sm text-gray-500 dark:text-gray-400">{props.Reactions.upvotes}</div>
+        <Downvote EUR= {!!UserReactions} pressed = { UserReactions?.downvote || false } workoutId = {props.workoutId}  />
+
+        <div className="row-start-2 col-start-3 text-sm text-gray-500 dark:text-gray-400">{props.Reactions.downvotes}</div>
         
         <Tooltip>
           <TooltipTrigger asChild>

@@ -4,6 +4,7 @@ import { useAuth } from '~/lib/hooks/useAuth'
 import { Avatar, AvatarFallback } from '../avatar';
 import { redirect } from 'next/navigation'
 import { getUserByEmail } from '~/lib/data';
+import DropDown from '../DropDown';
 
 
 const HeaderNav = async () => {
@@ -19,12 +20,9 @@ const HeaderNav = async () => {
                 <Link className='hover:underline text-lg font-semibold' href={'/'} >Shop</Link>
             </div> 
             <div className='space-x-8 flex items-center'>
-            { userName ? 
-              <Link href={`/profile/${UUID}`}>
-              <Avatar >
-                <AvatarFallback >{ `${userName[0]?.toUpperCase()}${userName[1]}` }</AvatarFallback>
-              </Avatar>
-              </Link>
+            { userName ?
+              <DropDown UUID={UUID || ""} userName={userName}/> 
+              
               :
           
               <>

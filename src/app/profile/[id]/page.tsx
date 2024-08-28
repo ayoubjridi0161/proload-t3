@@ -1,12 +1,13 @@
-import React from 'react'
+import React, { Suspense } from 'react'
+import ProfilePage from '~/components/ui/profile/profilePage'
 import { getWorkoutsByUser } from '~/lib/data'
 
+
 const   page = async ({params} : {params:{id:string}}) => {
-const workouts = await getWorkoutsByUser("",params.id)
     return (
-    <div>{workouts && JSON.stringify(workouts)}</div>
-
-
+<Suspense fallback={<div>loading...</div>}>
+<ProfilePage id={params.id} />
+</Suspense>
   )
 }
 

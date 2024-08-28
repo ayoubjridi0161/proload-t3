@@ -6,16 +6,23 @@ import Workout from "~/components/ui/workoutShowCase/Workout";
 import WorkoutSkeleton from "~/components/ui/workoutShowCase/skeleton/workoutSkeleton";
 import UserDeatails from "~/components/ui/workoutShowCase/UserDetails";
 import { auth } from "auth";
+import { SessionProvider } from "next-auth/react";
+import { fetchWorkoutById } from "~/lib/data";
+import { Skeleton } from "~/components/ui/skeleton";
 
 
 const page = async ({params} : {params:{id:string}}) => {
   const session =await auth()
   if(!session) return ( <div>loading</div>)
     const user = session?.user
+    if(!user?.id) throw new Error("no user!")
+      const workout = await fetchWorkoutById(parseInt(params.id))
+      if(!workout) throw new Error ("failed to fetch workout")
+    const Reactions = {upvotes : workout.upvotes ,downvotes:workout.downvotes , clones:workout.clones }
     return (
             <div className="flex gap-5">
       <Container>
-      <Suspense fallback={<div>ladoing</div>}>
+      <Suspense fallback={<WorkoutSkeleton/>}>
           <Workout id={parseInt(params.id)} />
       </Suspense>
       </Container>
@@ -24,7 +31,7 @@ const page = async ({params} : {params:{id:string}}) => {
       <UserDeatails />
       </Container>
       <Container>
-      <TooltipBox userId = {user?.id} workoutId = {parseInt(params.id)} />
+      <TooltipBox userId = {user?.id} Reactions = {Reactions} workoutId = {parseInt(params.id)} />
       </Container>
       <Container>
         <Comments />

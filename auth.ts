@@ -28,4 +28,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
     }),Github,Google
   ],
+  callbacks: {
+    async session({ session, token, user }) {
+      // Include user id in the session
+      if (token.sub) {
+        session.user.id = token.sub 
+      }
+      return session;
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    }
+  }
 })

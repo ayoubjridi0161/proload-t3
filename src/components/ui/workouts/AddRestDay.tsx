@@ -18,9 +18,9 @@ export default function AddRestDay(props : Props) {
 
 
   return (
-    <div className=' bg-primary-foreground border-border border rounded-lg '>
+    <div className=' bg-slate-200 border-slate-100 border rounded-lg '>
         <input type="hidden" name="day" value={JSON.stringify({name:"rest",index:props.id})} />
-        <div className="flex items-center justify-between rounded-lg border border-border p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <div className="flex items-center justify-between rounded-lg border  p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
             <div className="flex justify-between w-full items-center space-x-4">
                 <div className='flex items-center gap-5'>
                 {/*dumbbell*/}

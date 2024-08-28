@@ -1,8 +1,9 @@
-import { Reactions, days, exercices, users, workouts } from '~/server/db/schema'
+import { Reactions,    days, exercices, users, workouts } from '~/server/db/schema'
 import {db} from '../server/db/index'
 import * as types from './types'
-import { DrizzleError, asc, eq } from 'drizzle-orm'
+import { DrizzleError, and, asc, eq, sql } from 'drizzle-orm'
 import { unstable_noStore as noStore } from 'next/cache'
+/*Read Data*/
 export const fetchAllWorkouts = async()=>{
     const result = await db.query.workouts.findMany({
         columns: {name : true,id:true},
@@ -31,7 +32,49 @@ export async function fetchWorkoutById(id:number){
     })
     return result
 }
+export const getUserByEmail = async (email:string)=>{
+    const user = await db.query.users.findFirst({where : eq(users.email,email)})
+    return user?.id
+}
+export const getWorkoutsByUser = async (email:string,uuid : null | string = null)=>{
+    // const workoutID = await db.query.workouts.findMany({where : eq(workouts.userId, userId) , columns : {id:true}})
+    // const workoutIDs = await db.select().from(workouts).innerJoin(users,eq(workouts.userId,users.id)).where(eq(users.email,email))
+    if(uuid){
+        // const workoutsByUser = await db.select({workouts}).from(users).where(eq(users.id,uuid)).innerJoin(workouts,eq(workouts.userId,users.id))
+        const workoutsByUser = await db.query.workouts.findMany({
+            where:eq(workouts.userId,uuid),
 
+            columns: {name : true,id:true},
+            with:{
+                users :{
+                    columns : {username : true}
+                },
+                days : {
+                    columns : {name : true},
+                    with : {exercices : {
+                        columns: {name : true}
+                    }}
+                }
+            },
+            orderBy: (workouts, { desc }) => [desc(workouts.id)],
+        })
+        return workoutsByUser
+    }
+    
+}
+export const getDaysByWorkout = async (workoutId:number) =>{
+    const daysFetched = await db.query.days.findMany({where: eq(days.workoutId,workoutId),columns:{id:true}})
+    return daysFetched.map(day => day.id)
+}
+export const getUserReactions = async (workoutID:number,userID:string) =>{
+    try{
+    let response = await db.query.Reactions.findFirst({where:and(eq(Reactions.userId,userID),eq(Reactions.workoutId,workoutID)),columns:{workoutId:false,userId:false}})
+    
+    return response
+}catch(err) {
+    console.log(err)
+    throw err}
+}
 /*Insert Data*/
 export const InsertExercice = async (exercice : types.exercice , idOfDay : number )=>{
     try{
@@ -57,7 +100,6 @@ export const InsertWorkout = async (workout:types.workout)  =>{
         return{message:"failed to insert Workout"}
     }
 }
-
 export const InsertUser = async (user:{username:string,password:string,email:string})=>{
     try{
         await db.insert(users).values({username:user.username,password:user.password,email:user.email})
@@ -68,43 +110,6 @@ export const InsertUser = async (user:{username:string,password:string,email:str
         console.log(err)
         throw new DrizzleError({message:"failed to insert user",cause:err})
     }
-}
-export const getUserByEmail = async (email:string)=>{
-    const user = await db.query.users.findFirst({where : eq(users.email,email)})
-    return user?.id
-}
-
-export const updateUpvotes = async (userName:string,workoutId:number,formData:FormData)=>{
-    "use server"    
-    console.log(userName,workoutId,formData.get("pressed"))
-
-    
-    const userID = db.query.users.findFirst({where:eq(users.username,userName),columns:{id:true}})
-    
-    const pressed = formData.get("pressed") === "true"
-        const reaction = await db.query.Reactions.findFirst({where : eq(Reactions.userId,userId)})
-        if(reaction){
-            await db.update(Reactions)
-            .set({upvote:pressed})
-            .where(eq(Reactions.userId,userId))
-        }else{
-            await db.insert(Reactions).values({userId:userId,workoutId:workoutId,upvote:pressed})
-        
-        
-    }
-        console.log("error")
-        return {message:"success"}
-}
-
-export const getWorkoutsByUser = async (email:string,uuid : null | string = null)=>{
-    // const workoutID = await db.query.workouts.findMany({where : eq(workouts.userId, userId) , columns : {id:true}})
-    // const workoutIDs = await db.select().from(workouts).innerJoin(users,eq(workouts.userId,users.id)).where(eq(users.email,email))
-    if(uuid){
-        const workoutsByUser = await db.select({workouts}).from(users).where(eq(users.id,uuid)).innerJoin(workouts,eq(workouts.userId,users.id))
-        return workoutsByUser
-    }
-    const workoutIDs = await db.select({id:workouts.id}).from(users).where(eq(users.email,email)).innerJoin(workouts,eq(workouts.userId,users.id))
-    return workoutIDs
 }
 export const updateWorkout = async (data:{numberOfDays:number,name:string,description:string},workoutId:number)=>{
     try{
@@ -117,9 +122,23 @@ export const updateWorkout = async (data:{numberOfDays:number,name:string,descri
     throw err
 }
 }
+export const deleteDay = async (dayId : number) =>{
+    try{
+    await db.delete(exercices).where(eq(exercices.dayId,dayId));
+    await db.delete(days).where(eq(days.id,dayId))
+}catch(err){
+    throw new Error("failed to delete Day")
+}
+}
+export const deleteRemovedExercices = async (Ids : number[],dayId:number) =>{
+    const existingExercises = await db.query.exercices.findMany({where:eq(exercices.dayId,dayId),columns:{id:true}})
+    existingExercises.map(async  ex => {
+        if(!Ids.includes(ex.id)){
+            try {await db.delete(exercices).where(eq(exercices.id,ex.id))}catch(err){throw new Error("failed to delete exercice")}
+        }})
+}
 export const updateDay = async (data:{name:string,dayIndex:number},dayId:number)=>{
     if(dayId === -1) throw new Error("no dayID provided!")
-    console.log(data,dayId)
     try{
     const updatedID = await db.update(days)
     .set(data).where(eq(days.id,dayId)).returning({id:days.id})
@@ -139,3 +158,83 @@ export const updateExercice = async (data:{name:string,sets:number,reps:number},
         throw err
     }
 }
+export const updateReactions =async (userId:string,workoutId:number,action:{type:"upvote"|"downvote"|"clone",payload:boolean})=>{
+    try{
+        switch (action.type){
+            case "upvote" : 
+            await db
+                .update(Reactions)
+                .set({upvote:action.payload})
+                .where(and(eq(Reactions.userId,userId),eq(Reactions.workoutId,workoutId)))
+                
+            if (action.payload) {
+                await db
+                  .update(workouts)
+                  .set({ upvotes: sql`upvotes + 1` })
+                  .where(eq(workouts.id, workoutId))
+              } else {
+                await db
+                  .update(workouts)
+                  .set({ upvotes: sql`upvotes - 1` })
+                  .where(eq(workouts.id, workoutId))
+              }
+              break
+            case "downvote":
+              await db
+                .update(Reactions)
+                .set({ downvote: action.payload })
+                .where(and(eq(Reactions.userId, userId), eq(Reactions.workoutId, workoutId)))
+              if (action.payload) {
+                await db
+                  .update(workouts)
+                  .set({ downvotes: sql`downvotes + 1` })
+                  .where(eq(workouts.id, workoutId))
+              } else {
+                await db
+                  .update(workouts)
+                  .set({ downvotes: sql`downvotes - 1` })
+                  .where(eq(workouts.id, workoutId))
+              }
+              break
+              case "clone":
+                //handle clone later
+                break
+              default:
+                throw new Error ("Invalid action type")
+        }
+        return "success"
+    }catch(err) {return "failure"}
+}
+export const addNewReaction = async (userID:string,workoutID:number) =>{
+    try{
+        await db.insert(Reactions).values({userId:userID,workoutId:workoutID})
+        return {message:"success"}
+    }catch(err) {return {message:"failure to add reactions"}}
+}
+export const animals = [
+  {label: "Cat", value: "cat", description: "The second most popular pet in the world"},
+  {label: "Dog", value: "dog", description: "The most popular pet in the world"},
+  {label: "Elephant", value: "elephant", description: "The largest land animal"},
+  {label: "Lion", value: "lion", description: "The king of the jungle"},
+  {label: "Tiger", value: "tiger", description: "The largest cat species"},
+  {label: "Giraffe", value: "giraffe", description: "The tallest land animal"},
+  {
+    label: "Dolphin",
+    value: "dolphin",
+    description: "A widely distributed and diverse group of aquatic mammals",
+  },
+  {label: "Penguin", value: "penguin", description: "A group of aquatic flightless birds"},
+  {label: "Zebra", value: "zebra", description: "A several species of African equids"},
+  {
+    label: "Shark",
+    value: "shark",
+    description: "A group of elasmobranch fish characterized by a cartilaginous skeleton",
+  },
+  {
+    label: "Whale",
+    value: "whale",
+    description: "Diverse group of fully aquatic placental marine mammals",
+  },
+  {label: "Otter", value: "otter", description: "A carnivorous mammal in the subfamily Lutrinae"},
+  {label: "Crocodile", value: "crocodile", description: "A large semiaquatic reptile"},
+];
