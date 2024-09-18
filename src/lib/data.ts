@@ -1,7 +1,7 @@
-import { Reactions,    days, exercices, users, workouts } from '~/server/db/schema'
+import { Posts, Reactions,    days, exercices, users, workouts } from '~/server/db/schema'
 import {db} from '../server/db/index'
 import * as types from './types'
-import { DrizzleError, and, asc, eq, sql } from 'drizzle-orm'
+import { DrizzleEntityClass, DrizzleError, and, asc, count, eq, sql } from 'drizzle-orm'
 import { unstable_noStore as noStore } from 'next/cache'
 /*Read Data*/
 export const fetchAllWorkouts = async()=>{
@@ -36,10 +36,10 @@ export const getUserByEmail = async (email:string)=>{
     const user = await db.query.users.findFirst({where : eq(users.email,email)})
     return user?.id
 }
-export const getWorkoutsByUser = async (email:string,uuid : null | string = null)=>{
+export const getWorkoutsByUser = async (uuid : string)=>{
     // const workoutID = await db.query.workouts.findMany({where : eq(workouts.userId, userId) , columns : {id:true}})
     // const workoutIDs = await db.select().from(workouts).innerJoin(users,eq(workouts.userId,users.id)).where(eq(users.email,email))
-    if(uuid){
+
         // const workoutsByUser = await db.select({workouts}).from(users).where(eq(users.id,uuid)).innerJoin(workouts,eq(workouts.userId,users.id))
         const workoutsByUser = await db.query.workouts.findMany({
             where:eq(workouts.userId,uuid),
@@ -59,7 +59,7 @@ export const getWorkoutsByUser = async (email:string,uuid : null | string = null
             orderBy: (workouts, { desc }) => [desc(workouts.id)],
         })
         return workoutsByUser
-    }
+    
     
 }
 export const getDaysByWorkout = async (workoutId:number) =>{
@@ -97,7 +97,7 @@ export const InsertWorkout = async (workout:types.workout)  =>{
         const workoutId  = await db.insert(workouts).values({name:workout.name,userId:workout.userId,description:workout.description,numberOfDays:workout.numberOfDays,published:workout.published}).returning({id : workouts.id})
         return workoutId[0]?.id
     }catch(err){
-        return{message:"failed to insert Workout"}
+        return{message:"failed"}
     }
 }
 export const InsertUser = async (user:{username:string,password:string,email:string})=>{
@@ -198,6 +198,22 @@ export const updateReactions =async (userId:string,workoutId:number,action:{type
               break
               case "clone":
                 //handle clone later
+                const clonedWorkout = await fetchWorkoutById(workoutId)
+                if(clonedWorkout){
+                   const workoutIdResponse= await InsertWorkout({description:clonedWorkout.description,name:clonedWorkout.name,numberOfDays:clonedWorkout.numberOfDays || 0,published:false,userId:userId})
+                    if(workoutIdResponse && typeof workoutIdResponse === "number"){
+                        for(const day of clonedWorkout.days){
+                            const dayId = await InsertDay({index:day.dayIndex,name:day.name},workoutIdResponse)
+                            if(dayId && typeof dayId === "number"){
+                                for(const exercice of day.exercices){
+                                    const exerciceResponse = await InsertExercice({name:exercice.name,reps:exercice.reps,sets:exercice.sets},dayId)
+                                    if(exerciceResponse?.message === "database insert failed") return 'failed'
+                                }
+                            }else return "failed"
+                        }
+                    }else return "failed"
+                    await db.update(workouts).set({clones:sql`clones + 1 `}).where(eq(workouts.id,workoutId))
+                }else return "failed"
                 break
               default:
                 throw new Error ("Invalid action type")
@@ -207,9 +223,14 @@ export const updateReactions =async (userId:string,workoutId:number,action:{type
 }
 export const addNewReaction = async (userID:string,workoutID:number) =>{
     try{
+        console.log(userID,workoutID)
         await db.insert(Reactions).values({userId:userID,workoutId:workoutID})
         return {message:"success"}
-    }catch(err) {return {message:"failure to add reactions"}}
+    }catch(err) {
+        if(err instanceof DrizzleError){
+            return {message:JSON.stringify(err)}
+        }else{return {message:JSON.stringify(err)}}
+    }
 }
 export const animals = [
   {label: "Cat", value: "cat", description: "The second most popular pet in the world"},
@@ -238,3 +259,45 @@ export const animals = [
   {label: "Otter", value: "otter", description: "A carnivorous mammal in the subfamily Lutrinae"},
   {label: "Crocodile", value: "crocodile", description: "A large semiaquatic reptile"},
 ];
+export const getNumberOfWorkoutsPerUser = async (userId:string) =>{
+    try{
+    const res = await db.select({value: count(workouts.id)}).from(workouts).where(eq(workouts.userId,userId))
+    return {NumberOfWorkouts:res[0]?.value}
+    }catch(err){
+        return {message:"failure"}
+    }
+}
+export const createPost = async (post:{title:string,content:string,userId:string,resources?:string[]}) =>{
+    
+        try{
+            await db.insert(Posts).values({title:post.title,content:post.content,userId:post.userId,resources:post.resources ||[]})
+            return {message:"success"}
+        }
+        catch(err){
+            throw err
+        }
+}
+export const deletePost = async (postId:number) =>{
+    try{
+        await db.delete(Posts).where(eq(Posts.id,postId))
+        return "success"
+    }catch(err){   
+        throw err
+    }
+}
+export const getPosts = async ()=>{
+    try{
+        const posts = await db.query.Posts.findMany({
+            columns:{id:true,title:true,content:true,userId:true,resources:true},
+            with:{
+                users:{columns:{username:true}},
+                comments:{columns:{content:true,id:true},
+                          with:{replys:{columns:{content:true,id:true},with:{users:{columns:{username:true}}}},users:{columns:{username:true
+                          }}}}},
+            orderBy:(Posts,{desc})=>[desc(Posts.id)]
+        })
+        return posts
+    }catch(err){
+        throw err
+    }
+}

@@ -5,19 +5,28 @@ import { Avatar, AvatarFallback } from '../avatar';
 import { redirect } from 'next/navigation'
 import { getUserByEmail } from '~/lib/data';
 import DropDown from '../DropDown';
+import { signout } from '~/lib/actions';
+import { Button } from '../button';
+import { auth } from 'auth';
 
 
 const HeaderNav = async () => {
-  const [error,email,userName] = await useAuth();
-  if(!email) throw new Error ("error in finding email")
-  const UUID = await getUserByEmail(email);
+  const session = await auth()
+  const userName= session?.user?.name
+  const UUID = session?.user?.id
+   
+  
+  
   return (
     <nav className=' flex items-center justify-between text-white  px-[10%] py-3'>
             <h1 className=' text-2xl'>Proload</h1>
-            <div className=' flex gap-20'>
-                <Link className='hover:underline text-lg font-semibold' href={'/'} >Home</Link>
-                <Link className='hover:underline text-lg font-semibold' href={'/workouts'} >Community</Link >
-                <Link className='hover:underline text-lg font-semibold' href={'/'} >Shop</Link>
+            <div className=' flex gap-20 items-center'>
+                <Link className='hover:underline active:text-red-500 text-lg font-semibold' href={'/'} >Home</Link>
+                <Link className='hover:underline text-lg font-semibold active:text-red-500' href={'/workouts'} >Community</Link >
+                <Link className='hover:underline text-lg font-semibold active:text-red-500' href={'/'} >Shop</Link>
+                <form action={signout}>
+                  <Button variant={'outline'} className='text-black hover:text-red-600 focus:bg-slate-500' type='submit'>log out</Button>
+                </form>
             </div> 
             <div className='space-x-8 flex items-center'>
             { userName ?

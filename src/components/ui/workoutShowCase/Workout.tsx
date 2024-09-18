@@ -1,102 +1,21 @@
 import React, { ReactElement } from 'react'
 import Day from './Day'
 import { fetchWorkoutById } from '~/lib/data'
-
-const Workout = async ({id}:{id:number}) => {
-    const fetchedWorkout = await fetchWorkoutById(id);
-
-    // const Split = {
-    //     title: "Push/Pull/Legs",
-    //     days:[
-    //         {
-    //             name : "push",
-    //             exercices:[
-    //                 {
-    //                     name : "Bench Press",
-    //                     sets: 4,
-    //                     reps: 8,
-    //                     weight: 60
-    //                 },
-    //                 {
-    //                     name : "Dumbell Press",
-    //                     sets: 4,
-    //                     reps: 8,
-    //                     weight: 60
-    //                 },
-    //                 {
-    //                     name : "Tricep Extension",
-    //                     sets: 4,
-    //                     reps: 8,
-    //                     weight: 60
-    //                 },
-    //                 {
-    //                     name : "Shoulder Press",
-    //                     sets: 4,
-    //                     reps: 8,
-    //                     weight: 60
-    //                 }
-    //             ]
-    //         },
-    //         {
-    //             name : "pull",
-    //             exercices:[
-    //                 {
-    //                     name : "Deadlift",
-    //                     sets: 4,
-    //                     reps: 8,
-    //                     weight: 60
-    //                 },
-    //                 {
-    //                     name : "Pullups",
-    //                     sets: 4,
-    //                     reps: 8,
-    //                     weight: 60
-    //                 },
-    //                 {
-    //                     name : "Bicep Curl",
-    //                     sets: 4,
-    //                     reps: 8,
-    //                     weight: 60
-    //                 },
-    //                 {
-    //                     name : "Face Pull",
-    //                     sets: 4,
-    //                     reps: 8,
-    //                     weight: 60
-    //                 }
-    //             ]
-    //         },
-    //         {
-    //             name : "legs",
-    //             exercices:[
-    //                 {
-    //                     name : "Squat",
-    //                     sets: 4,
-    //                     reps: 8,
-    //                     weight: 60
-    //                 },
-    //                 {
-    //                     name : "Leg Press",
-    //                     sets: 4,
-    //                     reps: 8,
-    //                     weight: 60
-    //                 },
-    //                 {
-    //                     name : "Leg Curl",
-    //                     sets: 4,
-    //                     reps: 8,
-    //                     weight: 60
-    //                 },
-    //                 {
-    //                     name : "Calf Raise",
-    //                     sets: 4,
-    //                     reps: 8,
-    //                     weight: 60
-    //                 }
-    //             ]
-    //         }
-    //     ]
-    // }
+type split = 
+    {
+        id: number;
+        name: string;
+        createdAt: Date;
+        userId: string | null;
+        description: string;
+        upvotes: number;
+        downvotes: number;
+        clones: number;
+        published: boolean;
+        numberOfDays : number | null,
+        days:dayDetails[]
+    }
+    
     type dayDetails = {
         dayIndex:number,
         name : string,
@@ -106,16 +25,19 @@ const Workout = async ({id}:{id:number}) => {
             reps : number,
         }[] 
     }
+const Workout = async ({id,fetchedWorkout}:{id:number,fetchedWorkout:split}) => {
+
+    
     if (fetchedWorkout === undefined) {
         return <div>Workout not found</div>;
     }
-    const NOD = fetchedWorkout.numberOfDays ||  10
-    const {days} = fetchedWorkout
+    const NOD = fetchedWorkout.numberOfDays || 10
+    const days = fetchedWorkout.days.sort((a,b)=> (a.dayIndex,b.dayIndex))
     function renderDays(){
         const renderDays: any = [];
-for (let i = 1, j = 0; i <= NOD; i++) {
+    for (let i = 1, j = 0; i <= NOD; i++) {
     // Check if the current day matches the dayIndex in the days array
-    if (days[j] && i === days[j].dayIndex) {
+    if (days[j] && i === days[j]?.dayIndex) {
         // If it matches, push the Day component with the day details from the days array
         renderDays.push(<Day key={i} day={days[j]} />);
         j++; // Move to the next element in the days array

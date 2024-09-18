@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 import GetWorkouts from "~/components/ui/form/getWorkouts"
 import TweetCard from "~/components/ui/Posts/TweetCard"
 import WorkoutBox from "~/components/ui/workouts/WorkoutBox"
-import { postWorkouts } from "~/lib/actions"
+import { postWorkouts, seed } from "~/lib/actions"
 import { fetchAllWorkouts } from "~/lib/data"
 import {User} from "@nextui-org/user";
 import {
@@ -13,8 +13,13 @@ import {
   } from "@nextui-org/autocomplete";
 import { Providers } from "../providers"
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/react"
-import { Button } from "@nextui-org/react"
 import DropDown from "~/components/ui/DropDown"
+import { Button } from "~/components/ui/button"
+import { toast } from "sonner"
+import { SonnerDemo } from "./tryout"
+import { Toaster } from "~/components/ui/sonner"
+import PostManager from "./CreatePost"
+import MuscleGroupRadarChart from "~/components/component/MuscleChart"
 
 const page = async () => {
     const session = await auth()
@@ -78,8 +83,16 @@ const page = async () => {
             <h1 className="text-2xl font-bold mb-4">Tweet Card Test</h1>
       
 
-            <DropDown UUID="hello" userName="Ayoub" />
-        </div>
+            <SonnerDemo />
+            <Toaster />
+            <PostManager />
+            <MuscleGroupRadarChart />
+            <form action={seed}>
+            <Button  variant={'destructive'} size={'lg'}   className=' mb-5 w-1/12'>Seed</Button>
+
+            </form>
+            
+                    </div>
     )
 }
 export default page

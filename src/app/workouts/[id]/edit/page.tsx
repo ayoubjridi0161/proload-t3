@@ -1,14 +1,19 @@
 "use server"
 import React from 'react'
-import { fetchWorkoutById, getWorkoutsByUser } from '~/lib/data'
+import { fetchWorkoutById } from '~/lib/data'
 import {auth} from 'auth'
 import EditWorkout from '~/components/ui/workouts/EditWorkout'
 import { useAuth } from '~/lib/hooks/useAuth'
+import { getWorkoutByUser } from '~/lib/actions'
 const Page = async ({params} : {params:{id:string}}) => {
   const [error,email,userName ] = await useAuth();
   if(!email) throw new Error('not authed')
-  const workoutIDs = await getWorkoutsByUser(email)
-  const flattenedWorkoutIDs = workoutIDs.map(({id}) => id)
+  const {res,err} = await getWorkoutByUser(email)
+  if(!res)
+    {console.log("err",err)
+     return (<div>this is not your workout</div>)
+    }
+  const flattenedWorkoutIDs = res.map(({id}) => id)
   const workoutID = Number(params.id)
   if(! flattenedWorkoutIDs.includes(workoutID)) throw new Error(' not authed')
   const data = await fetchWorkoutById(workoutID)

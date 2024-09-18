@@ -22,14 +22,16 @@ import { PopoverTrigger, PopoverContent, Popover } from "~/components/ui/popover
 import { ArrowBigDownDash, ArrowBigUpDash } from "lucide-react"
 import { JSX, SVGProps } from "react"
 import { Toggle } from "~/components/ui/toggle"
-import {Downvote, Upvote} from "./Reactions"
+import {Clone, Downvote, Upvote} from "./Reactions"
 import { getUserReactions } from "~/lib/data"
 type Props = {
-  userId:string,workoutId:number,
+  userId:string | undefined,
+  workoutId:number,
   Reactions : {upvotes:number,downvotes:number,clones:number}
 }
 
 async function TooltipBox(props:Props) {
+  if(!props.userId) return <div>no user</div>
   let UserReactions = await getUserReactions(props.workoutId,props.userId) 
 
   
@@ -38,31 +40,12 @@ async function TooltipBox(props:Props) {
   return (
     <div className="grid grid-cols-5 place-items-center gap-x-2 ">
       <TooltipProvider>
-        
-      <Tooltip>
-          <TooltipTrigger asChild>
-            <form >
-            <Button className="text-black" size="icon" variant="ghost">
-              <CopyIcon className="h-5 w-5" />
-              <span className="sr-only">Clone</span>
-            </Button>
-            </form>
-          </TooltipTrigger>
-          <TooltipContent>Clone</TooltipContent>
-        </Tooltip>
+        <Clone workoutId={props.workoutId} />        
         <div className="row-start-2 col-start-1 text-sm text-gray-500 dark:text-gray-400">{props.Reactions.clones }</div>
-
-        
-            <Upvote EUR= {!!UserReactions} pressed = { UserReactions?.upvote || false } workoutId = {props.workoutId}  />
-            {/* <h1>hello</h1> */}  
-          
-          
-        
+        <Upvote EUR= {!!UserReactions} pressed = { UserReactions?.upvote || false } workoutId = {props.workoutId}  />
         <div className="row-start-2 col-start-2 text-sm text-gray-500 dark:text-gray-400">{props.Reactions.upvotes}</div>
         <Downvote EUR= {!!UserReactions} pressed = { UserReactions?.downvote || false } workoutId = {props.workoutId}  />
-
         <div className="row-start-2 col-start-3 text-sm text-gray-500 dark:text-gray-400">{props.Reactions.downvotes}</div>
-        
         <Tooltip>
           <TooltipTrigger asChild>
             <Button className="text-black" size="icon" variant="ghost">

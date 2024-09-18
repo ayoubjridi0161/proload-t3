@@ -64,12 +64,20 @@ export const exercices = pgTable("exercises",{
   name: varchar('name',{length:256}).notNull(),
   sets: integer('sets').notNull(),
   reps: integer('reps').notNull(),
-  dayId:integer('day_id').notNull().references(()=>days.id)
+  dayId:integer('day_id').notNull().references(()=>days.id),
+  exerciceName: integer('exercice_name').references(()=>exerciceNames.id)
 })
-export const exercicesRelations= relations(exercices, ({one}) => ({days : one(days,{
+export const exercicesRelations= relations(exercices, ({one}) => (
+  {days : one(days,{
   fields:[exercices.dayId],
   references:[days.id],
-})})  );
+  }),
+  exerciceNames: one(exerciceNames,{
+    fields:[exercices.exerciceName],
+    references:[exerciceNames.id]
+  })
+}
+));
 
 export const users = pgTable("users",{
   id:uuid('uuid').defaultRandom().primaryKey(),
@@ -79,7 +87,12 @@ export const users = pgTable("users",{
   createdAt:timestamp('created_at',{withTimezone:true}).default(sql`CURRENT_TIMESTAMP`),
 
 })  
-export const usersRelations = relations(users,({many})=>({workouts:many(workouts),comments:many(comments),replys:many(replys)}));
+export const usersRelations = relations(users,({many})=>({
+  workouts:many(workouts),
+  comments:many(comments),
+  replys:many(replys),
+  posts:many(Posts)
+}));
 export const stateEnum = pgEnum('state', ['comment', 'reply']);
 export const comments = pgTable("comments",{
   id:serial('id').primaryKey(),
@@ -87,6 +100,7 @@ export const comments = pgTable("comments",{
   userId:uuid('user_id').references(()=>users.id),
   userName:varchar('user_name',{length:256}).notNull(),
   workoutId:integer('workout_id').references(()=>workouts.id),
+  postId:integer('post_id').references(()=>Posts.id),
   createdAt:timestamp('created_at',{withTimezone:true}).default(sql`CURRENT_TIMESTAMP`).notNull()
 })
 export const replys = pgTable("replys",{
@@ -100,7 +114,8 @@ export const replys = pgTable("replys",{
 export const commentsRelations = relations(comments,({many,one})=>({
   users:one(users,{fields:[comments.userId],references:[users.id]}),
   workouts:one(workouts,{fields:[comments.workoutId],references:[workouts.id]}),
-  replys:many(replys)
+  replys:many(replys),
+  posts:one(Posts,{fields:[comments.postId],references:[Posts.id]})
 }))
 export const replysRelations = relations(replys,({one})=>({
   users:one(users,{fields:[replys.userId],references:[users.id]}),
@@ -132,17 +147,36 @@ export const ReactionsRelations = relations(Reactions, ({ one }) => ({
     references: [users.id],
   }),
 }));
-// export const Posts = pgTable(
-//   'Posts',{
-//     id:serial('id').primaryKey(),
-//     title: varchar('title',{length:250}).notNull(),
-//     content:varchar('content',{length:3000}).notNull(),
-//     resources: text('resources').array().notNull()
-//     .default(sql`ARRAY[]::text[]`),
-//     userId : uuid('user_id').notNull().references(()=> users.id),
+export const Posts = pgTable(
+  'Posts',{
+    id:serial('id').primaryKey(),
+    title: varchar('title',{length:250}).notNull(),
+    content:varchar('content',{length:3000}).notNull(),
+    resources: text('resources').array().notNull()
+    .default(sql`ARRAY[]::text[]`),
+    userId : uuid('user_id').notNull().references(()=> users.id),
+    createdAt:timestamp('created_at',{withTimezone:true}).default(sql`CURRENT_TIMESTAMP`).notNull()
     
-//   }
-// )
-// export const PostsRelations(Posts,({one,many})=>{
-//   users:one(users,{fields:[Posts.userId],references:[users.id]}),
-// })
+  }
+)
+export const PostsRelations= relations(Posts,({many,one})=>({
+  users:one(users,{fields:[Posts.userId],references:[users.id]}),
+  comments:many(comments),
+})
+)
+
+export const exerciceNames = pgTable(
+  'exerciceNames',
+  {
+    id: serial('id').primaryKey(),
+    name: varchar('name', { length: 256 }).notNull(),
+    musclesTargeted: text('muscles_targeted').array().notNull().default(sql`ARRAY[]::text[]`),
+    muscleGroup: varchar('muscle_group', { length: 256 }).notNull(),
+    equipment:text('equipment').array().notNull().default(sql`ARRAY[]::text[]`),
+    video: varchar('video', { length: 256 }),
+    image: varchar('image', { length: 256 }),
+  },
+);
+export const exerciceNamesRelations = relations(exerciceNames, ({ many }) => ({
+  exercices: many(exercices),
+}));

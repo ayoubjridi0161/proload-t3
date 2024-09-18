@@ -11,11 +11,11 @@ import Link from "next/link"
 import LockIcon from "../svg/lockIcon"
 import MailIcon from "../svg/mailIcon"
 import { signIn } from "auth"
-// import { MailIcon } from "lucide-react"
 export const Login =  ()=>{
     // const [error,action,isPending] = useActionState(login,null);
     const [error,action] = useFormState(login,null)
     const router = useRouter()
+    console.log(error)
     if(error?.message === "success"){
         router.push('/workouts')
     }
@@ -39,8 +39,9 @@ export const Login =  ()=>{
 }
 const LocalButton = ()=>{
     const {pending} = useFormStatus()
+    console.log("pending;",pending)
     return(
-  <Button variant={"default"}  className={pending ? "bg-gray " :  " "}>Sign in</Button>
+  <Button variant={"default"}  className={pending ? "bg-slate-500 " :  " "}>Sign in</Button>
 
     )
 }

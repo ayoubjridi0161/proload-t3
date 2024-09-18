@@ -7,6 +7,7 @@ const protectedRoutes = [
 ];
 const unprotectedRoutes = ['/', '/login'];
 
+
 import { auth } from 'auth';
 
 export default async function middleware(request: NextRequest) {
@@ -22,8 +23,12 @@ export default async function middleware(request: NextRequest) {
     const absoluteURL = new URL('/dashboard', request.nextUrl.origin);
     return NextResponse.redirect(absoluteURL.toString());
   }
-  if(session?.user?.name !== "proof" && isProtectedRoute){
-    const absoluteURL = new URL('/', request.nextUrl.origin);
-    return NextResponse.redirect(absoluteURL.toString());
+  // if(session?.user?.name !== "proofv3" && isProtectedRoute){
+  //   const absoluteURL = new URL('/', request.nextUrl.origin);
+  //   return NextResponse.redirect(absoluteURL.toString());
+  // }
+  if(session?.user && request.nextUrl.pathname.startsWith('/login')){
+    const absoluteURL = new URL('/workouts',request.nextUrl.origin)
+    return NextResponse.redirect(absoluteURL.toString())
   }
 }

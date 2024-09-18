@@ -1,12 +1,13 @@
 "use server"
 import { auth, signIn , signOut } from "auth"
-import { InsertDay, InsertExercice, InsertUser, InsertWorkout, addNewReaction, deleteDay, deleteRemovedExercices, fetchAllWorkouts, getDaysByWorkout, getUserByEmail, updateDay, updateExercice,  updateReactions,  updateWorkout } from "./data"
+import { InsertDay, InsertExercice, InsertUser, InsertWorkout, addNewReaction, deleteDay, deleteRemovedExercices, fetchAllWorkouts, getDaysByWorkout, getNumberOfWorkoutsPerUser, getUserByEmail, getWorkoutsByUser, updateDay, updateExercice,  updateReactions,  updateWorkout } from "./data"
 import { redirect } from "next/navigation"
 import { AuthError } from "next-auth"
 import { user } from "./zodValidation"
 import { ZodError, any } from "zod"
 import { revalidatePath } from "next/cache"
 import { DrizzleError } from "drizzle-orm"
+import { seedDatabase } from "~/server/db/seed"
 export async function editWorkout (formData : FormData){
   
   const user = await getUserByEmail(formData.get('email') as string)
@@ -104,10 +105,12 @@ export default async function addWorkout(formData : FormData) {
 export const login = async (previous : any , formData : FormData)=>{
   // console.log(formData)
   try {
-    const returned = await signIn('credentials',formData );
-    if(returned){
-    }
-    revalidatePath("/login")
+    await signIn('credentials',formData );
+    console.log("logged")
+     
+     
+    return {message:"success"}
+    
     
   } catch (error) {
     if(error instanceof AuthError){
@@ -159,10 +162,34 @@ export const addUserReaction = async (workoutID:number,EUR:boolean,action:{type:
   const session = await auth();
   const id = session?.user?.id;
   if(!id) {throw new Error ("no user authenticated")}
+  if(action.type==="clone"){
+    const res = await getNumberOfWorkoutsPerUser(id)
+    console.log(res)
+    if(res.NumberOfWorkouts !== undefined && res.NumberOfWorkouts<3){
+      const res = await updateReactions(id,workoutID,action)
+      revalidatePath(`workouts/${workoutID}`)
+      return res
+    }else return("workout limit exeeded")
+  }
     if(!EUR) {const res = await addNewReaction(id,workoutID);
       if(res.message !== "success" ) throw new Error(res.message)
     }
   const res = await updateReactions(id,workoutID,action)
   revalidatePath(`workouts/${workoutID}`)
   return res
+}
+
+export const getWorkoutByUser = async (email:string)=>{
+  try{
+    const session = await auth()
+    const UUID = session?.user?.id
+    if(!UUID) throw new Error ("not authed")
+  const workoutIDs = await getWorkoutsByUser(UUID)
+  return {res:workoutIDs,err:null}
+}catch(err){
+  return {res:null,err:err}
+}
+}
+export const seed = async ()=>{
+  await seedDatabase()
 }

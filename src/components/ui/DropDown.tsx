@@ -22,6 +22,8 @@ const DropDown = (props:Props) => {
               {/* </Link> */}
       </DropdownTrigger>
       <DropdownMenu aria-label="Static Actions">
+      <DropdownItem key="new"><Link href={`/profile/${props.UUID}`}>Profile</Link></DropdownItem>
+
       <DropdownItem key="new"><button onClick={() => signOut()}>Sign Out</button></DropdownItem>
 
       </DropdownMenu>

@@ -7,9 +7,7 @@ import WorkoutsPage from '~/components/ui/workouts/WorkoutsPage'
 import { fetchAllWorkouts } from '~/lib/data'
 
 export default async function page() {
-  const session = await auth()
-  if(session){
-  const { user } = session
+  
   const workoutSummaryList = await fetchAllWorkouts()
   
   
@@ -24,7 +22,6 @@ export default async function page() {
             </div>
     </div>
   )
-}
-else redirect('/login')
+
 
 }
