@@ -32,7 +32,7 @@ type numberedData={
     name: string;
     musclesTargeted: string;
     muscleGroup: string;
-    equipment: string[];
+    equipment: string;
 }[]
 
 export default function ExercicesTable({columns, numberedData}: {columns: {key: string, label: string}[], numberedData: numberedData}) {
