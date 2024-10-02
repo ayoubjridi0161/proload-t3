@@ -5,8 +5,8 @@ import { useFormState } from "react-dom"
 
 const GetWorkouts = ()=>{
     const [data, action ] =useFormState(postWorkouts,null)
-    if (data) {
-       const workouts = data?.map((workout:any)=>console.log(workout))
+    if (Array.isArray(data)) {
+       const workouts = data.map((workout:any)=>console.log(workout))
     }
     
 
