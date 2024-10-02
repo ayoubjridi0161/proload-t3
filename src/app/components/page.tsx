@@ -1,7 +1,6 @@
 import { auth } from "auth"
 import { redirect } from "next/navigation"
 import GetWorkouts from "~/components/ui/form/getWorkouts"
-import TweetCard from "~/components/ui/Posts/TweetCard"
 import WorkoutBox from "~/components/ui/workouts/WorkoutBox"
 import { postWorkouts, seed } from "~/lib/actions"
 import { fetchAllWorkouts } from "~/lib/data"

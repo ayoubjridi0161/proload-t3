@@ -6,7 +6,6 @@ import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
 import { createPost, getPosts } from "~/lib/data";
 import { auth } from "auth";
-import TweetCard from "~/components/ui/Posts/TweetCard";
 import PostCard from "~/components/ui/Posts/PostCard";
 import { redirect } from "next/navigation";
 
