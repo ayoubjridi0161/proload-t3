@@ -87,7 +87,7 @@ const page = async () => {
             <SonnerDemo />
             <Toaster />
             <PostManager />
-            <MuscleGroupRadarChart />
+            {/* <MuscleGroupRadarChart /> */}
             <form action={seed}>
             <Button  variant={'destructive'} size={'lg'}   className=' mb-5 w-1/12'>Seed</Button>
 
