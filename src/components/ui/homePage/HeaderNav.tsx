@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import React from 'react'
-import { useAuth } from '~/lib/hooks/useAuth'
 import { Avatar, AvatarFallback } from '../avatar';
 import { redirect } from 'next/navigation'
 import { getUserByEmail } from '~/lib/data';

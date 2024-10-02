@@ -3,10 +3,10 @@ import React from 'react'
 import { fetchWorkoutById, getExerciceNames } from '~/lib/data'
 import {auth} from 'auth'
 import EditWorkout from '~/components/ui/workouts/EditWorkout'
-import { useAuth } from '~/lib/hooks/useAuth'
 import { getWorkoutByUser } from '~/lib/actions'
 const Page = async ({params} : {params:{id:string}}) => {
-  const [error,email,userName ] = await useAuth();
+  const session = await auth()
+  const email = session?.user?.email
   if(!email) throw new Error('not authed')
   const {res,err} = await getWorkoutByUser(email)
   if(!res)

@@ -44,7 +44,7 @@ export default async function Component({id}:{id:string}) {
           <AvatarFallback>JD</AvatarFallback>
         </Avatar>
         <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold">John Doe</h1>
+          <h1 className="text-3xl font-bold">{userDetails?.name}</h1>
           <p className="text-muted-foreground">Fitness enthusiast, health coach, and avid blogger.</p>
         </div>
       </div>
