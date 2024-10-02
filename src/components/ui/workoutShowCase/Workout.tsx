@@ -39,7 +39,7 @@ const Workout = async ({id,fetchedWorkout}:{id:number,fetchedWorkout:split}) => 
     // Check if the current day matches the dayIndex in the days array
     if (days[j] && i === days[j]?.dayIndex) {
         // If it matches, push the Day component with the day details from the days array
-        renderDays.push(<Day key={i} day={days[j]} />);
+         renderDays.push(<Day key={i} day={days[j]} />);
         j++; // Move to the next element in the days array
     } else {
         // If it doesn't match or days[j] is undefined, push a Day component for a rest day

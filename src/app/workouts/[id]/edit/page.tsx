@@ -1,6 +1,6 @@
 "use server"
 import React from 'react'
-import { fetchWorkoutById } from '~/lib/data'
+import { fetchWorkoutById, getExerciceNames } from '~/lib/data'
 import {auth} from 'auth'
 import EditWorkout from '~/components/ui/workouts/EditWorkout'
 import { useAuth } from '~/lib/hooks/useAuth'
@@ -19,10 +19,10 @@ const Page = async ({params} : {params:{id:string}}) => {
   const data = await fetchWorkoutById(workoutID)
   if (!data) throw new Error('Workout not found')
   const {name, description, days ,id , numberOfDays} = data
-  
+  const exerciceNames = await getExerciceNames()
   // console.log(`name:${name} , description:${description}, days : ${days}, id : ${id}, email:${email}`)
   return (
-     <EditWorkout NoD = {numberOfDays} name = {name} description = {description} days = {days} id = {id} email = {email} />
+     <EditWorkout exerciceNames={exerciceNames} NoD = {numberOfDays} name = {name} description = {description} days = {days} id = {id} email = {email} />
   )
 }
 

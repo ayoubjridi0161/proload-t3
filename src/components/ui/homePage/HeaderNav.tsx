@@ -30,9 +30,10 @@ const HeaderNav = async () => {
                 
             </div> 
             <div className='space-x-8 flex items-center'>
-            { userName ?
+            { userName  ?
+             image &&
               <DropDown image = {image} UUID={UUID || ""} userName={userName}/> 
-              
+             
               :
           
               <>

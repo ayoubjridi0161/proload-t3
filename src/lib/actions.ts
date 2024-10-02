@@ -120,22 +120,22 @@ export const login = async (previous : any , formData : FormData)=>{
     
   }
 }
-export const signup = async (prev : any ,formData : FormData)=>{
-  try{
-    console.log(formData)
-   const parsed = user.safeParse({username:formData.get('username') as string,email:formData.get('email') as string,password:formData.get('password') as string})
-  if(parsed.success){
-    const response = await InsertUser(parsed.data)
-    return {message:"success"}
+// export const signup = async (prev : any ,formData : FormData)=>{
+//   try{
+//     console.log(formData)
+//    const parsed = user.safeParse({username:formData.get('username') as string,email:formData.get('email') as string,password:formData.get('password') as string})
+//   if(parsed.success){
+//     const response = await InsertUser(parsed.data)
+//     return {message:"success"}
     
-  }
-  }catch(err){
-    if(err instanceof DrizzleError){
-      console.log(err)
-    return {message:err.cause?.constraint }
-  }
-  }
-}
+//   }
+//   }catch(err){
+//     if(err instanceof DrizzleError){
+//       console.log(err)
+//     return {message:err.cause?.constraint }
+//   }
+//   }
+// }
 export const signout = async ()=>{
   await signOut()
   revalidatePath('/')

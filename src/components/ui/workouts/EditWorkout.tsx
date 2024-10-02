@@ -35,6 +35,11 @@ type Props = {
     days : dayDetails[]
     email : string
     NoD : number | null
+    exerciceNames:{
+      name: string;
+      musclesTargeted: string[];
+      muscleGroup: string;
+      equipment: string[];}[]
     
 }
 
@@ -47,7 +52,7 @@ export default function EditWorkout(props : Props ) {
       const numberOfDays = props.NoD || 1
       for(let i = 1,j=1 ; i <= numberOfDays ; i++){
         if(sortedDays[j-1]?.dayIndex === i){
-          days.push(<AddEditDay dayDetails={sortedDays[j-1] } remove={removeDay} id={i} key={i} muscles='legs,arms,chest'  />)
+          days.push(<AddEditDay exerciceNames={props.exerciceNames} dayDetails={sortedDays[j-1] } remove={removeDay} id={i} key={i} muscles='legs,arms,chest'  />)
           j++;
         }
         else{ days.push(<AddRestDay remove={removeDay} id={i} key={i} />)
@@ -80,7 +85,7 @@ export default function EditWorkout(props : Props ) {
     React.useEffect(()=>{
       if(newKey)
         if(dayRest?.day === 'train')
-        setDays(days => [...days , <AddDay  remove={removeDay} id={newKey} key={newKey} muscles='legs,arms,chest'  />])
+        setDays(days => [...days , <AddDay exerciceNames={props.exerciceNames}  remove={removeDay} id={newKey} key={newKey} muscles='legs,arms,chest'  />])
         else if(dayRest?.day === 'rest') setDays(days => [...days , <AddRestDay remove={removeDay} id={newKey} key={newKey} />])   
         // console.log(days) 
 

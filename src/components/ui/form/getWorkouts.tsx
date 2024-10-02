@@ -8,9 +8,6 @@ const GetWorkouts = ()=>{
     if (Array.isArray(data)) {
        const workouts = data.map((workout:any)=>console.log(workout))
     }
-    
-
-
     return(
         <div>
             <form action={action}>
