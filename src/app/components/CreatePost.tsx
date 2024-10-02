@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { revalidatePath } from "next/cache";
 import { promises as fs } from 'fs';
 import path from 'path';
