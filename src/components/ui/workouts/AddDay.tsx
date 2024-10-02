@@ -14,7 +14,13 @@ import { Input } from '../input'
 type Props = {
     muscles: string,
     id: number,
-    remove: (id:number)=>void
+    remove: (id:number)=>void,
+    exerciceNames:{
+      name: string;
+      musclesTargeted: string[];
+      muscleGroup: string;
+      equipment: string[];
+  }[]
 
 }
 type exercice = {
@@ -68,7 +74,7 @@ export default function AddDay(props : Props) {
           <div className={isEdit ?  "flex flex-wrap gap-2  px-3 pb-1 pt-3 w-full" : "hidden"}>
             {exercices }
           </div>{isEdit &&
-          <ButtonWhite className='m-3' type='button' onClick={()=>{setNbrExercices(prev => prev+1);setExercices(prev => [...prev,<AddExercice dayIndex={dayIndex}  dayName={dayNameProps.current?.value} key={`day${props.id}-exercice${nbrExercices}`} id={`day${props.id}-exercice${nbrExercices}`}/> ])}}>Add exercice</ButtonWhite>
+          <ButtonWhite className='m-3' type='button' onClick={()=>{setNbrExercices(prev => prev+1);setExercices(prev => [...prev,<AddExercice exerciceName={props.exerciceNames}  dayIndex={dayIndex}  dayName={dayNameProps.current?.value} key={`day${props.id}-exercice${nbrExercices}`} id={`day${props.id}-exercice${nbrExercices}`}/> ])}}>Add exercice</ButtonWhite>
           }
           </div>
         

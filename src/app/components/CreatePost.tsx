@@ -8,6 +8,7 @@ import { createPost, getPosts } from "~/lib/data";
 import { auth } from "auth";
 import TweetCard from "~/components/ui/Posts/TweetCard";
 import PostCard from "~/components/ui/Posts/PostCard";
+import { redirect } from "next/navigation";
 
 // This interface defines the structure of a post
 interface Post {
@@ -54,7 +55,7 @@ export default async function PostManager() {
           //   <h3 className="text-lg font-semibold">{post.title}</h3>
           //   <p className="mt-2">{post.content}</p>
           // </div>
-          <PostCard author={post.users.username} description={post.content} publishDate="2 sep 2003" title={post.title} readingTime="3mn"  key={index}  />
+          <PostCard userImage={post.users.image} author={post.users.name ||"unknown"} description={post.content} publishDate="2 sep 2003" title={post.title} readingTime="3mn"  key={index}  />
         ))}
         </div>
       </div>

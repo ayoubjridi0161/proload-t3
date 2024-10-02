@@ -15,8 +15,11 @@ import { Toaster } from "~/components/ui/sonner";
 const page = async ({params} : {params:{id:string}}) => {
   const session =await auth()
     const user = session?.user
-      const workout = await fetchWorkoutById(parseInt(params.id))
-      if(!workout) throw new Error ("failed to fetch workout")
+    function delay(ms: number) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    const workout = await delay(3000).then(() => fetchWorkoutById(parseInt(params.id)));
+    if(!workout) throw new Error ("failed to fetch workout")
     const Reactions = {upvotes : workout.upvotes ,downvotes:workout.downvotes , clones:workout.clones }
     return (
             <div className="flex gap-5">
@@ -24,10 +27,14 @@ const page = async ({params} : {params:{id:string}}) => {
       <Suspense fallback={<WorkoutSkeleton/>}>
           <Workout fetchedWorkout={workout} id={parseInt(params.id)} />
       </Suspense>
+
       </Container>
+      
       <div className="space-y-5">
       <Container>
-      <UserDeatails />
+        <Suspense fallback={<div>loading user</div>}>
+      <UserDeatails userID = {workout.userId} />
+      </Suspense>
       </Container>
       <Container>
       <TooltipBox userId = {user?.id } Reactions = {Reactions} workoutId = {parseInt(params.id)} />

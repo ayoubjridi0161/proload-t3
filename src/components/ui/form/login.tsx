@@ -2,6 +2,7 @@
 import { githubSignIn, login } from "~/lib/actions"
 
 import { useFormState, useFormStatus } from "react-dom"
+import { GitBranch,Github } from "lucide-react"
 import { useActionState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "../button" 
@@ -31,7 +32,7 @@ export const Login =  ()=>{
    <p className="text-red-950">{error && error.message}</p>
  </form>
 <form action={githubSignIn}>
-      <button type="submit">Signin with GitHub</button>
+      <button type="submit"><Github /></button>
     </form>
 </div> 
 

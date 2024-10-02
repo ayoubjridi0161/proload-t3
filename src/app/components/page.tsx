@@ -20,6 +20,7 @@ import { SonnerDemo } from "./tryout"
 import { Toaster } from "~/components/ui/sonner"
 import PostManager from "./CreatePost"
 import MuscleGroupRadarChart from "~/components/component/MuscleChart"
+import AutoComplete from "./autoComplete"
 
 const page = async () => {
     const session = await auth()
@@ -91,7 +92,7 @@ const page = async () => {
             <Button  variant={'destructive'} size={'lg'}   className=' mb-5 w-1/12'>Seed</Button>
 
             </form>
-            
+            <AutoComplete />            
                     </div>
     )
 }

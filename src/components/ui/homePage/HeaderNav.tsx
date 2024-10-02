@@ -13,8 +13,10 @@ import { auth } from 'auth';
 const HeaderNav = async () => {
   const session = await auth()
   const userName= session?.user?.name
+  const image = session?.user?.image
   const UUID = session?.user?.id
-   
+  // console.log("uuid is:",UUID)
+  
   
   
   return (
@@ -22,15 +24,14 @@ const HeaderNav = async () => {
             <h1 className=' text-2xl'>Proload</h1>
             <div className=' flex gap-20 items-center'>
                 <Link className='hover:underline active:text-red-500 text-lg font-semibold' href={'/'} >Home</Link>
-                <Link className='hover:underline text-lg font-semibold active:text-red-500' href={'/workouts'} >Community</Link >
-                <Link className='hover:underline text-lg font-semibold active:text-red-500' href={'/'} >Shop</Link>
-                <form action={signout}>
-                  <Button variant={'outline'} className='text-black hover:text-red-600 focus:bg-slate-500' type='submit'>log out</Button>
-                </form>
+                <Link className='hover:underline text-lg font-semibold active:text-red-500' href={'/workouts'} >Workouts</Link >
+                <Link className='hover:underline text-lg font-semibold active:text-red-500' href={'/posts'} >Posts</Link>
+                <Link className='hover:underline text-lg font-semibold active:text-red-500' href={'/exercices'} >Exercices</Link>
+                
             </div> 
             <div className='space-x-8 flex items-center'>
             { userName ?
-              <DropDown UUID={UUID || ""} userName={userName}/> 
+              <DropDown image = {image} UUID={UUID || ""} userName={userName}/> 
               
               :
           

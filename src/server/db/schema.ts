@@ -2,7 +2,6 @@
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
 import { desc, Many, relations, sql } from "drizzle-orm";
-import { boolean } from "drizzle-orm/mysql-core";
 import {
   index,
   integer,
@@ -16,9 +15,11 @@ import {
   pgEnum,
   boolean as pgBoolean,
   text,
+  boolean,
 } from "drizzle-orm/pg-core";
 import { number } from "zod";
 
+import type { AdapterAccountType } from "next-auth/adapters"
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
  * database instance for multiple projects.
@@ -30,7 +31,7 @@ export const createTable = pgTableCreator((name) => `proload-t3_${name}`);
 export const workouts = pgTable("workouts",{
   id: serial('id').primaryKey(),
   name: varchar('name',{length:256}).notNull(),
-  userId: uuid('user_id').references(()=>users.id),
+  userId: text('user_id').references(()=>users.id),
   createdAt: timestamp("created_at",{withTimezone:true}).default(sql`CURRENT_TIMESTAMP`).notNull(),
   description:varchar('description',{length:1000}).notNull(),
   upvotes:integer('upvotes').default(0).notNull(),
@@ -61,11 +62,10 @@ export const daysRelations = relations(days,({one,many})=> ({
 }))
 export const exercices = pgTable("exercises",{
   id:serial('id').primaryKey(),
-  name: varchar('name',{length:256}).notNull(),
+  name: varchar('exercice_name',{length:256}).references(()=>exerciceNames.name).notNull(),
   sets: integer('sets').notNull(),
   reps: integer('reps').notNull(),
   dayId:integer('day_id').notNull().references(()=>days.id),
-  exerciceName: integer('exercice_name').references(()=>exerciceNames.id)
 })
 export const exercicesRelations= relations(exercices, ({one}) => (
   {days : one(days,{
@@ -73,20 +73,23 @@ export const exercicesRelations= relations(exercices, ({one}) => (
   references:[days.id],
   }),
   exerciceNames: one(exerciceNames,{
-    fields:[exercices.exerciceName],
-    references:[exerciceNames.id]
+    fields:[exercices.name],
+    references:[exerciceNames.name]
   })
 }
 ));
 
-export const users = pgTable("users",{
-  id:uuid('uuid').defaultRandom().primaryKey(),
-  username:varchar('username',{length:256}).notNull().unique(),
-  email:varchar('email',{length:256}).notNull().unique(),
-  password:varchar('password',{length:256}).notNull(),
-  createdAt:timestamp('created_at',{withTimezone:true}).default(sql`CURRENT_TIMESTAMP`),
+export const users = pgTable("user", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  name: text("name"),
+  email: text("email").unique(),
+  emailVerified: timestamp("emailVerified", { mode: "date" }),
+  image: text("image"),
 
-})  
+})
+
 export const usersRelations = relations(users,({many})=>({
   workouts:many(workouts),
   comments:many(comments),
@@ -97,7 +100,7 @@ export const stateEnum = pgEnum('state', ['comment', 'reply']);
 export const comments = pgTable("comments",{
   id:serial('id').primaryKey(),
   content:varchar('content',{length:1000}).notNull(),
-  userId:uuid('user_id').references(()=>users.id),
+  userId:text('user_id').references(()=>users.id),
   userName:varchar('user_name',{length:256}).notNull(),
   workoutId:integer('workout_id').references(()=>workouts.id),
   postId:integer('post_id').references(()=>Posts.id),
@@ -106,7 +109,7 @@ export const comments = pgTable("comments",{
 export const replys = pgTable("replys",{
   id:serial('id').primaryKey(),
   content:varchar('content',{length:1000}).notNull(),
-  userId:uuid('user_id').references(()=>users.id),
+  userId:text('user_id').references(()=>users.id),
   userName:varchar('user_name',{length:256}).notNull(),
   commentId:integer('comment_id').references(()=>comments.id),
   createdAt:timestamp('created_at',{withTimezone:true}).default(sql`CURRENT_TIMESTAMP`).notNull()
@@ -124,7 +127,7 @@ export const replysRelations = relations(replys,({one})=>({
 export const Reactions = pgTable(
   'Reactions',
   {
-    userId: uuid('user_id')
+    userId: text('user_id')
       .notNull()
       .references(() => users.id),
     workoutId: integer('workout_id')
@@ -154,7 +157,7 @@ export const Posts = pgTable(
     content:varchar('content',{length:3000}).notNull(),
     resources: text('resources').array().notNull()
     .default(sql`ARRAY[]::text[]`),
-    userId : uuid('user_id').notNull().references(()=> users.id),
+    userId : text('user_id').notNull().references(()=> users.id),
     createdAt:timestamp('created_at',{withTimezone:true}).default(sql`CURRENT_TIMESTAMP`).notNull()
     
   }
@@ -168,8 +171,7 @@ export const PostsRelations= relations(Posts,({many,one})=>({
 export const exerciceNames = pgTable(
   'exerciceNames',
   {
-    id: serial('id').primaryKey(),
-    name: varchar('name', { length: 256 }).notNull(),
+    name: varchar('name', { length: 256 }).notNull().primaryKey(),
     musclesTargeted: text('muscles_targeted').array().notNull().default(sql`ARRAY[]::text[]`),
     muscleGroup: varchar('muscle_group', { length: 256 }).notNull(),
     equipment:text('equipment').array().notNull().default(sql`ARRAY[]::text[]`),
@@ -180,3 +182,71 @@ export const exerciceNames = pgTable(
 export const exerciceNamesRelations = relations(exerciceNames, ({ many }) => ({
   exercices: many(exercices),
 }));
+
+
+export const accounts = pgTable(
+  "account",
+  {
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    type: text("type").$type<AdapterAccountType>().notNull(),
+    provider: text("provider").notNull(),
+    providerAccountId: text("providerAccountId").notNull(),
+    refresh_token: text("refresh_token"),
+    access_token: text("access_token"),
+    expires_at: integer("expires_at"),
+    token_type: text("token_type"),
+    scope: text("scope"),
+    id_token: text("id_token"),
+    session_state: text("session_state"),
+  },
+  (account) => ({
+    compoundKey: primaryKey({
+      columns: [account.provider, account.providerAccountId],
+    }),
+  })
+)
+ 
+export const sessions = pgTable("session", {
+  sessionToken: text("sessionToken").primaryKey(),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  expires: timestamp("expires", { mode: "date" }).notNull(),
+})
+ 
+export const verificationTokens = pgTable(
+  "verificationToken",
+  {
+    identifier: text("identifier").notNull(),
+    token: text("token").notNull(),
+    expires: timestamp("expires", { mode: "date" }).notNull(),
+  },
+  (verificationToken) => ({
+    compositePk: primaryKey({
+      columns: [verificationToken.identifier, verificationToken.token],
+    }),
+  })
+)
+ 
+export const authenticators = pgTable(
+  "authenticator",
+  {
+    credentialID: text("credentialID").notNull().unique(),
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    providerAccountId: text("providerAccountId").notNull(),
+    credentialPublicKey: text("credentialPublicKey").notNull(),
+    counter: integer("counter").notNull(),
+    credentialDeviceType: text("credentialDeviceType").notNull(),
+    credentialBackedUp: boolean("credentialBackedUp").notNull(),
+    transports: text("transports"),
+  },
+  (authenticator) => ({
+    compositePK: primaryKey({
+      columns: [authenticator.userId, authenticator.credentialID],
+    }),
+  })
+)

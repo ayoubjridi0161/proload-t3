@@ -1,4 +1,4 @@
-import { Posts, Reactions,    days, exercices, users, workouts } from '~/server/db/schema'
+import { Posts, Reactions,    days, exerciceNames, exercices, users, workouts } from '~/server/db/schema'
 import {db} from '../server/db/index'
 import * as types from './types'
 import { DrizzleEntityClass, DrizzleError, and, asc, count, eq, sql } from 'drizzle-orm'
@@ -9,7 +9,7 @@ export const fetchAllWorkouts = async()=>{
         columns: {name : true,id:true},
         with:{
             users :{
-                columns : {username : true}
+                columns : {name:true}
             },
             days : {
                 columns : {name : true},
@@ -36,6 +36,10 @@ export const getUserByEmail = async (email:string)=>{
     const user = await db.query.users.findFirst({where : eq(users.email,email)})
     return user?.id
 }
+export const getUserByID = async (id:string) =>{
+    const user = await db.query.users.findFirst({where : eq(users.id,id) , columns : {name:true,image:true}})
+    return user
+}
 export const getWorkoutsByUser = async (uuid : string)=>{
     // const workoutID = await db.query.workouts.findMany({where : eq(workouts.userId, userId) , columns : {id:true}})
     // const workoutIDs = await db.select().from(workouts).innerJoin(users,eq(workouts.userId,users.id)).where(eq(users.email,email))
@@ -47,7 +51,7 @@ export const getWorkoutsByUser = async (uuid : string)=>{
             columns: {name : true,id:true},
             with:{
                 users :{
-                    columns : {username : true}
+                    columns : {name:true}
                 },
                 days : {
                     columns : {name : true},
@@ -100,17 +104,17 @@ export const InsertWorkout = async (workout:types.workout)  =>{
         return{message:"failed"}
     }
 }
-export const InsertUser = async (user:{username:string,password:string,email:string})=>{
-    try{
-        await db.insert(users).values({username:user.username,password:user.password,email:user.email})
-        return true
+// export const InsertUser = async (user:{username:string,password:string,email:string})=>{
+//     try{
+//         await db.insert(users).values({name:user.username,password:user.password,email:user.email})
+//         return true
         
-    }catch(err){
+//     }catch(err){
         
-        console.log(err)
-        throw new DrizzleError({message:"failed to insert user",cause:err})
-    }
-}
+//         console.log(err)
+//         throw new DrizzleError({message:"failed to insert user",cause:err})
+//     }
+// }
 export const updateWorkout = async (data:{numberOfDays:number,name:string,description:string},workoutId:number)=>{
     try{
     const updatedID = await db.update(workouts)
@@ -290,9 +294,9 @@ export const getPosts = async ()=>{
         const posts = await db.query.Posts.findMany({
             columns:{id:true,title:true,content:true,userId:true,resources:true},
             with:{
-                users:{columns:{username:true}},
+                users:{columns:{name:true,image:true}},
                 comments:{columns:{content:true,id:true},
-                          with:{replys:{columns:{content:true,id:true},with:{users:{columns:{username:true}}}},users:{columns:{username:true
+                          with:{replys:{columns:{content:true,id:true},with:{users:{columns:{name:true}}}},users:{columns:{name:true
                           }}}}},
             orderBy:(Posts,{desc})=>[desc(Posts.id)]
         })
@@ -300,4 +304,29 @@ export const getPosts = async ()=>{
     }catch(err){
         throw err
     }
+}
+export const getExerciceNames = async ()=>{
+    try{
+        const exercices = await db.query.exerciceNames.findMany({columns:{name:true,muscleGroup:true,musclesTargeted:true,equipment:true}})
+        return exercices
+    }catch(err){
+        throw err
+    }
+}
+export const getExerciceByName = async (name:string)=>{
+    try{
+        const res =await db.query.exerciceNames.findFirst({where:eq(exerciceNames.name,name),columns:{name:true,muscleGroup:true,musclesTargeted:true,equipment:true}}) 
+        return res
+    }catch(e){
+        throw new Error("failed to fetch exercice")
+    }
+}
+export const getProfileByID = async (id:string)=>{
+    const res = await db.query.users.findFirst({where:eq(users.id,id),columns:{name:true,image:true},with:{workouts:{
+        columns:{numberOfDays:true,name:true,id:true,published:true,description:true,downvotes:true,upvotes:true,createdAt:true},
+    },posts:{
+        columns:{userId:false}
+    }
+} })
+    return res
 }

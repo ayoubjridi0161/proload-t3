@@ -5,6 +5,7 @@ import '~/styles/bgPattern.css'
 import { Button } from "~/components/ui/button";
 import { inter } from "~/components/ui/font";
 import Footer from "~/components/ui/footer";
+import SessionWrapper from "~/lib/SessionWrapper";
 
 export const metadata = {
   title: "ProloadT3",
@@ -18,11 +19,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
+    <SessionWrapper>
     <html lang="en" className={`${GeistSans.variable}`}>
       <body className={`${inter.className} bg-white`} >
         
         {children}
         </body>
     </html>
+    </SessionWrapper>
   );
 }

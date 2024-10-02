@@ -7,6 +7,7 @@ import { Textarea } from '../textarea';
 import { Tooltip, TooltipProvider } from '../tooltip';
 import TooltipBox from '~/components/component/tooltipV0';
 import { Downvote, Upvote } from '~/components/component/Reactions';
+import { Avatar,AvatarFallback,AvatarImage } from '../avatar';
 
 interface PostCardProps {
   title: string;
@@ -14,9 +15,10 @@ interface PostCardProps {
   description: string;
   publishDate: string;
   readingTime: string;
+  userImage: string | null;
 }
 
-const PostCard: React.FC<PostCardProps> = ({ title, author, description, publishDate, readingTime }) => {
+const PostCard: React.FC<PostCardProps> = ({ title, author, description, publishDate, readingTime,userImage }) => {
   return (
     <>
     <div className="card">
@@ -27,7 +29,15 @@ const PostCard: React.FC<PostCardProps> = ({ title, author, description, publish
           </a>
           <p className="name">By {author}</p>
         </div>
-        <span className="image">    </span>
+        <span className="image">
+          <Avatar>
+            <AvatarFallback>
+              {author.slice(0, 2).toUpperCase()}
+            </AvatarFallback>
+            {userImage &&
+            <AvatarImage src={userImage} />}
+          </Avatar>
+        </span>
       </div>
       <p className="description">{description}</p>
       <div className='flex justify-between items-center'>

@@ -42,11 +42,9 @@
   .image {
     display: block;
     flex-shrink: 0;
-    height: 3rem;
-    width: 3rem;
     border-radius: 0.5rem;
+    background-color: transparent;
     object-fit: cover;
-    background-color: royalblue;
   }
   
   .description {

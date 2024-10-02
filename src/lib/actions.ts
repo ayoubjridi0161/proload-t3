@@ -1,6 +1,6 @@
 "use server"
 import { auth, signIn , signOut } from "auth"
-import { InsertDay, InsertExercice, InsertUser, InsertWorkout, addNewReaction, deleteDay, deleteRemovedExercices, fetchAllWorkouts, getDaysByWorkout, getNumberOfWorkoutsPerUser, getUserByEmail, getWorkoutsByUser, updateDay, updateExercice,  updateReactions,  updateWorkout } from "./data"
+import { InsertDay, InsertExercice,  InsertWorkout, addNewReaction, deleteDay, deleteRemovedExercices, fetchAllWorkouts, getDaysByWorkout, getNumberOfWorkoutsPerUser, getProfileByID, getUserByEmail, getWorkoutsByUser, updateDay, updateExercice,  updateReactions,  updateWorkout } from "./data"
 import { redirect } from "next/navigation"
 import { AuthError } from "next-auth"
 import { user } from "./zodValidation"
@@ -152,7 +152,7 @@ export const postWorkouts = async (prev : any , formData : FormData) =>{
 }
 export const githubSignIn = async ()=> {
   
-        await signIn("github")
+        await signIn("github",{redirectTo:"/"})
      
 }
 export const newsLetter = async ()=>{
@@ -192,4 +192,14 @@ export const getWorkoutByUser = async (email:string)=>{
 }
 export const seed = async ()=>{
   await seedDatabase()
+}
+export async function signInWithResend(formData
+  :FormData) {
+    console.log(formData)
+    await signIn('resend',formData)
+  
+}
+export const getUserProfile = async (id:string)=>{
+  const user = getProfileByID(id)
+  return user
 }

@@ -22,9 +22,9 @@ const config = {
     },
     extend: {
       backgroundImage: {
-        "hero-image": "url('public/gym2.jpeg')",
-        "footer-texture": "url('public/actor.jfif')",
-        "login-image": "url('public/loginBackground.png')",
+        // "hero-image": "url('public/gym2.jpeg')",
+        // "footer-texture": "url('public/actor.jfif')",
+        // "login-image": "url('public/loginBack ground.png')",
       },
       colors: {
         background: "hsl(var(--background))",

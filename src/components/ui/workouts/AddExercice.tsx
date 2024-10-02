@@ -1,13 +1,15 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button } from '../button'
 import { TrashIcon } from 'lucide-react'
 import ExerciceCard from './Exercice'
 import { ButtonBlack } from '../UIverse/Buttons'
+import { Autocomplete, AutocompleteItem, AutocompleteSection } from '@nextui-org/autocomplete'
 
 type Props = {
     id : string
     dayIndex:number
     dayName : string | undefined
+    exerciceName: exerciceNames[]
 }
 type exercice = {
     name : string,
@@ -15,11 +17,26 @@ type exercice = {
     reps : number
 
 }
+type exerciceNames = {
+  id?:number,
+  name:string,
+  muscleGroup:string,
+  musclesTargeted:string[],
+  equipment:string[]
+}
 
 export default function AddExercice(props: Props) {
+  const muscleGroups = ['chest', 'back', 'shoulders', 'legs', 'arms', 'core']
     const [Exercice,setExercice] = React.useState<exercice>({name:'',sets:1,reps:1})
     const [showExercice,setShowExercice] = React.useState(false)  
     const [deleteEx,setDeleteEx] = React.useState(false)
+    const [value,setValue] = React.useState<React.Key>("squat")
+    useEffect(() => {
+        
+            setExercice(prev => ({...prev,name:value.toString()}))
+
+          } ,[value])
+
 
     
   return (
@@ -29,7 +46,7 @@ export default function AddExercice(props: Props) {
       <input type="hidden" disabled={deleteEx} name={`${props.dayIndex}`} value={JSON.stringify({...Exercice,id:-1})} /> 
       <ExerciceCard className={deleteEx ? "hidden" : " bg-slate-300 border-border opacity-80"} delete={()=>{setDeleteEx(true)}}  name={Exercice.name} sets={Exercice.sets} reps={Exercice.reps} edit={()=>{setShowExercice(prev => !prev)}} />
     </div> :   
-<div className="flex items-center justify-between h-fit rounded-lg w-full border border-border bg-slate-300 p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+<div className="flex items-center h-fit rounded-lg w-full border border-border bg-slate-300 p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
  <div className="flex items-center space-x-4 ">
       <div>
         <label
@@ -38,19 +55,39 @@ export default function AddExercice(props: Props) {
         >
           Exercise Name
         </label>
-        <input
+        {/* <input
           required
-          className="block w-full rounded-md border-gray-300 bg-white p-2 text-sm text-gray-900 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary-500 dark:focus:ring-primary-500"
+          className="block w-52 rounded-md border-gray-300 bg-white p-2 text-sm text-gray-900 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary-500 dark:focus:ring-primary-500"
           id="exerciseName"
           placeholder="e.g. Deadlifts"
           type="text"
           value={Exercice.name}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setExercice((prev) => ({ ...prev, name: e.target.value }))}
-        />
-      </div>
-      <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
+        /> */}
+        <Autocomplete 
+          label="Select an exercice" 
+        className="max-w-xs" 
+        selectedKey={value as string}
+        onSelectionChange={setValue as any}
 
-    </div>
+      >
+        {/* {props.exerciceName.map((exercice) => (
+          <AutocompleteItem key={exercice.name} value={exercice.name}>
+            {exercice.name}
+          </AutocompleteItem>
+        ))} */}
+        {muscleGroups.map((group) => (
+          <AutocompleteSection key={group} showDivider title={group}>
+            {props.exerciceName
+              .filter((exercice) => exercice.muscleGroup === group)
+              .map((exercice) => (
+                <AutocompleteItem key={exercice.name} value={exercice.name}>
+                  {exercice.name}
+                </AutocompleteItem>
+              ))}
+          </AutocompleteSection>
+        ))}
+      </Autocomplete>
+      </div>
       <div>
         <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor="sets">
           Sets
@@ -79,7 +116,7 @@ export default function AddExercice(props: Props) {
         />
       </div>
     </div>
-    <ButtonBlack type='button' className='mt-5' onClick={()=>{setShowExercice(prev => !prev)}} size="sm" variant="outline">
+    <ButtonBlack type='button' className='mt-10 ' onClick={()=>{setShowExercice(prev => !prev)}} size="sm" variant="outline">
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" stroke-linecap="round" strokeLinejoin="round" className="lucide lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>   
      </ButtonBlack>
   </div>}

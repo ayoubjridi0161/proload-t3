@@ -4,19 +4,25 @@ import React from 'react'
 import { Providers } from '~/app/providers'
 import { Button } from '@nextui-org/react'
 import Link from 'next/link'
-import { Avatar, AvatarFallback } from './avatar'
-import { signOut } from 'next-auth/react'
+import { Avatar, AvatarFallback ,AvatarImage } from './avatar'
+import { signOut, useSession } from 'next-auth/react'
 type Props = {
     UUID:string 
     userName:string
+    image:string
+    
 }
 const DropDown = (props:Props) => {
+  const {data:session} = useSession()
+  // console.log(session)
   return (
 <Providers>
       <Dropdown>
       <DropdownTrigger>
       {/* <Link href={`/profile/${props.UUID}`}> */}
               <Avatar >
+                <AvatarImage src={props.image}></AvatarImage>
+
                 <AvatarFallback >{ `${props.userName[0]?.toUpperCase()}${props.userName[1]}` }</AvatarFallback>
               </Avatar>
               {/* </Link> */}

@@ -26,15 +26,24 @@ import {
 } from "~/components/ui/alert-dialog"
 import { ShootingStars } from '../UIverse/shootingStarBackground/shooting-stars'
 import { StarsBackground } from '../UIverse/shootingStarBackground/stars-background'
+import { useRouter } from 'next/navigation'
 
 
-export default function CreateWorkout({user}:{user:string | undefined | null}) {
+export default function CreateWorkout({user,exerciceNames}:{user:string | undefined | null, 
+  exerciceNames: {
+  name: string;
+  musclesTargeted: string[];
+  muscleGroup: string;
+  equipment: string[];
+}[]}) 
+{
     const [newKey, setNewKey] = React.useState(0) 
     const [dayRest, setDayRest] = React.useState<{day: string ,change:number}>( )
     const [isPublished, setIsPublished] = React.useState<boolean>()
     const [days, setDays] = React.useState<ReactElement[]>([])
     const email = user || 'none'
     const [removedDay,setRemovedDay] = React.useState<number>()
+    const router = useRouter()
 
     const formRef = React.useRef<HTMLFormElement>(null)
 
@@ -53,7 +62,7 @@ export default function CreateWorkout({user}:{user:string | undefined | null}) {
     React.useEffect(()=>{
       if(newKey)
         if(dayRest?.day === 'train')
-        setDays(days => [...days , <AddDay  remove={removeDay} id={newKey} key={newKey} muscles='legs,arms,chest'  />])
+        setDays(days => [...days , <AddDay exerciceNames = {exerciceNames} remove={removeDay} id={newKey} key={newKey} muscles='legs,arms,chest'  />])
         else setDays(days => [...days , <AddRestDay remove={removeDay} id={newKey} key={newKey} />])   
         // console.log(days) 
 
@@ -66,10 +75,10 @@ export default function CreateWorkout({user}:{user:string | undefined | null}) {
     },[dayRest])
     // submit form
     React.useEffect(()=>{
+      if( typeof isPublished === 'boolean' )
         formRef.current?.requestSubmit()
-      
+        // router.push('/workouts')
     },[isPublished])
-    console.log("isPublished",isPublished)
 
     return (
     <div className=' h-full w-full relative rounded-md bg-slate-100 shadow-sm  mx-auto'>
