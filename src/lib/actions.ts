@@ -152,8 +152,14 @@ export const postWorkouts = async (prev : any , formData : FormData) =>{
 }
 export const githubSignIn = async ()=> {
   
-        await signIn("github",{redirectTo:"/"})
+        await signIn("github")
      
+}
+
+export const googleSignIn = async ()=> {
+  
+  await signIn("google",{redirectTo:"/"})
+
 }
 export const newsLetter = async ()=>{
   console.log("hello")

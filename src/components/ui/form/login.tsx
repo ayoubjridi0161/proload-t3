@@ -32,7 +32,7 @@ export const Login =  ()=>{
    <p className="text-red-950">{error && error.message}</p>
  </form>
 <form action={githubSignIn}>
-      <button type="submit"><Github /></button>
+      <button type="submit">Github : <Github /></button>
     </form>
 </div> 
 
