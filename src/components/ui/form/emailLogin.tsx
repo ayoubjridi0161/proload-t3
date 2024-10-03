@@ -3,7 +3,7 @@ import { githubSignIn, signInWithResend,googleSignIn } from '~/lib/actions'
 import { Button } from '../button'
 import { Input } from '../input'
 import { Github, } from 'lucide-react'
-import './EmailLogin.css'
+import './emailLogin.css'
 
 const Hello = () => {
   return (
