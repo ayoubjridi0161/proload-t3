@@ -152,13 +152,13 @@ export const postWorkouts = async (prev : any , formData : FormData) =>{
 }
 export const githubSignIn = async ()=> {
   
-        await signIn("github")
+        await signIn("github", { redirectTo: process.env.REDIRECT_URL })
      
 }
 
 export const googleSignIn = async ()=> {
   
-  await signIn("google",{redirectTo:"/"})
+  await signIn("google", { redirectTo: process.env.REDIRECT_URL })
 
 }
 export const newsLetter = async ()=>{
