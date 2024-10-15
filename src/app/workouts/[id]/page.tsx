@@ -13,8 +13,10 @@ import { Toaster } from "~/components/ui/sonner";
 
 
 const page = async ({params} : {params:{id:string}}) => {
-  const session =await auth()
-    const user = session?.user
+  const session =await auth();
+  console.log(session)
+  const userID = session?.user?.id
+  const sessionToken = session?.sessionToken as string ;
     function delay(ms: number) {
       return new Promise(resolve => setTimeout(resolve, ms));
     }
@@ -29,7 +31,7 @@ const page = async ({params} : {params:{id:string}}) => {
       </Suspense>
 
       </Container>
-      
+       
       <div className="space-y-5">
       <Container>
         <Suspense fallback={<div>loading user</div>}>
@@ -37,7 +39,7 @@ const page = async ({params} : {params:{id:string}}) => {
       </Suspense>
       </Container>
       <Container>
-      <TooltipBox userId = {user?.id } Reactions = {Reactions} workoutId = {parseInt(params.id)} />
+      <TooltipBox  userId = {userID } Reactions = {Reactions} workoutId = {parseInt(params.id)} />
       </Container>
       <Container>
         <Comments />

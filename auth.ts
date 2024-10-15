@@ -22,69 +22,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         verificationTokensTable: verificationTokens as any,
       }
     ),
-  providers: [Github,Google,Resend({
-    from:"proof@proload.me"
+  providers: [Github({
+    clientId:process.env.AUTH_GITHUB_DEV_ID,
+    clientSecret:process.env.AUTH_GITHUB_DEV_SECRET
   }),
-    
-    // Credentials({
-    //     async authorize(credentials) {
-    //         const parsedCredentials = z
-    //           .object({ email: z.string().email(), password: z.string().min(2)  })
-    //           .parse(credentials);
-    //           if(!parsedCredentials)
-    //           throw new Error("zod :Invalid credentials")
+  Google({
+    allowDangerousEmailAccountLinking:true,
+}),
+  Resend({
+    from:"no-reply@proload.me",
+    async generateVerificationToken() {
+      return crypto.randomUUID()
+    },
+  }),
 
-    //             const {email,password} = parsedCredentials;
-    //             const user = await db.query.users.findFirst({where:eq(users.email,email)})
-    //             if(!user) {throw new Error("User not found");}
-    //             const passwordMatch = password === user.password
-    //             if(!passwordMatch) {throw new Error("wrong passwrd")}
-    //             console.log(user)
-
-    //             return {name:user.username,id:user.id,email:user.email}    
-    //     }
-    // })
   ],
-  callbacks:{
-    async authorized({ request: { nextUrl }, auth }) {
-      console.log("authorization")
-      const isLoggedIn = !!auth?.user;
-      const { pathname } = nextUrl;
-      if (pathname.startsWith('/login') && isLoggedIn) {
-        console.log("authed user already")
-          return Response.redirect(new URL('/', nextUrl));
-      }
-      // if (pathname.startsWith("/workouts/create") && !isLoggedIn) {
-      //     return Response.redirect(new URL('/login', nextUrl));
-      // }
-      return !!auth;
-  },
-  }
-  //   // signIn({user}){
-  //   //   console.log("logged")
-  //   //   if(user.name === "proofv3")
-  //   //   {
-  //   //     console.log("its proof")
-  //   //     revalidatePath('/')
-  //   //     return '/'
-  //   //   }
-  //   //   return "/workouts"
-  //   // },
-    
-  //   async jwt({ token, user }) {
-  //     if (user) { // User is available during sign-in
-  //       token.id = user.id
-  //       token.name = user.name
-  //       token.email = user.email
-  //     }
-  //     return token
-  //   },
-  //   async session({ session, token }) {
-  //     session.user.id = token.id as string 
-  //     session.user.email = token.email as string
-  //     session.user.name = token.name
-  //     return session
-  //   },
-  // },
+  
+
 
 })

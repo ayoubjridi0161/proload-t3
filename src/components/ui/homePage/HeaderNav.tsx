@@ -14,7 +14,6 @@ const HeaderNav = async () => {
   const userName= session?.user?.name
   const image = session?.user?.image
   const UUID = session?.user?.id
-  // console.log("uuid is:",UUID)
   
   
   
@@ -29,10 +28,9 @@ const HeaderNav = async () => {
                 
             </div> 
             <div className='space-x-8 flex items-center'>
-            { userName  ?
-             image &&
-              <DropDown image = {image} UUID={UUID || ""} userName={userName}/> 
+            { UUID  ?
              
+              <DropDown image = {image || ""} UUID={UUID || ""} userName={userName || "aaa"}/> 
               :
           
               <>

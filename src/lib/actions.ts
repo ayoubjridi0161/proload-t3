@@ -1,6 +1,6 @@
 "use server"
 import { auth, signIn , signOut } from "auth"
-import { InsertDay, InsertExercice,  InsertWorkout, addNewReaction, deleteDay, deleteRemovedExercices, fetchAllWorkouts, getDaysByWorkout, getNumberOfWorkoutsPerUser, getProfileByID, getUserByEmail, getWorkoutsByUser, updateDay, updateExercice,  updateReactions,  updateWorkout } from "./data"
+import { InsertDay, InsertExercice,  InsertWorkout, addNewReaction, deleteDay, deleteRemovedExercices, fetchAllWorkouts, getDaysByWorkout, getNumberOfWorkoutsPerUser, getProfileByID, getUserByEmail, getWorkoutsByUser, insertComment, updateDay, updateExercice,  updateProfile,  updateReactions,  updateWorkout } from "./data"
 import { redirect } from "next/navigation"
 import { AuthError } from "next-auth"
 import { user } from "./zodValidation"
@@ -152,13 +152,13 @@ export const postWorkouts = async (prev : any , formData : FormData) =>{
 }
 export const githubSignIn = async ()=> {
   
-        await signIn("github", { redirectTo: process.env.REDIRECT_URL })
+        await signIn("github", { redirectTo:'/workouts' })
      
 }
 
 export const googleSignIn = async ()=> {
   
-  await signIn("google", { redirectTo: process.env.REDIRECT_URL })
+  await signIn("google", {redirectTo:'/workouts',})
 
 }
 export const newsLetter = async ()=>{
@@ -208,4 +208,17 @@ export async function signInWithResend(formData
 export const getUserProfile = async (id:string)=>{
   const user = getProfileByID(id)
   return user
+}
+// export const updateProfileAction = async (formData : FormData)=>{
+  
+//   if(!id) throw new Error("not authenticated")
+//   const res = await updateProfile(data,id)
+//   return res
+  
+// }
+
+export const addNewComment = async (formData:FormData,sessionToken:string, type: "comment"|"reply", workoutID?:number, postID?:number)=>{
+  const res = await insertComment({workoutID,postID,content:formData?.get('content') as string},type,sessionToken)
+  return res
+
 }

@@ -9,9 +9,6 @@ export default async function RootLayout({
   }: {
     children: React.ReactNode;
   }) {
-    const session = await auth();
-    
-    const user  = session?.user;
     return (
       
       <div className="h-screen  space-y-7">

@@ -1,9 +1,13 @@
-import { Posts, Reactions,    days, exerciceNames, exercices, users, workouts } from '~/server/db/schema'
+import { Posts, Reactions,    comments,    days, exerciceNames, exercices, sessions, users, workouts } from '~/server/db/schema'
 import {db} from '../server/db/index'
 import * as types from './types'
 import { DrizzleEntityClass, DrizzleError, and, asc, count, eq, sql } from 'drizzle-orm'
 import { unstable_noStore as noStore } from 'next/cache'
 /*Read Data*/
+export const getUserFromSession = async (sessionToken:string)=>{
+    const response = await db.query.sessions.findFirst({where: eq(sessions.sessionToken,sessionToken),columns:{userId:true}})
+    return response?.userId || null
+}
 export const fetchAllWorkouts = async()=>{
     const result = await db.query.workouts.findMany({
         columns: {name : true,id:true},
@@ -329,4 +333,26 @@ export const getProfileByID = async (id:string)=>{
     }
 } })
     return res
+}
+export const updateProfile = async (data:{name?:string,image?:string,description?:string},id:string)=>{
+    try{
+        await db.update(users).set({image:data.image}).where(eq(users.id,id))
+        return "success"
+    }catch(err){
+        return "failure"
+    }
+
+}
+export const insertComment = async (comment:{content:string,postID?:number,workoutID?:number},type:"comment"|"reply",sessionToken:string)=>{
+    try{
+        const userID = await getUserFromSession(sessionToken)
+        if(!userID) throw new Error("user not found")
+        if(type === "comment"){
+            await db.insert(comments).values({content:comment.content,userId:userID,postId:comment.postID,workoutId:comment.workoutID})
+            return "success"
+    }
+    }catch(err){
+            return "failure"
+    }
+
 }

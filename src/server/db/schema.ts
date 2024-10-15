@@ -101,9 +101,8 @@ export const comments = pgTable("comments",{
   id:serial('id').primaryKey(),
   content:varchar('content',{length:1000}).notNull(),
   userId:text('user_id').references(()=>users.id),
-  userName:varchar('user_name',{length:256}).notNull(),
-  workoutId:integer('workout_id').references(()=>workouts.id),
-  postId:integer('post_id').references(()=>Posts.id),
+  workoutId:integer('workout_id').references(()=>workouts.id).default(-1),
+  postId:integer('post_id').references(()=>Posts.id).default(-1),
   createdAt:timestamp('created_at',{withTimezone:true}).default(sql`CURRENT_TIMESTAMP`).notNull()
 })
 export const replys = pgTable("replys",{

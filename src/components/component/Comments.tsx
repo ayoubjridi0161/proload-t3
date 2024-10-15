@@ -3,18 +3,20 @@ import { ReplyIcon, HeartIcon } from 'lucide-react'
 import React from 'react'
 import { Button } from '../ui/button'
 import { Textarea } from '../ui/textarea'
+import { addNewComment } from '~/lib/actions'
 
 
     export default function Comments() {
+      // const insertCommentAction = addNewComment.bind(null, formData as FormData, sessionToken, "comment")
         return (
           <div className="mx-auto max-w-lg max-h-96 overflow-auto p-5 space-y-6">
             <div className="grid gap-2">
-                <div className="flex items-center space-x-2">
+                <form className="flex items-center space-x-2">
                   <Textarea id="comment" placeholder="Write your comment..." className="max-h-[40px]" />
                   <Button type="submit" size="sm">
                     Submit
                   </Button>
-                </div>
+                </form>
               </div>
             <div className="space-y-6">
               <div className="grid gap-6">
