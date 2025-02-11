@@ -1,7 +1,9 @@
 import { nextui } from "@nextui-org/theme";
 import type { Config } from "tailwindcss";
+import { withUt } from "uploadthing/tw";
 
-const config = {
+
+const config = withUt( {
   darkMode: ["class"],
   plugins: [nextui()],
   content: [
@@ -68,6 +70,6 @@ const config = {
       },
     },
   },
-} satisfies Config;
+}) satisfies Config;
 
 export default config;

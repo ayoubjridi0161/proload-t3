@@ -25,9 +25,10 @@ import { Toggle } from "~/components/ui/toggle"
 import {Clone, Downvote, Upvote} from "./Reactions"
 import { getUserReactions } from "~/lib/data"
 type Props = {
-  userId:string | undefined,
+  token : string ,
   workoutId:number,
-  Reactions : {upvotes:number,downvotes:number,clones:number}
+  Reactions : {upvotes:number,downvotes:number,clones:number},
+  userId : string
 }
 
 async function TooltipBox(props:Props) {

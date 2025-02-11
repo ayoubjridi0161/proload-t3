@@ -20,7 +20,7 @@ export const authConfig = {
       return false;
       },
       async session({ session, user }) {
-        console.log("session");
+        console.log("session:",session);
         
         return session;
       },

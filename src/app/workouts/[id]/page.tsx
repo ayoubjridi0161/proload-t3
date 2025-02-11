@@ -10,16 +10,15 @@ import { SessionProvider } from "next-auth/react";
 import { fetchWorkoutById } from "~/lib/data";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Toaster } from "~/components/ui/sonner";
+import { useAuth } from "~/lib/hooks/useAuth";
 
 
 const page = async ({params} : {params:{id:string}}) => {
-  const session =await auth();
-  console.log(session)
-  const userID = session?.user?.id
-  const sessionToken = session?.sessionToken as string ;
+    const {sessionToken,user,error} = await useAuth()
     function delay(ms: number) {
       return new Promise(resolve => setTimeout(resolve, ms));
     }
+    if(!sessionToken || !user?.id) throw new Error("no session found")
     const workout = await delay(3000).then(() => fetchWorkoutById(parseInt(params.id)));
     if(!workout) throw new Error ("failed to fetch workout")
     const Reactions = {upvotes : workout.upvotes ,downvotes:workout.downvotes , clones:workout.clones }
@@ -39,7 +38,7 @@ const page = async ({params} : {params:{id:string}}) => {
       </Suspense>
       </Container>
       <Container>
-      <TooltipBox  userId = {userID } Reactions = {Reactions} workoutId = {parseInt(params.id)} />
+      <TooltipBox  token= {sessionToken} userId = {user?.id} Reactions = {Reactions} workoutId = {parseInt(params.id)} />
       </Container>
       <Container>
         <Comments />

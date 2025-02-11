@@ -29,7 +29,7 @@ import { StarsBackground } from '../UIverse/shootingStarBackground/stars-backgro
 import { useRouter } from 'next/navigation'
 
 
-export default function CreateWorkout({user,exerciceNames}:{user:string | undefined | null, 
+export default function CreateWorkout({token,exerciceNames}:{token:string , 
   exerciceNames: {
   name: string;
   musclesTargeted: string[];
@@ -41,7 +41,7 @@ export default function CreateWorkout({user,exerciceNames}:{user:string | undefi
     const [dayRest, setDayRest] = React.useState<{day: string ,change:number}>( )
     const [isPublished, setIsPublished] = React.useState<boolean>()
     const [days, setDays] = React.useState<ReactElement[]>([])
-    const email = user || 'none'
+    const sessionToken = token 
     const [removedDay,setRemovedDay] = React.useState<number>()
     const router = useRouter()
 
@@ -84,7 +84,7 @@ export default function CreateWorkout({user,exerciceNames}:{user:string | undefi
     <div className=' h-full w-full relative rounded-md bg-slate-100 shadow-sm  mx-auto'>
       <form ref={formRef} className=" h-full  rounded-lg border border-border p-4 sm:p-6 shadow-sm space-y-4" action={addWorkout}>
         {/* ... existing hidden inputs ... */}
-        <input type="hidden" name='email' value={email} />
+        <input type="hidden" name='sessionToken' value={sessionToken} />
         <input type="hidden" name='NoD' value={days.length}  />
         <input type="hidden" name='published' value={isPublished?.toString()} />
         <div className='pt-1 flex items-center'>

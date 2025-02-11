@@ -1,6 +1,6 @@
 "use server"
 import { auth, signIn , signOut } from "auth"
-import { InsertDay, InsertExercice,  InsertWorkout, addNewReaction, deleteDay, deleteRemovedExercices, fetchAllWorkouts, getDaysByWorkout, getNumberOfWorkoutsPerUser, getProfileByID, getUserByEmail, getWorkoutsByUser, insertComment, updateDay, updateExercice,  updateProfile,  updateReactions,  updateWorkout } from "./data"
+import { InsertDay, InsertExercice,  InsertWorkout, addNewReaction, deleteDay, deleteRemovedExercices, fetchAllWorkouts, getDaysByWorkout, getNumberOfWorkoutsPerUser, getProfileByID, getUserByEmail, getUserFromSession, getWorkoutsByUser, insertComment, updateDay, updateExercice,  updateProfile,  updateReactions,  updateWorkout } from "./data"
 import { redirect } from "next/navigation"
 import { AuthError } from "next-auth"
 import { user } from "./zodValidation"
@@ -67,7 +67,8 @@ export async function editWorkout (formData : FormData){
 }
 export default async function addWorkout(formData : FormData) {
   console.log(formData)
-  const user = await getUserByEmail(formData.get('email') as string)
+  // const user = await getUserByEmail(formData.get('email') as string)
+  const user = await getUserFromSession(formData.get('sessionToken') as string)
   if(!user){
     return {message:"user not found"}
   }

@@ -12,7 +12,7 @@ export default async  function page() {
   const session = await auth();
   const userInfo = session?.user;
   return (
-    <form action={updateProfileAction} className=" mt-5 w-full max-w-4xl mx-auto p-6 md:p-8 lg:p-10 bg-background rounded-lg shadow-lg">
+    <form  className=" mt-5 w-full max-w-4xl mx-auto p-6 md:p-8 lg:p-10 bg-background rounded-lg shadow-lg">
       <input type="hidden" name="oldData" value={JSON.stringify({
         name:userInfo?.name,
         image:userInfo?.image

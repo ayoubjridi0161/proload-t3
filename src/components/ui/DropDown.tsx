@@ -20,7 +20,7 @@ const DropDown = (props:Props) => {
       <Dropdown>
       <DropdownTrigger>
       {/* <Link href={`/profile/${props.UUID}`}> */}
-              <Avatar >
+              <Avatar className='border-2 border-black' >
                 <AvatarImage src={props.image}></AvatarImage>
                 <AvatarFallback >{ `${props.userName[0]?.toUpperCase()}${props.userName[1]}` }</AvatarFallback>
               </Avatar>

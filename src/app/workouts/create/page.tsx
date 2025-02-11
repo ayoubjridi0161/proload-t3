@@ -5,19 +5,18 @@ import { Button } from '~/components/ui/button'
 import CreateWorkout from '~/components/ui/workouts/CreateWorkout'
 import WorkoutsPage from '~/components/ui/workouts/WorkoutsPage'
 import { getExerciceNames } from '~/lib/data'
+import { useAuth } from '~/lib/hooks/useAuth'
 
 export default async function page() {
-  const session = await auth()
-  if (!session) {
-throw new Error("Not authenticated") }
-  const { user } = session
-  console.log("user:",user)
+  const {sessionToken}= await useAuth()
+  if (!sessionToken) {
+    throw new Error("Not authenticated") }
   const exerciceNames = await getExerciceNames()
   
   
   return (
     <div className='h-full'>
-      <CreateWorkout exerciceNames = {exerciceNames} user ={user?.email} />
+      <CreateWorkout exerciceNames = {exerciceNames} token ={sessionToken} />
     </div>
   )
 
