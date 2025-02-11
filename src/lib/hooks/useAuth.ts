@@ -15,7 +15,7 @@ export const useAuth = async ()=>{
     if(!session) {
         error = "no session found"
     }else{
-        sessionToken = session.sessionToken || "noToken"
+        sessionToken = session.sessionToken || null
         user = session.user
     }
     return {sessionToken,user,error} as authResponse
