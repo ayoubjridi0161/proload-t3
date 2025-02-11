@@ -62,7 +62,7 @@ export default async  function page() {
   )
 }
 
-function UploadIcon(props) {
+function UploadIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
