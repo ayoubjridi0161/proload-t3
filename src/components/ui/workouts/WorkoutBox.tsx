@@ -44,7 +44,7 @@ const  WorkoutBox = async ({workoutSummary}:{workoutSummary : workoutSummary }) 
     };
   });
 
-  console.log(data);
+  // console.log(data);
   return (
     <Link href={`/workouts/${workoutSummary.id}`} className='bg-slate-200 min-h-64 w-72 cursor-pointer border-border  p-4 rounded-md shadow-md'>
         <div className='flex gap-1 items-center'>

@@ -8,6 +8,9 @@ import { ZodError, any } from "zod"
 import { revalidatePath } from "next/cache"
 import { DrizzleError } from "drizzle-orm"
 import { seedDatabase } from "~/server/db/seed"
+import {S3Client,PutObjectCommand } from "@aws-sdk/client-s3"
+import { nanoid} from "nanoid"
+import {createPresignedPost} from "@aws-sdk/s3-presigned-post"
 export async function editWorkout (formData : FormData){
   
   const user = await getUserByEmail(formData.get('email') as string)
@@ -209,3 +212,63 @@ export const getUserProfile = async (id:string)=>{
   const user = getProfileByID(id)
   return user
 }
+
+const s3Client = new S3Client({
+  region: process.env.NEXT_AWS_S3_REGION ,
+  credentials: {
+    accessKeyId: process.env.NEXT_AWS_S3_ACCESS_KEY_ID || '',
+    secretAccessKey: process.env.NEXT_AWS_S3_ACCESS_KEY || ''
+  }
+})
+
+export const uploadFiles = async (prevState : {message:string,status?:string} | null  , formData: FormData)=>{
+  try{
+    const file = formData.get("file")
+     
+    if((file as File).size === 0) return {status:"failure" , message : "please add an image"}
+      console.log("sendingFile")
+      const {url,fields} = await createPresignedPost(
+        s3Client,
+        {
+        Bucket : process.env.NEXT_AWS_S3_BUCKER_NAME || '' ,
+        Key : nanoid()
+      })
+      const formDataS3 = new FormData()
+      Object.entries(fields).forEach(([Key,value])=>{
+        formDataS3.append(Key,value)
+      })
+      formDataS3.append('file',file as string)
+      const response = await fetch(url,{
+        method:'POST',
+        body:formDataS3
+      }) 
+      const text = await response.text()
+       console.log(text)
+      if(response.ok){console.log("file uploaded")}else{console.log("file error not uplaoded")}
+
+    revalidatePath("/")
+    return {status:"success", message:"file has been uploaded"}
+  }catch(error){
+
+    return {status:"failure", message:"file has not been uploaded"}
+
+  }
+}
+// export const sendFileToS3 = async (fileName : string ,file : Buffer |string |File)=>{
+//   const fileBuffer = file
+//   const params = {
+//     Bucket : process.env.NEXT_AWS_S3_BUCKER_NAME,
+//     Key : `${fileName}`,
+//     body:fileBuffer,
+//     contentType : "image/jpg"
+//   }
+//   const command = new PutObjectCommand(params)
+//   try {
+//     const res = await s3Client.send(command)
+//     console.log("res:=>",res)
+//     return fileName
+//   }catch(err){
+//     console.error("Upload error:", err);
+//     throw err
+//   }
+// }

@@ -8,7 +8,6 @@ export function SonnerDemo() {
     <Button
       variant="outline"
       onClick={() =>{
-        console.log("clicked");
         return(
         toast("Event has been created", {
           description: "Sunday, December 03, 2023 at 9:00 AM",

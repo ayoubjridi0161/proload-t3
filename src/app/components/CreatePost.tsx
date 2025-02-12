@@ -27,7 +27,6 @@ async function serverCreatePost(formData: FormData) {
   const pTitle = formData.get("title") as string;
   const pContent = formData.get("content") as string;
     const result = await createPost({ title:pTitle, content:pContent, userId: session.user?.id });    
-    console.log(result);
     revalidatePath("/posts");
   }
   
