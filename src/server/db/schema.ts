@@ -177,6 +177,7 @@ export const exerciceNames = pgTable(
     equipment:text('equipment').array().notNull().default(sql`ARRAY[]::text[]`),
     video: varchar('video', { length: 256 }),
     image: varchar('image', { length: 256 }),
+    description: text('description')
   },
 );
 export const exerciceNamesRelations = relations(exerciceNames, ({ many }) => ({

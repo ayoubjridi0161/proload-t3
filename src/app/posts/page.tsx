@@ -1,5 +1,5 @@
 import React from 'react'
-import CreatePost from '../components/CreatePost'
+import CreatePost from '../(userPages)/components/CreatePost'
 
 const page = () => {
   return (

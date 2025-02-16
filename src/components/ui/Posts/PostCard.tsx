@@ -1,13 +1,15 @@
 import React from 'react'
 import "./postCard.css"
 import Comments from '~/components/component/Comments';
-import { ReplyIcon, HeartIcon } from 'lucide-react';
+import { ReplyIcon, HeartIcon, MessageSquare } from 'lucide-react';
 import { Button } from '../button';
 import { Textarea } from '../textarea';
-import { Tooltip, TooltipProvider } from '../tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../tooltip';
 import TooltipBox from '~/components/component/tooltipV0';
-import { Downvote, Upvote } from '~/components/component/Reactions';
+import { Downvote, Upvote , Comment } from '~/components/component/Reactions';
 import { Avatar,AvatarFallback,AvatarImage } from '../avatar';
+import { Toggle } from '../toggle';
+import Commentbox from '../commentBox/commentbox';
 
 interface PostCardProps {
   title: string;
@@ -53,8 +55,10 @@ const PostCard: React.FC<PostCardProps> = ({ title, author, description, publish
           <dt className="dt">Reading time</dt>
         </div>
         </dl>
-        <div>
-        <TooltipProvider>
+        <div className='flex items-center gap-1'>
+          <TooltipProvider>
+            {/*comment button */}
+          <Comment />
           <Upvote EUR={false} pressed={false} workoutId={25} />
           <Downvote EUR={false} pressed={false} workoutId={25} />
         </TooltipProvider>
@@ -62,7 +66,9 @@ const PostCard: React.FC<PostCardProps> = ({ title, author, description, publish
       </div>
       
       
+      
     </div>
+    <Commentbox />
     </>
   )
 }

@@ -1,6 +1,6 @@
 "use client"
 import { Toggle } from '../ui/toggle'
-import { ArrowBigDownDash, ArrowBigUpDash, CopyIcon } from 'lucide-react'
+import { ArrowBigDownDash, ArrowBigUpDash, CopyIcon, MessageSquare } from 'lucide-react'
 import { Button } from '../ui/button'
 import Link from 'next/link'
 import { auth } from 'auth'
@@ -75,3 +75,16 @@ export const Downvote =  ({workoutId,pressed,EUR}:{EUR:boolean,workoutId:number,
         <TooltipContent>Clone</TooltipContent>
       </Tooltip>
   )}
+
+export const Comment = ()=>{
+  return(
+    <Tooltip  >
+                <TooltipTrigger asChild >
+                  <Button onClick={()=>{console.log("allahu akbar")}} variant={"ghost"} className='hover:bg-muted hover:text-muted-foreground px-3'>
+                  <MessageSquare className='cursor-pointer '/>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>comments </TooltipContent>
+          </Tooltip>
+  )
+}
