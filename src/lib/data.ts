@@ -37,7 +37,7 @@ export const getUserByEmail = async (email:string)=>{
     return user?.id
 }
 export const getUserByID = async (id:string) =>{
-    const user = await db.query.users.findFirst({where : eq(users.id,id) , columns : {name:true,image:true}})
+    const user = await db.query.users.findFirst({where : eq(users.id,id) , columns : {name:true,image:true,id:true}})
     return user
 }
 export const getWorkoutsByUser = async (uuid : string)=>{
@@ -305,6 +305,25 @@ export const getPosts = async ()=>{
         throw err
     }
 }
+
+export const getUserPosts = async (id:string)=>{
+    try{
+        const posts = await db.query.Posts.findMany({
+            where:eq(Posts.userId,id),
+            columns:{id:true,title:true,content:true,userId:true,resources:true},
+            with:{
+                
+                comments:{columns:{content:true,id:true},
+                          with:{replys:{columns:{content:true,id:true},with:{users:{columns:{name:true}}}},users:{columns:{name:true
+                          }}}}},
+            orderBy:(Posts,{desc})=>[desc(Posts.id)]
+        })
+        return posts
+    }catch(err){
+        throw err
+    }
+}
+
 export const getExerciceNames = async ()=>{
     try{
         const exercices = await db.query.exerciceNames.findMany({columns:{name:true,muscleGroup:true,musclesTargeted:true,equipment:true}})
@@ -329,4 +348,13 @@ export const getProfileByID = async (id:string)=>{
     }
 } })
     return res
+}
+
+export const updateUserProfile = async (data:{username:string},id:string)=>{
+    try{
+        const res = await db.update(users).set({name:data.username}).where(eq(users.id,id)).returning()
+        return {message : res }
+    }catch(err){
+        throw err
+    }
 }

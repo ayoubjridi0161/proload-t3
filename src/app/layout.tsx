@@ -6,6 +6,7 @@ import { Button } from "~/components/ui/button";
 import { inter } from "~/components/ui/font";
 import Footer from "~/components/ui/footer";
 import SessionWrapper from "~/lib/SessionWrapper";
+import { Toaster } from "~/components/ui/sonner";
 
 export const metadata = {
   title: "ProloadT3",
@@ -22,8 +23,10 @@ export default function RootLayout({
     <SessionWrapper>
     <html lang="en" className={`${GeistSans.variable}`}>
       <body className={`${inter.className} bg-white`} >
-        
+        <main>
         {children}
+        </main>
+        <Toaster />
         </body>
     </html>
     </SessionWrapper>

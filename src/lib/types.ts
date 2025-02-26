@@ -36,3 +36,12 @@ export type dayDetails ={
         dayId: number;
     }[];
 }
+
+export type publicUser = {
+    id: string,
+    name: string | null,
+    email: string,
+    image?: string,
+    bio?:string,
+    achievements?:string[],
+}

@@ -1,6 +1,6 @@
 "use server"
 import { auth, signIn , signOut } from "auth"
-import { InsertDay, InsertExercice,  InsertWorkout, addNewReaction, deleteDay, deleteRemovedExercices, fetchAllWorkouts, getDaysByWorkout, getNumberOfWorkoutsPerUser, getProfileByID, getUserByEmail, getWorkoutsByUser, updateDay, updateExercice,  updateReactions,  updateWorkout } from "./data"
+import { InsertDay, InsertExercice,  InsertWorkout, addNewReaction, deleteDay, deleteRemovedExercices, fetchAllWorkouts, getDaysByWorkout, getNumberOfWorkoutsPerUser, getProfileByID, getUserByEmail, getWorkoutsByUser, updateDay, updateExercice,  updateReactions,  updateUserProfile,  updateWorkout } from "./data"
 import { redirect } from "next/navigation"
 import { AuthError } from "next-auth"
 import { user } from "./zodValidation"
@@ -272,3 +272,14 @@ export const uploadFiles = async (prevState : {message:string,status?:string} | 
 //     throw err
 //   }
 // }
+
+export const updateUserProfileAction = async (prev:any , formdata:FormData)=>{
+  try{
+  const res = await updateUserProfile({username:formdata.get("username") as string},formdata.get("userID") as string)
+  revalidatePath('/profile/edit/details')
+  return {message:res ? "success" : "failure"}
+  }catch(err){
+    console.log(err)
+    return "failure"
+  }
+}

@@ -23,7 +23,7 @@ const HeaderNav = async () => {
             <h1 className=' text-2xl'>Proload</h1>
             <div className=' flex gap-20 items-center'>
                 <Link className='hover:underline active:text-red-500 text-lg font-semibold' href={'/'} >Home</Link>
-                <Link className='hover:underline text-lg font-semibold active:text-red-500' href={'/workouts'} >Workouts</Link >
+                <a className='hover:underline text-lg font-semibold active:text-red-500' href={'/workouts'} >Workouts</a >
                 <Link className='hover:underline text-lg font-semibold active:text-red-500' href={'/posts'} >Posts</Link>
                 <Link className='hover:underline text-lg font-semibold active:text-red-500' href={'/exercices'} >Exercices</Link>
                 
