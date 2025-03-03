@@ -2,7 +2,6 @@
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@nextui-org/dropdown'
 import React from 'react'
 import { Providers } from '~/app/providers'
-import { Button } from '@nextui-org/react'
 import Link from 'next/link'
 import { Avatar, AvatarFallback ,AvatarImage } from './avatar'
 import { signOut, useSession } from 'next-auth/react'
