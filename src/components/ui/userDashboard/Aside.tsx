@@ -1,23 +1,25 @@
+import Link from 'next/link';
 import React from 'react'
 
 type Props = {}
 
 function Aside({}: Props) {
   return (
-    <aside className="col-span-1 h-full bg-[#1b512d] px-10 pt-10 shadow-lg">
+    <aside className="col-span-1 h-full bg-[#1b512d] bg-opacity-85 px-10 pt-10 shadow-lg">
         <div className="flex min-h-[82vh] h-full w-full flex-col justify-between p-3">
           <div className="w-full space-y-5">
-            <AsideLink title="Home" icon={<HomeIcon />} />
-            <AsideLink title="Workout Library" icon={<DumbbellIcon />} />
-            <AsideLink title="Track Workout" icon={<TrackIcon />} />
+            <AsideLink link='/dashboard/' title="Home" icon={<HomeIcon />} />
+            <AsideLink link='/dashboard/' title="Workout Library" icon={<DumbbellIcon />} />
+            <AsideLink link='/dashboard/track' title="Track Workout" icon={<TrackIcon />} />
           <hr className='bg-[#def4c6]' />
-            <AsideLink title="Progress" icon={<ProgressIcon />} />
-            <AsideLink title="Personal Records" icon={<MedalIcon />} />
+            <AsideLink link='/dashboard/stats' title="Progress" icon={<ProgressIcon />} />
+            <AsideLink link='/dashboard/personalRecords' title="Personal Records" icon={<MedalIcon />} />
+            <AsideLink link='/dashboard/' title="Insights" icon={<MedalIcon />} />
           </div>
           <div className="w-full space-y-2">
-            <AsideLink icon={<GearIcon />} title="Settings" />
-            <AsideLink icon={<QuestionIcon />} title="Help&Support" />
-            <AsideLink icon={<LogOutIcon />} title="Log Out" />
+            <AsideLink link='/profile/edit' icon={<GearIcon />} title="Settings" />
+            <AsideLink link='/dashboard/' icon={<QuestionIcon />} title="Help&Support" />
+            <AsideLink link='/dashboard/' icon={<LogOutIcon />} title="Log Out" />
           </div>
         </div>
       </aside>
@@ -29,15 +31,17 @@ export default Aside
 export const AsideLink = ({
     title,
     icon,
+    link
   }: {
+    link:string,
     title: string;
     icon: React.ReactNode;
   }) => {
     return (
-      <div className="flex w-full items-center gap-3  text-lg text-[#def4c6] ">
+      <Link href={link}  className="flex w-full items-center gap-3  text-lg text-[#def4c6] ">
         {icon}
         <h1>{title}</h1>
-      </div>
+      </Link>
     );
   };
   export const TrackIcon = () => {

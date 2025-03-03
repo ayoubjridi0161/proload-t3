@@ -1,0 +1,112 @@
+import {TabsContent,Tabs,TabsList,TabsTrigger} from '~/components/ui/tabs'
+import { andika, lalezar } from '../font'
+import Container from './Container'
+import {Table,TableBody,TableCell,TableHead,TableHeader, TableRow} from '~/components/ui/table'
+import { Button } from '../button'
+type Props = {}
+
+const PersonalRecords = (props: Props) => {
+  return (
+    <div className={`w-full ${andika.className} space-y-5 `}>
+        <Tabs defaultValue="All PR" className={`w-full `} >
+            <TabsList className='bg-transparent text-[#b4b4b4]  space-x-10'>
+            <TabsTrigger value='All PR' className='text-md'>All PR</TabsTrigger>
+            <TabsTrigger value='Upper Body' className='text-md'>Upper Body</TabsTrigger>
+            <TabsTrigger value='Lower Body' className='text-md'>Lower Body</TabsTrigger>
+            <TabsTrigger value='Core' className='text-md'>Core</TabsTrigger>
+            </TabsList>
+            <TabsContent value='All PR' className='gap-3 grid-cols-2 grid '>
+            <Container className='border-1 border-slate-200 text-[#707877] space-y-3'>
+                    <div className='rounded-full w-fit p-2 bg-green-100'><Dumbbell /></div>
+                    <h3 className='text-xs'>Latest Achievement</h3>
+                    <h1 className='text-lg font-bold'>Deadlift: 215kg</h1>
+                    <p className='text-sm'>Achieved Today - 15kg increase </p>
+                    <Button className='bg-[#256200] text-orange-200 font-bold'>Share</Button>
+                </Container>
+                <Container className='border-1 border-slate-200 text-[#707877] space-y-3'>
+                    <div className='rounded-full w-fit p-2 bg-green-100'><Dumbbell /></div>
+                    <h3 className='text-xs'>Most improved</h3>
+                    <h1 className='text-lg font-bold'>Bench Press: 120kg</h1>
+                    <p className='text-sm'>+25% in last 20 days </p>
+                    <Button className='bg-[#256200] text-orange-200 font-bold'>View Progress</Button>
+                </Container>
+            </TabsContent>
+            <TabsContent value='Upper Body'>upper Body</TabsContent>
+            <TabsContent value='Lower Body'>Lower Body</TabsContent>
+            <TabsContent value='Core'>Core</TabsContent>
+            
+        </Tabs>
+
+        <div className='space-y-2 p-4 '>
+            <h1 className='text-lg '>All Personal Records</h1>
+            <Table className='bg-[#f2fcf5]'>
+                <TableBody>
+                    <TableRow>
+                    <TableCell>Deadlift</TableCell>
+                    <TableCell>210 kg</TableCell>
+                    <TableCell>Sep 15,2024</TableCell>
+                    <TableCell>+10 kg</TableCell>
+                    </TableRow>
+                    <TableRow>
+                    <TableCell>Bench press</TableCell>
+                    <TableCell>100 kg</TableCell>
+                    <TableCell>Sep 15,2024</TableCell>
+                    <TableCell>+10 kg</TableCell>
+                    </TableRow>
+                    <TableRow>
+                    <TableCell>Squat</TableCell>
+                    <TableCell>150 kg</TableCell>
+                    <TableCell>Sep 15,2024</TableCell>
+                    <TableCell>+10 kg</TableCell>
+                    </TableRow>
+                    <TableRow>
+                    <TableCell>Shoulder Press</TableCell>
+                    <TableCell>55 kg</TableCell>
+                    <TableCell>Sep 15,2024</TableCell>
+                    <TableCell>+10 kg</TableCell>
+                    </TableRow>
+                </TableBody>
+            </Table>
+            
+        </div>
+        <div className='space-y-4 p-4 '>
+        <h1 className='text-lg '>Achievements</h1>
+        <div className='grid grid-cols-4 gap-8 '>
+            <Container className='bg-white gap-3 flex items-center text-slate-700 '>
+                <Medal />
+                <div><h1 className='font-semibold'>Strength Builder</h1>
+                <p className='text-sm text-opacity-40'>No missed workouts</p></div>
+            </Container>
+            <Container className='bg-white gap-3 flex items-center text-slate-700 '>
+                <Medal />
+                <div><h1 className='font-semibold'>Strength Builder</h1>
+                <p className='text-sm text-opacity-40'>No missed workouts</p></div>
+            </Container>
+            <Container className='bg-white gap-3 flex items-center text-slate-700 '>
+                <Medal />
+                <div><h1 className='font-semibold'>Strength Builder</h1>
+                <p className='text-sm text-opacity-40'>No missed workouts</p></div>
+            </Container>
+        </div>
+            
+        </div>
+
+    </div>
+  )
+}
+
+const Dumbbell = ()=> {
+    return(<svg xmlns="http://www.w3.org/2000/svg" width={30} height={30} viewBox="0 0 24 24">
+        <g fill="none" stroke="#00c846" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} color="#00c846">
+            <path d="M16 8a2.62 2.62 0 0 1-1.455 1.607q-3.421 1.517-4.937 4.937A2.62 2.62 0 0 1 8 16m-4.8 4.8L2 22M20.8 3.2L22 2m-4.212.42l-1.512 1.454l3.84 3.876l1.478-1.434c.444-.523.58-.916.027-1.641l-1.105-1.163l-1.121-1.106c-.717-.642-1.281-.297-1.607.015"></path>
+            <path d="M14.012 3.756c1.11-1.173 1.87-.338 2.261.127l3.808 3.823c.474.38 1.34 1.109.195 2.244c-.185.183-.366.375-.567.54c-.742.61-1.454.105-1.831-.36l-3.876-3.876c-.408-.366-1.113-1.03-.518-1.918c.16-.205.349-.39.527-.58M4.587 21.62l-1.14-1.129l-1.085-1.142c-.643-.643-.272-1.286.046-1.605L3.89 16.26l3.856 3.873l-1.518 1.491c-.53.433-.895.566-1.608 0m1.603-7.7c-.39-.465-1.15-1.301-2.262-.127c-.178.189-.366.374-.527.58c-.595.887.11 1.551.518 1.918l3.876 3.875c.377.465 1.089.971 1.83.36c.202-.165.383-.356.568-.54c1.146-1.134.279-1.863-.195-2.243z"></path>
+        </g>
+    </svg>)
+}
+const Medal = ()=>{
+    return(<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 256 256">
+        <path fill="#000" d="M220 96a92 92 0 1 0-152 69.69V240a12 12 0 0 0 17.37 10.73L128 229.42l42.64 21.31A12 12 0 0 0 188 240v-74.31A91.86 91.86 0 0 0 220 96M60 96a68 68 0 1 1 68 68a68.07 68.07 0 0 1-68-68m104 124.59l-30.64-15.32a12 12 0 0 0-10.74 0L92 220.58v-39.92a92 92 0 0 0 72 0ZM128 148a52 52 0 1 0-52-52a52.06 52.06 0 0 0 52 52m0-80a28 28 0 1 1-28 28a28 28 0 0 1 28-28" strokeWidth={6.5} stroke="#000"></path>
+    </svg>)
+}
+
+export default PersonalRecords
