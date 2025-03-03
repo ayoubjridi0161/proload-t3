@@ -42,7 +42,7 @@ export default function page({}: Props) {
             </Container>
             <div className='p-6 space-y-3'>
                 {Array.from({length:3}).map((item,index)=>(
-                    <Container className='space-y-3'>
+                    <Container className='space-y-3' key={index}>
                     <div className='flex'>
                         <div>
                         <Image src="https://s3.eu-north-1.amazonaws.com/proload.me/ach3.jpg" width={180} height={180} alt='hello'/>

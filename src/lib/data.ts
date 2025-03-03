@@ -1,6 +1,6 @@
 import { Posts, Reactions,    days, exerciceNames, exercices, users, workouts } from '~/server/db/schema'
 import {db} from '../server/db/index'
-import * as types from './types'
+import type * as types from './types'
 import { DrizzleEntityClass, DrizzleError, and, asc, count, eq, sql } from 'drizzle-orm'
 import { unstable_noStore as noStore } from 'next/cache'
 /*Read Data*/
@@ -72,7 +72,7 @@ export const getDaysByWorkout = async (workoutId:number) =>{
 }
 export const getUserReactions = async (workoutID:number,userID:string) =>{
     try{
-    let response = await db.query.Reactions.findFirst({where:and(eq(Reactions.userId,userID),eq(Reactions.workoutId,workoutID)),columns:{workoutId:false,userId:false}})
+    const response = await db.query.Reactions.findFirst({where:and(eq(Reactions.userId,userID),eq(Reactions.workoutId,workoutID)),columns:{workoutId:false,userId:false}})
     
     return response
 }catch(err) {
@@ -136,6 +136,7 @@ export const deleteDay = async (dayId : number) =>{
 }
 export const deleteRemovedExercices = async (Ids : number[],dayId:number) =>{
     const existingExercises = await db.query.exercices.findMany({where:eq(exercices.dayId,dayId),columns:{id:true}})
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     existingExercises.map(async  ex => {
         if(!Ids.includes(ex.id)){
             try {await db.delete(exercices).where(eq(exercices.id,ex.id))}catch(err){throw new Error("failed to delete exercice")}
@@ -204,7 +205,7 @@ export const updateReactions =async (userId:string,workoutId:number,action:{type
                 //handle clone later
                 const clonedWorkout = await fetchWorkoutById(workoutId)
                 if(clonedWorkout){
-                   const workoutIdResponse= await InsertWorkout({description:clonedWorkout.description,name:clonedWorkout.name,numberOfDays:clonedWorkout.numberOfDays || 0,published:false,userId:userId})
+                   const workoutIdResponse= await InsertWorkout({description:clonedWorkout.description,name:clonedWorkout.name,numberOfDays:clonedWorkout.numberOfDays ?? 0,published:false,userId:userId})
                     if(workoutIdResponse && typeof workoutIdResponse === "number"){
                         for(const day of clonedWorkout.days){
                             const dayId = await InsertDay({index:day.dayIndex,name:day.name},workoutIdResponse)
@@ -274,7 +275,7 @@ export const getNumberOfWorkoutsPerUser = async (userId:string) =>{
 export const createPost = async (post:{title:string,content:string,userId:string,resources?:string[]}) =>{
     
         try{
-            await db.insert(Posts).values({title:post.title,content:post.content,userId:post.userId,resources:post.resources ||[]})
+            await db.insert(Posts).values({title:post.title,content:post.content,userId:post.userId,resources:post.resources ??[]})
             return {message:"success"}
         }
         catch(err){

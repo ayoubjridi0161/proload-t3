@@ -18,7 +18,7 @@ export default async function page({}: Props) {
           <SideBar />
           <section className='w-1/2 p-5'>
             <AddPost image = {""} />
-            {parsedPosts && parsedPosts.map((post)=> <Post key={post.id} userImage={post.userImage || ""} userName={post.user || ""} userId={post.userId || -1} title={post.title} postContent={post.content} />)}
+            {parsedPosts?.map((post)=> <Post key={post.id} userImage={post.userImage ?? ""} userName={post.user ?? ""} userId={post.userId ?? -1} title={post.title} postContent={post.content} />)}
           </section>
           <section className='w-1/6 pt-2'>
             <Advertising />

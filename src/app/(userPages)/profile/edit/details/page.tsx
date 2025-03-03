@@ -13,7 +13,7 @@ async function page({}: Props) {
     throw new Error ("Not authenticated")
   }
   const { user } = session
-  const myUser = {id: user?.id || "", name: user?.name || null , email: user?.email|| "", image: user?.image || "undefined"}
+  const myUser = {id: user?.id ?? "", name: user?.name ?? null , email: user?.email?? "", image: user?.image ?? "undefined"}
   return (
     <EditProfile user ={myUser} />
   )

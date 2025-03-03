@@ -16,8 +16,8 @@ export default async function RootLayout({
     return (
       
     <div className={`${roboto.className} overflow-hidden h-screen`}>
-        <Header name={userName ||""} image={image ||""} UUID={UUID}/>
-        <main className="">{children}</main>
+        <Header name={userName  ?? ""} image={image ?? ""} UUID={UUID}/>
+        <main>{children}</main>
     </div>);
   }
   

@@ -13,7 +13,7 @@ type dayDetails = {
 
 const Day = ({day}:{day:dayDetails | undefined}) => {
     function renderExercices(){
-        return day && day.exercices?.map((exercice, index) => {
+        return day?.exercices?.map((exercice, index) => {
             return <Exercice key={index} exercice={exercice}/>
         })
     }

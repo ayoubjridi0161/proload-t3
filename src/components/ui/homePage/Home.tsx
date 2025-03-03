@@ -32,10 +32,7 @@ export const Home = () => {
     <div className='w-[48%] my-16'>
         <h1 className='mb-2 text-sm'>Enter your email</h1>
         <Input type="email" placeholder='exemple@mail.com' />
-        <Button formAction={async ()=>{
-            "use server"
-            console.log("hello")
-        }} className='mt-16'>Subscribe</Button>
+        <Button  className='mt-16'>Subscribe</Button>
     </div>
     {/*start journey modal */}
     

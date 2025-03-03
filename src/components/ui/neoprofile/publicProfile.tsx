@@ -13,9 +13,9 @@ function PublicProfile({user}: {user: publicUser}) {
         <div className='bg-slate-200 row-start-1 row-end-7 col-start-1 bg-s3gym bg-bottom bg-cover'></div>
         <div className='flex justify-between row-start-5 row-span-6  col-start-1 z-20 p-4 pt-6 '>
             <div className='flex items-center gap-5 w-full h-full'>
-                <Image src={user.image ||"https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png"} alt='omarsy' width={180} className='h-full w-[15%]' height={120} />
+                <Image src={user.image ??"https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png"} alt='omarsy' width={180} className='h-full w-[15%]' height={120} />
                 <div className='mt-3    '>
-                <h1 className='font-bold text-xl'>{user.name || "Proload User"}</h1>
+                <h1 className='font-bold text-xl'>{user.name ?? "Proload User"}</h1>
                 <p>3002 followers</p>
                 </div>
             </div>
@@ -66,8 +66,8 @@ export const MainSection = async ({user}:{user:publicUser})=>{
   const FetchedPosts = await getUserPosts(user.id)
   return(
     <section className='w-3/5 p-3'>
-      {/* <AddPost image={user.image || "https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png"}  /> */}
-      {FetchedPosts.map((post,i)=> <Post key={i} userImage={user.image || "https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png"} userName={user.name|| "Proload User"} userId={user.id} title={post.title} postContent={post.content} />)}
+      {/* <AddPost image={user.image ?? "https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png"}  /> */}
+      {FetchedPosts.map((post,i)=> <Post key={i} userImage={user.image ?? "https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png"} userName={user.name?? "Proload User"} userId={user.id} title={post.title} postContent={post.content} />)}
     </section>
   )
 }

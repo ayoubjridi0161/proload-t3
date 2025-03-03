@@ -4,7 +4,8 @@
 * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
 */
 
-import { JSX, SVGProps } from "react"
+import { type SVGProps } from "react"
+
 
 /** Add fonts into your Next.js project:
 

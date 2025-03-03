@@ -7,7 +7,7 @@ import EmailLogin from '~/components/ui/form/emailLogin';
 import { Login } from '~/components/ui/form/login'
 import { signout } from '~/lib/actions';
 
-const page = async  () => {
+const page =  () => {
   return (
     <>
     <div className=' grid place-items-center h-screen  ' style={{

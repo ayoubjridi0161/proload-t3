@@ -27,7 +27,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 import { Card, CardHeader, CardContent, CardFooter } from "~/components/ui/card"
 import { Button } from "~/components/ui/button"
 import Link from "next/link"
-import { JSX, SVGProps } from "react"
+import { type JSX, type SVGProps } from "react"
 import { auth } from "auth"
 import { getPosts, getWorkoutsByUser } from "~/lib/data"
 import PostCard from "../Posts/PostCard"
@@ -84,7 +84,7 @@ export default async function Component({id}:{id:string}) {
           //   <h3 className="text-lg font-semibold">{post.title}</h3>
           //   <p className="mt-2">{post.content}</p>
           // </div>
-          <PostCard userImage={userDetails.image} author={userDetails.name || "hiim"} description={post.content} publishDate="2 sep 2003" title={post.title} readingTime="3mn"  key={index}  />
+          <PostCard userImage={userDetails.image} author={userDetails.name ?? "hiim"} description={post.content} publishDate="2 sep 2003" title={post.title} readingTime="3mn"  key={index}  />
         ))}
           </div>
     </div>

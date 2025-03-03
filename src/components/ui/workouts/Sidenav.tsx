@@ -3,7 +3,7 @@ import Container from '../Container'
 import { auth } from 'auth'
 import { Avatar, AvatarFallback } from '../avatar'
 
-export default async function Sidenav({username}: {username:string | undefined | null}) {
+export default function Sidenav({username}: {username:string | undefined | null}) {
 
   return (
     <Container className=' h-fit border rounded-lg items-center flex justify-between '>

@@ -41,7 +41,7 @@ export default function CreateWorkout({user,exerciceNames}:{user:string | undefi
     const [dayRest, setDayRest] = React.useState<{day: string ,change:number}>( )
     const [isPublished, setIsPublished] = React.useState<boolean>()
     const [days, setDays] = React.useState<ReactElement[]>([])
-    const email = user || 'none'
+    const email = user ?? 'none'
     const [removedDay,setRemovedDay] = React.useState<number>()
     const router = useRouter()
 

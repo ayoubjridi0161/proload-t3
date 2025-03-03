@@ -57,7 +57,7 @@ function Header({name,image,UUID}: Props) {
             <Button variant={"link"} className="text-md">
                 My Workout
             </Button>
-            <DropDown image = {image} UUID={UUID || ""} userName={name}/> 
+            <DropDown image = {image} UUID={UUID ?? ""} userName={name}/> 
         </div>
 
     </div>

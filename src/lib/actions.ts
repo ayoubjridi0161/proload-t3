@@ -24,8 +24,10 @@ export async function editWorkout (formData : FormData){
   }
   
   
-  let days = formData.getAll('day') 
+  const days = formData.getAll('day') 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   let ParsedDays : {name:string,index:number,dayID:number}[] = days.map(day =>{
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return JSON.parse(day as string)
   })
   ParsedDays =ParsedDays.filter(day => day.name !== 'rest')
@@ -39,23 +41,26 @@ export async function editWorkout (formData : FormData){
       await deleteDay(id);
   }
   //end of block
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   ParsedDays.map(async day=>{
     let dayID : number | {message:string} ;
     
     if(day.dayID!==-1){
-        dayID = await updateDay({name:day.name,dayIndex:day.index},day.dayID ) || {message:"failed"}
+        dayID = await updateDay({name:day.name,dayIndex:day.index},day.dayID ) ?? {message:"failed"}
       }else{
-        dayID = await InsertDay(day,updatedWorkoutID) || {message:"failed"}
+        dayID = await InsertDay(day,updatedWorkoutID) ?? {message:"failed"}
       }
     if(typeof dayID !== "number") throw new Error("updating day failed!")
   const exercices  = formData.getAll(day.index.toString())
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-return
   const parsedExercices : {name:string,sets:number,reps:number,id:number}[] = exercices.map(exercice => JSON.parse(exercice as string))
   //get rid of removed exercices
   await deleteRemovedExercices(parsedExercices.map(ex => ex.id),dayID)  
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   parsedExercices.map(async ex =>{
     if(ex.id!==-1){
-      updateExercice({name:ex.name,sets:ex.sets,reps:ex.reps},ex.id)
+      void updateExercice({name:ex.name,sets:ex.sets,reps:ex.reps},ex.id)
     }else{
       await InsertExercice({name:ex.name,sets:ex.sets,reps:ex.reps},dayID)
   }})
@@ -85,6 +90,7 @@ export default async function addWorkout(formData : FormData) {
   console.log(days)
   
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-return
   const parsedDays : {name:string,index:number,dayID:number}[]= days.map((day)=>JSON.parse(day as string))
   //cast the indexes to integers
   
@@ -99,7 +105,8 @@ export default async function addWorkout(formData : FormData) {
     
     const exercices = formData.getAll(eachDay.index.toString())
     // console.log(exercices)
-    for(let exercice of exercices){
+    for(const exercice of exercices){
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const parsed : {name:string,sets:number,reps:number,id:number} = JSON.parse(exercice as string)
       await InsertExercice({name:parsed.name,sets:parsed.sets,reps:parsed.reps},dayID)
     }
@@ -118,7 +125,7 @@ export const login = async (previous : any , formData : FormData)=>{
   } catch (error) {
     if(error instanceof AuthError){
       if(error.cause?.err instanceof ZodError) return {message: "invalid credentials"}
-      return {message:error.cause?.err?.message || "error"}
+      return {message:error.cause?.err?.message ?? "error"}
     } 
     
   }
@@ -164,7 +171,7 @@ export const googleSignIn = async ()=> {
   await signIn("google", { redirectTo: process.env.REDIRECT_URL })
 
 }
-export const newsLetter = async ()=>{
+export const newsLetter = ()=>{
   console.log("hello")
 }
 export const addUserReaction = async (workoutID:number,EUR:boolean,action:{type:"upvote"|"downvote"|"clone",payload:boolean})=>{
@@ -216,8 +223,8 @@ export const getUserProfile = async (id:string)=>{
 const s3Client = new S3Client({
   region: process.env.NEXT_AWS_S3_REGION ,
   credentials: {
-    accessKeyId: process.env.NEXT_AWS_S3_ACCESS_KEY_ID || '',
-    secretAccessKey: process.env.NEXT_AWS_S3_ACCESS_KEY || ''
+    accessKeyId: process.env.NEXT_AWS_S3_ACCESS_KEY_ID ?? '',
+    secretAccessKey: process.env.NEXT_AWS_S3_ACCESS_KEY ?? ''
   }
 })
 
@@ -230,7 +237,7 @@ export const uploadFiles = async (prevState : {message:string,status?:string} | 
       const {url,fields} = await createPresignedPost(
         s3Client,
         {
-        Bucket : process.env.NEXT_AWS_S3_BUCKER_NAME || '' ,
+        Bucket : process.env.NEXT_AWS_S3_BUCKER_NAME ?? '' ,
         Key : nanoid()
       })
       const formDataS3 = new FormData()

@@ -9,7 +9,7 @@ import { Button } from "../button"
 import { useFormState } from "react-dom"
 import { toast } from "sonner"
 const EditProfile = ({user}:{user:publicUser}) => {
-      const [data, action ] =useFormState(updateUserProfileAction ,"null")
+      const [data, action ] =useFormState(updateUserProfileAction ,{message:"none"})
       console.log(data)
       // if(data?.message === "success") {
       //     // toast("Profile Updated")

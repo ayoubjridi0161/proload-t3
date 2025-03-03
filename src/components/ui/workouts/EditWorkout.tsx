@@ -1,5 +1,5 @@
 "use client"
-import React, { MouseEventHandler, ReactElement } from 'react'
+import React, { MouseEventHandler, type ReactElement } from 'react'
 import { Input } from '../input'
 import {ButtonBlack,ButtonWhite} from '~/components/ui/UIverse/Buttons'
 import '~/components/ui/UIverse/Button.css'
@@ -44,12 +44,12 @@ type Props = {
 }
 
 export default function EditWorkout(props : Props ) {
-    const [newKey, setNewKey] = React.useState(props.NoD || 99) 
+    const [newKey, setNewKey] = React.useState(props.NoD ?? 99) 
     const [dayRest, setDayRest] = React.useState<{day: string ,change:number}>()
     function addDays(){
       const sortedDays = props.days.sort((a,b)=>a.dayIndex - b.dayIndex)
       const days : ReactElement[] = [] 
-      const numberOfDays = props.NoD || 1
+      const numberOfDays = props.NoD ?? 1
       for(let i = 1,j=1 ; i <= numberOfDays ; i++){
         if(sortedDays[j-1]?.dayIndex === i){
           days.push(<AddEditDay exerciceNames={props.exerciceNames} dayDetails={sortedDays[j-1] } remove={removeDay} id={i} key={i} muscles='legs,arms,chest'  />)

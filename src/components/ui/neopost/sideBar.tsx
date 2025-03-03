@@ -5,7 +5,7 @@ import { CircleHelp, LogOut } from 'lucide-react';
 
 type Props = {}
 
-export default async function sideBar({}: Props) {
+export default function sideBar({}: Props) {
   return (
     <aside className="w-1/6 px-5 top-0 h-screen fixed left-0 pb-5 pt-24 justify-between flex flex-col shadow-xl border-r-1 border-[#4a4a4a] border-opacity-20">
         <div className='space-y-4'>

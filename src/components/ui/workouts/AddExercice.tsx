@@ -67,6 +67,7 @@ export default function AddExercice(props: Props) {
           label="Select an exercice" 
         className="max-w-xs" 
         selectedKey={value as string}
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         onSelectionChange={setValue as any}
 
       >

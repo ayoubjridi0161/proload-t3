@@ -1,5 +1,5 @@
 "use client"
-import React, { ReactElement, useRef } from 'react'
+import React, { type ReactElement, useRef } from 'react'
 import { Label } from '../label'
 import { Button } from '../button'
 import { Pencil, GrabIcon, TrashIcon, Dumbbell, Check, Plus, Edit } from 'lucide-react'
