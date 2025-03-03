@@ -1,5 +1,5 @@
 "use client"
-import React, { MouseEventHandler, ReactElement } from 'react'
+import React, { MouseEventHandler, type ReactElement } from 'react'
 import { Input } from '../input'
 import {ButtonBlack,ButtonWhite} from '~/components/ui/UIverse/Buttons'
 import '~/components/ui/UIverse/Button.css'
@@ -82,6 +82,7 @@ export default function CreateWorkout({user,exerciceNames}:{user:string | undefi
 
     return (
     <div className=' h-full w-full relative rounded-md bg-slate-100 shadow-sm  mx-auto'>
+      {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
       <form ref={formRef} className=" h-full  rounded-lg border border-border p-4 sm:p-6 shadow-sm space-y-4" action={addWorkout}>
         {/* ... existing hidden inputs ... */}
         <input type="hidden" name='email' value={email} />

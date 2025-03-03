@@ -77,13 +77,15 @@ export default async function addWorkout(formData : FormData) {
   console.log(formData)
   const user = await getUserByEmail(formData.get('email') as string)
   if(!user){
-    return {message:"user not found"}
+    // return {message:"user not found"}
+    throw new Error("user not found") 
   }
   // for now workouts don't have descroption
   // const description = formData.get('description') as string || '';  
    const workoutID =  await  InsertWorkout({name:formData.get('workoutName') as string,userId:user,description: 'new description',numberOfDays:parseInt(formData.get('NoD') as string),published:formData.get('published') === 'true'})
   if(typeof workoutID !== 'number'){
-    return workoutID
+    // return  {message:"failed to insert workout"}
+    throw new Error("failed to insert workout") 
   }
 
   const days = formData.getAll('day')
@@ -100,7 +102,8 @@ export default async function addWorkout(formData : FormData) {
   for(const eachDay of sortedDays){
     const dayID = await InsertDay({name:eachDay.name,index:eachDay.index},workoutID)
     if(typeof dayID !== 'number'){
-      return dayID
+      // return {message:"failed to insert day"}
+      throw new Error("failed to insert day")
     }
     
     const exercices = formData.getAll(eachDay.index.toString())
@@ -112,6 +115,8 @@ export default async function addWorkout(formData : FormData) {
     }
   }
 }
+
+
 export const login = async (previous : any , formData : FormData)=>{
   // console.log(formData)
   try {
