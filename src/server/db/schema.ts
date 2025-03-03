@@ -8,6 +8,7 @@ import {
   pgTable,
   pgTableCreator,
   serial,
+  json,
   timestamp,
   primaryKey,
   varchar,
@@ -44,6 +45,7 @@ export const workouts = pgTable("workouts",{
 export const workoutsRelations = relations(workouts,({many,one})=>({days : many(days),
   users: one(users,{fields:[workouts.userId],references:[users.id]}),
   comments:many(comments),
+  logs:many(userLogs),
 
 }));
 
@@ -79,6 +81,15 @@ export const exercicesRelations= relations(exercices, ({one}) => (
 }
 ));
 
+export const userLogs = pgTable("user_logs",{
+  id: serial('id').primaryKey(),  
+  userId: text('user_id').references(()=>users.id),
+  workoutId: integer('workout_id').references(()=>workouts.id),
+  date: timestamp('date',{withTimezone:true}).default(sql`CURRENT_TIMESTAMP`).notNull(),
+  duration: integer('duration'),
+  logs: json('logs'),
+})
+
 export const users = pgTable("user", {
   id: text("id")
     .primaryKey()
@@ -87,6 +98,7 @@ export const users = pgTable("user", {
   email: text("email").unique(),
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   image: text("image"),
+  currentWorkout: integer("current_workout"),
 
 })
 
@@ -94,7 +106,8 @@ export const usersRelations = relations(users,({many})=>({
   workouts:many(workouts),
   comments:many(comments),
   replys:many(replys),
-  posts:many(Posts)
+  posts:many(Posts),
+  logs:many(userLogs)
 }));
 export const stateEnum = pgEnum('state', ['comment', 'reply']);
 export const comments = pgTable("comments",{
