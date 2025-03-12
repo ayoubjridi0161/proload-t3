@@ -17,10 +17,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           ),
     pages:{
         signIn:"/login",
-    },events:{
+    },
+    events:{
       signOut: async (message)=>{
         console.log("signout",message)
         redirect("/")
+      }
+    },
+    callbacks:{
+      session({ session, user }) {
+        session.user.currentWorkout = user.currentWorkout
+        return session;
       }
     }
         })

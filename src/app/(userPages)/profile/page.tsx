@@ -6,7 +6,7 @@ export default async function page() {
   const user: publicUser = session?.user as publicUser;
   
   return (
-    <div className="w-[70%] mx-auto">
+    <div className=" mx-auto">
         <Profile user = {user}/>
     </div>
   )

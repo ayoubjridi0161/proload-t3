@@ -1,4 +1,4 @@
-import { Posts, Reactions,    days, exerciceNames, exercices, users, workouts } from '~/server/db/schema'
+import { Posts, Reactions,    days, exerciceNames, exercices, userLogs, users, workouts } from '~/server/db/schema'
 import {db} from '../server/db/index'
 import type * as types from './types'
 import { DrizzleEntityClass, DrizzleError, and, asc, count, eq, sql } from 'drizzle-orm'
@@ -6,7 +6,7 @@ import { unstable_noStore as noStore } from 'next/cache'
 /*Read Data*/
 export const fetchAllWorkouts = async()=>{
     const result = await db.query.workouts.findMany({
-        columns: {name : true,id:true},
+        columns: {name : true,id:true ,upvotes:true,},
         with:{
             users :{
                 columns : {name:true}
@@ -335,10 +335,15 @@ export const getExerciceNames = async ()=>{
 }
 export const getExerciceByName = async (name:string)=>{
     try{
-        const res =await db.query.exerciceNames.findFirst({where:eq(exerciceNames.name,name),columns:{name:true,muscleGroup:true,musclesTargeted:true,equipment:true}}) 
+        const res =await db.query.exerciceNames.findFirst(
+            {where:
+                eq(exerciceNames.name,name),
+            columns:
+                {name:true,muscleGroup:true,musclesTargeted:true,equipment:true}
+            }) 
         return res
     }catch(e){
-        throw new Error("failed to fetch exercice")
+        throw e
     }
 }
 export const getProfileByID = async (id:string)=>{
@@ -355,6 +360,24 @@ export const updateUserProfile = async (data:{username:string},id:string)=>{
     try{
         const res = await db.update(users).set({name:data.username}).where(eq(users.id,id)).returning()
         return {message : res }
+    }catch(err){
+        throw err
+    }
+}
+
+export const getUsers = async ()=>{
+    try{
+        const res = await db.query.users.findMany({columns:{name:true,image:true,id:true}})
+        return res
+    }catch(err){
+        throw err
+    }
+}
+
+export const addLogs= async (workoutID:number,userID:string,dayName:string,logs:{ name: string; sets: { setIndex: string; weight: string }[] }[])=>{
+    try{
+        const res = await db.insert(userLogs).values({userId:userID,logs:logs,workoutId:workoutID}).returning()
+        return res
     }catch(err){
         throw err
     }

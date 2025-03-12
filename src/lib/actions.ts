@@ -1,6 +1,6 @@
 "use server"
 import { auth, signIn , signOut } from "auth"
-import { InsertDay, InsertExercice,  InsertWorkout, addNewReaction, deleteDay, deleteRemovedExercices, fetchAllWorkouts, getDaysByWorkout, getNumberOfWorkoutsPerUser, getProfileByID, getUserByEmail, getWorkoutsByUser, updateDay, updateExercice,  updateReactions,  updateUserProfile,  updateWorkout } from "./data"
+import { InsertDay, InsertExercice,  InsertWorkout, addLogs, addNewReaction, createPost, deleteDay, deleteRemovedExercices, fetchAllWorkouts, getDaysByWorkout, getNumberOfWorkoutsPerUser, getProfileByID, getUserByEmail, getWorkoutsByUser, updateDay, updateExercice,  updateReactions,  updateUserProfile,  updateWorkout } from "./data"
 import { redirect } from "next/navigation"
 import { AuthError } from "next-auth"
 import { user } from "./zodValidation"
@@ -14,14 +14,15 @@ import {createPresignedPost} from "@aws-sdk/s3-presigned-post"
 export async function editWorkout (formData : FormData){
   
   const user = await getUserByEmail(formData.get('email') as string)
-  if(!user){
-    return {message:"user not found"}
-  }
-  try{
-  const updatedWorkoutID = await updateWorkout({numberOfDays:parseInt(formData.get('NoD') as string),name:formData.get('workoutName') as string,description:''},Number(formData.get('workoutID')))
-  if(!updatedWorkoutID){
-    throw new DrizzleError({message:"failed to update workout"})
-  }
+    if(!user){
+      // return {message:"user not found"}
+      throw new Error("user not found")
+    }
+    try{
+    const updatedWorkoutID = await updateWorkout({numberOfDays:parseInt(formData.get('NoD') as string),name:formData.get('workoutName') as string,description:''},Number(formData.get('workoutID')))
+    if(!updatedWorkoutID){
+      throw new DrizzleError({message:"failed to update workout"})
+    }
   
   
   const days = formData.getAll('day') 
@@ -211,9 +212,7 @@ export const getWorkoutByUser = async (email:string)=>{
   return {res:null,err:err}
 }
 }
-export const seed = async ()=>{
-  await seedDatabase()
-}
+
 export async function signInWithResend(formData
   :FormData) {
     console.log(formData)
@@ -233,9 +232,12 @@ const s3Client = new S3Client({
   }
 })
 
-export const uploadFiles = async (prevState : {message:string,status?:string} | null  , formData: FormData)=>{
+export const uploadFiles = async (prevState : {message:string,status?:string, url? : string| null} , formData: FormData)=>{
   try{
     const file = formData.get("file")
+    const textData = formData.get("text") as string
+     console.log(file,textData);
+     return {status:"failure" , message : "please add an image"}
      
     if((file as File).size === 0) return {status:"failure" , message : "please add an image"}
       console.log("sendingFile")
@@ -256,34 +258,19 @@ export const uploadFiles = async (prevState : {message:string,status?:string} | 
       }) 
       const text = await response.text()
        console.log(text)
-      if(response.ok){console.log("file uploaded")}else{console.log("file error not uplaoded")}
-
-    revalidatePath("/")
-    return {status:"success", message:"file has been uploaded"}
+      if(response.ok){
+        console.log(fields.key)
+        revalidatePath("/")
+        return {status:"success", message:`${url}/${fields.key}`, url: `${url}/${fields.key}`, text: textData}
+      }else{
+        console.log("file error not uploaded")
+        return {status:"failure", message:"file has not been uploaded"}
+      }
   }catch(error){
-
+    console.log(error)
     return {status:"failure", message:"file has not been uploaded"}
-
   }
 }
-// export const sendFileToS3 = async (fileName : string ,file : Buffer |string |File)=>{
-//   const fileBuffer = file
-//   const params = {
-//     Bucket : process.env.NEXT_AWS_S3_BUCKER_NAME,
-//     Key : `${fileName}`,
-//     body:fileBuffer,
-//     contentType : "image/jpg"
-//   }
-//   const command = new PutObjectCommand(params)
-//   try {
-//     const res = await s3Client.send(command)
-//     console.log("res:=>",res)
-//     return fileName
-//   }catch(err){
-//     console.error("Upload error:", err);
-//     throw err
-//   }
-// }
 
 export const updateUserProfileAction = async (prev:any , formdata:FormData)=>{
   try{
@@ -294,4 +281,105 @@ export const updateUserProfileAction = async (prev:any , formdata:FormData)=>{
     console.log(err)
     return "failure"
   }
+}
+
+export const logWorkoutAction = async (prev:any , formdata:FormData)=> {
+  try {
+    const session = await auth();
+    const userID = session?.user?.id;
+    if (!userID) throw new Error("no user found");
+    const workoutID = user?.currentWorkout
+    const dayName = formdata.get("dayName") as string;
+    const exercises: any[] = [];
+    const parsedExercises: { name: string; sets: { setIndex: string; weight: string }[] }[] = [];
+
+    formdata.forEach((value, key) => {
+      if (key.startsWith("ex.")) {
+        exercises.push(key);
+      }
+    });
+    exercises.forEach((key: string) => {
+      const [_, name, __, setIndex] = key.split(".");
+      const weight = formdata.get(key) as string;
+      if (weight) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        let exercise = parsedExercises.find(ex => ex.name === name) as { name: string; sets: { setIndex: string; weight: string }[] } | undefined;
+        if (!exercise) {
+          exercise = { name: name ?? '', sets: [] };
+          if (exercise) {
+            parsedExercises.push(exercise);
+          }
+        }
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        if (setIndex) {
+          if (exercise) {
+            exercise.sets.push({ setIndex, weight });
+          }
+        }
+      }
+    });
+    try{
+      const res = await addLogs(workoutID as number,userID,dayName,parsedExercises)
+      return {message:res ? "success" : "failure"}
+    }catch(err){
+      console.log(err)
+    }
+    
+
+    return { message: "success" };
+  } catch (err) {
+    return { message: "failure" };
+  }
+};
+
+export const addPostAction = async (formData:FormData) => {
+  const session = await auth()
+    const url = await uploadToS3(formData)
+    const content = formData.get("text") as string
+    const userID = session?.user?.id
+    if(!userID) throw new Error("no user found")        
+    try{
+      const res = await createPost({content:content,resources:[url],userId:userID,title:""})
+      return res
+    }catch(err){
+      throw err
+    }
+};
+
+
+export async function uploadToS3(formData: FormData) {
+  const file = formData.get("file") as Blob | null;
+  if (!file) throw new Error("No file provided");
+
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+
+  // const fileName = `uploads/${Date.now()}-${(file as File).name}`;
+  // const params = {
+  //   Bucket: process.env.NEXT_AWS_S3_BUCKER_NAME!,
+  //   Key: fileName,
+  //   Body: buffer,
+  //   ContentType: file.type,
+  // };
+
+
+  const {url,fields} = await createPresignedPost(
+    s3Client,
+    {
+    Bucket : process.env.NEXT_AWS_S3_BUCKER_NAME ?? '' ,
+    Key : nanoid()
+  })
+
+  const formDataS3 = new FormData()
+      Object.entries(fields).forEach(([Key,value])=>{
+        formDataS3.append(Key,value)
+      })
+  const blob = new Blob([buffer]);
+  formDataS3.append('file', blob);
+  const response = await fetch(url,{
+        method:'POST',
+        body:formDataS3
+      }) 
+  revalidatePath("/"); 
+  return `https://s3.eu-north-1.amazonaws.com/${process.env.NEXT_AWS_S3_BUCKER_NAME}/${fields.key}`;
 }

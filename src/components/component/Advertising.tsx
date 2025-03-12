@@ -4,7 +4,7 @@ type Props = {}
 
 export default function Advertising({}: Props) {
   return (
-    <div className={ `p-5 shadow-bottom mt-4 space-y-1 w-full ` }>
+    <div className={ `p-5  mt-4 space-y-1 w-full ` }>
     <h1 className='font-extrabold'>Advertising</h1>
     <Image src='/creatina.jpg' width={20} height={20} className='w-full pt-1 pb-3  ' alt={"ayoub"}  />
     
