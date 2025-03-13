@@ -1,6 +1,6 @@
 "use server"
 import { auth, signIn , signOut } from "auth"
-import { InsertDay, InsertExercice,  InsertWorkout, addLogs, addNewReaction, createPost, deleteDay, deleteRemovedExercices, fetchAllWorkouts, getDaysByWorkout, getNumberOfWorkoutsPerUser, getProfileByID, getUserByEmail, getWorkoutsByUser, updateDay, updateExercice,  updateReactions,  updateUserProfile,  updateWorkout } from "./data"
+import { InsertDay, InsertExercice,  InsertWorkout, addLogs, addNewReaction, createPost, deleteDay, deleteRemovedExercices, fetchAllWorkouts, getDaysByWorkout, getExerciceByName, getMuscleGroups, getNumberOfWorkoutsPerUser, getProfileByID, getUserByEmail, getWorkoutsByUser, updateDay, updateExercice,  updateReactions,  updateUserProfile,  updateWorkout } from "./data"
 import { redirect } from "next/navigation"
 import { AuthError } from "next-auth"
 import { user } from "./zodValidation"
@@ -382,4 +382,53 @@ export async function uploadToS3(formData: FormData) {
       }) 
   revalidatePath("/"); 
   return `https://s3.eu-north-1.amazonaws.com/${process.env.NEXT_AWS_S3_BUCKER_NAME}/${fields.key}`;
+}
+
+export const getWorkoutList = async()=>{
+  try{
+    const res = await fetchAllWorkouts()
+    const muscleGroup= await getMuscleGroups()
+    
+  const workouts = res.map(workout =>{
+    return (
+    { id:workout.id,
+      name:workout.name,
+    exercices:workout.days.map(day => day.exercices).flat().map(ex =>{return {name:ex.name,times:ex.sets*ex.reps}})}
+  )
+  })
+  const parsedWorkouts = workouts.map(w=>{
+        const res = w.exercices.map(async exercices =>{
+          if(exercices.name.length > 0){
+            const result = await getExerciceByName(exercices.name)
+            return {name:exercices.name,times:exercices.times,muscleGroup:result?.muscleGroup ?? "unknown"}
+          }
+          return null
+        })
+        return {name:w.name,id:w.id,exercices:res}
+      })
+      const validParsedWorkouts = parsedWorkouts.map(w => {return {id:w.id,name:w.name,exercices:w.exercices.filter(ex => ex !== null)}})
+  const data = validParsedWorkouts.map(w=>{
+    return{ name:w.name,id:w.id,
+    exercices:muscleGroup.map(async mg => {
+      const muscleExercices = (await Promise.all(w.exercices)).filter(ex => ex?.muscleGroup === mg)
+      return {
+        mg,
+        exerciseCount: muscleExercices.reduce((acc, ex) => acc + (ex?.times ?? 0), 0)
+      }
+    })
+  }
+  })
+  
+  return data.map(async w=>{ return{
+    name:w.name,
+    id:w.id,
+    exercices: (await Promise.all(w.exercices)).filter(ex => ex.exerciseCount > 0)
+  }
+})
+
+  // }w.exercices.filter(async ex => (await ex).exerciseCount > 0))
+
+  }catch(err){
+    throw err
+  }
 }

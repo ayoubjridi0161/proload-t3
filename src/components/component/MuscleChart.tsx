@@ -3,12 +3,12 @@ import React from 'react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
 import { Button } from '../ui/button';
 type Data = {
-  muscleGroup: string;
+  mg : string;
   exerciseCount: number;
 }[]
 const MuscleGroupRadarChart = ({data}:{data:Data}) => {
   // Sample data - replace with your actual data
-  const muscleGroups = ['Chest', 'Back', 'Legs', 'shoulders', 'Arms', 'Core'];
+  const muscleGroups = data.map(d => d.mg)
   // const data2 = muscleGroups.map(muscleGroup => ({
   //   muscleGroup,
   //   exerciseCount: exercices.filter(exercice => exercice.muscleGroup === muscleGroup).length
@@ -19,7 +19,7 @@ const MuscleGroupRadarChart = ({data}:{data:Data}) => {
   const totalExercises = data.reduce((sum, item) => sum + item.exerciseCount, 0);
 
   const chartData = data.map(item => ({
-    muscleGroup: item.muscleGroup,
+    muscleGroup: item.mg,
     percentage: (item.exerciseCount / totalExercises) * 100
   }));
 

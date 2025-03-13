@@ -1,31 +1,28 @@
 import React from 'react'
 import WorkoutBox from './WorkoutBox'
 
-type Props = {
-    workoutSummaryList : {id: number;
+type Props= {
+    workoutSummaryList: Promise<{
     name: string;
-    upvotes: number;
-    days: {
-        name: string;
-        exercices: {
-            name: string;
-        }[];
+    id: number;
+    exercices: {
+        mg: string;
+        exerciseCount: number;
     }[];
-    users: {
-        name: string | null;
-    } | null;
-}[]
-}
+}>[]}
 
-export default function workoutList({workoutSummaryList}: Props) {
+
+export default function workoutList({workoutSummaryList}:Props) {
+    
   return (
     <div className="flex flex-wrap gap-5 justify-center ">
-            
-            {
-                workoutSummaryList.map((workoutSummary, index) => (
-                    <WorkoutBox key={index} workoutSummary={workoutSummary} />
-                ))
-            } 
-      </div>
+      {
+        workoutSummaryList.map( (workoutSummary, index: number) => (
+          <WorkoutBox key={index} workoutSummary={workoutSummary} />
+        ))
+      } 
+      
+
+    </div>
   )
 }

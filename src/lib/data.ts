@@ -2,25 +2,33 @@ import { Posts, Reactions,    days, exerciceNames, exercices, userLogs, users, w
 import {db} from '../server/db/index'
 import type * as types from './types'
 import { DrizzleEntityClass, DrizzleError, and, asc, count, eq, sql } from 'drizzle-orm'
-import { unstable_noStore as noStore } from 'next/cache'
+import { unstable_noStore as noStore , unstable_cache as cached } from 'next/cache'
+import { removeRedundancy } from './utils'
 /*Read Data*/
 export const fetchAllWorkouts = async()=>{
     const result = await db.query.workouts.findMany({
-        columns: {name : true,id:true ,upvotes:true,},
+        columns: {published:false,userId:false},
         with:{
             users :{
                 columns : {name:true}
             },
             days : {
-                columns : {name : true},
                 with : {exercices : {
-                    columns: {name : true}
                 }}
             }
         },
         orderBy: (workouts, { desc }) => [desc(workouts.id)],
     })
     return result
+}
+
+export const getMuscleGroups = async()=>{
+    const result = await db.query.exerciceNames.findMany({
+        columns: { muscleGroup: true },
+    })
+    const flatted = result.map (exercice => exercice.muscleGroup)
+
+    return removeRedundancy(flatted)
 }
 export async function fetchWorkoutById(id:number){
     noStore();
