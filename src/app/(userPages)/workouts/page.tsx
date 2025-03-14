@@ -15,7 +15,7 @@ export default async function page() {
   // console.log(JSON.stringify(workoutSummaryList))
   
   return (
-    <div className='h-full w-3/4 mx-auto space-y-5'>          
+    <div className='h-full w-full mx-auto space-y-5'>          
         <WorkoutList workoutSummaryList={workoutSummaryList}/>
       
     </div>

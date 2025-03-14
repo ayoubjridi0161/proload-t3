@@ -24,6 +24,7 @@ import SideBar from "~/components/ui/neopost/sideBar";
 import { AppSidebar } from "../../components/app-sidebar"
 import { SiteHeader } from "../../components/site-header"
 import { SidebarInset, SidebarProvider } from "~/components/ui/sidebar"
+import { getUserLikes } from "~/lib/data";
 
 
 export default async function RootLayout({
@@ -35,6 +36,7 @@ export default async function RootLayout({
           const userName= session?.user?.name
           const image = session?.user?.image
           const UUID = session?.user?.id
+          if(!UUID) throw new Error("No user ID found")
   return (
     <div className="[--header-height:calc(theme(spacing.14))]   bg-[#f2fcf5] ">
     <SidebarProvider className="flex flex-col ">

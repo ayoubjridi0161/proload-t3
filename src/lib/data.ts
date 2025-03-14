@@ -1,7 +1,7 @@
 import { Posts, Reactions,    days, exerciceNames, exercices, userLogs, users, workouts } from '~/server/db/schema'
 import {db} from '../server/db/index'
 import type * as types from './types'
-import { DrizzleEntityClass, DrizzleError, and, asc, count, eq, sql } from 'drizzle-orm'
+import { DrizzleEntityClass, DrizzleError, and, arrayContains, asc, count, eq, sql } from 'drizzle-orm'
 import { unstable_noStore as noStore , unstable_cache as cached } from 'next/cache'
 import { removeRedundancy } from './utils'
 /*Read Data*/
@@ -45,7 +45,7 @@ export const getUserByEmail = async (email:string)=>{
     return user?.id
 }
 export const getUserByID = async (id:string) =>{
-    const user = await db.query.users.findFirst({where : eq(users.id,id) , columns : {name:true,image:true,id:true}})
+    const user = await db.query.users.findFirst({where : eq(users.id,id) , columns : {name:true,image:true,id:true,likes:true}})
     return user
 }
 export const getWorkoutsByUser = async (uuid : string)=>{
@@ -301,7 +301,7 @@ export const deletePost = async (postId:number) =>{
 export const getPosts = async ()=>{
     try{
         const posts = await db.query.Posts.findMany({
-            columns:{id:true,title:true,content:true,userId:true,resources:true},
+            columns:{id:true,title:true,content:true,userId:true,resources:true,likes:true},
             with:{
                 users:{columns:{name:true,image:true}},
                 comments:{columns:{content:true,id:true},
@@ -389,4 +389,29 @@ export const addLogs= async (workoutID:number,userID:string,dayName:string,logs:
     }catch(err){
         throw err
     }
+}
+
+export const addLike = async (PostID:number,userID:string)=>{
+    try{
+        await db.update(Posts).set({likes:sql`likes + 1`}).where(eq(Posts.id,PostID))
+        await db.update(users).set({likes:sql`array_append(likes,${PostID})`}).where(eq(users.id,userID))
+    }catch(err){
+        throw err
+    }
+}
+export const removeLike = async (PostID:number,userID:string)=>{
+    try{
+        await db.update(Posts).set({likes:sql`likes - 1`}).where(eq(Posts.id,PostID))
+        await db.update(users).set({likes:sql`array_remove(likes,${PostID})`}).where(eq(users.id,userID))
+    }catch(err){
+        throw err
+    }
+}
+export const isLiked = async (PostID:number,userID:string)=>{
+    const contains = await db.query.users.findFirst({where:and(eq(users.id,userID),arrayContains(users.likes,[PostID])),columns:{id:true}})
+    return contains
+}
+export const getUserLikes = async (userID:string)=>{
+    const likes = await db.query.users.findFirst({where:eq(users.id,userID),columns:{likes:true}})
+    return likes?.likes
 }

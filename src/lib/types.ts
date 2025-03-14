@@ -44,4 +44,5 @@ export type publicUser = {
     image?: string,
     bio?:string,
     achievements?:string[],
+    likes?:number[],
 }

@@ -99,7 +99,7 @@ export const users = pgTable("user", {
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   image: text("image"),
   currentWorkout: integer("current_workout"),
-
+  likes: integer('likes').array(),
 })
 
 export const usersRelations = relations(users,({many})=>({
@@ -167,6 +167,7 @@ export const Posts = pgTable(
   'Posts',{
     id:serial('id').primaryKey(),
     title: varchar('title',{length:250}).notNull(),
+    likes:integer('likes').default(0).notNull(),
     content:varchar('content',{length:3000}).notNull(),
     resources: text('resources').array().notNull()
     .default(sql`ARRAY[]::text[]`),

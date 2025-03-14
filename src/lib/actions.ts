@@ -1,6 +1,6 @@
 "use server"
 import { auth, signIn , signOut } from "auth"
-import { InsertDay, InsertExercice,  InsertWorkout, addLogs, addNewReaction, createPost, deleteDay, deleteRemovedExercices, fetchAllWorkouts, getDaysByWorkout, getExerciceByName, getMuscleGroups, getNumberOfWorkoutsPerUser, getProfileByID, getUserByEmail, getWorkoutsByUser, updateDay, updateExercice,  updateReactions,  updateUserProfile,  updateWorkout } from "./data"
+import { InsertDay, InsertExercice,  InsertWorkout, addLike, addLogs, addNewReaction, createPost, deleteDay, deleteRemovedExercices, fetchAllWorkouts, getDaysByWorkout, getExerciceByName, getMuscleGroups, getNumberOfWorkoutsPerUser, getProfileByID, getUserByEmail, getUserByID, getWorkoutsByUser, isLiked, removeLike, updateDay, updateExercice,  updateReactions,  updateUserProfile,  updateWorkout } from "./data"
 import { redirect } from "next/navigation"
 import { AuthError } from "next-auth"
 import { user } from "./zodValidation"
@@ -387,7 +387,7 @@ export async function uploadToS3(formData: FormData) {
 export const getWorkoutList = async()=>{
   try{
     const res = await fetchAllWorkouts()
-    const muscleGroup= await getMuscleGroups()
+    const muscleGroup = await getMuscleGroups() as string[];
     
   const workouts = res.map(workout =>{
     return (
@@ -432,3 +432,21 @@ export const getWorkoutList = async()=>{
     throw err
   }
 }
+
+export const likePost = async (postID: number) => {
+  const session = await auth();
+  const userID = session?.user?.id;
+  if (!userID) return "failure";
+  
+  try {
+    const Liked = await isLiked(postID, userID);
+    if (Liked) {
+      await removeLike(postID, userID);
+    } else {
+      await addLike(postID, userID);
+    }
+    return "success"
+  } catch (err) {
+    return "failure"
+  }
+};
