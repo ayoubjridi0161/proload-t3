@@ -1,9 +1,9 @@
 import { auth } from "auth";
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 
 
-const protectedRoutes = ["/profile"]
+const protectedRoutes = ["/profile","/neopost","/neoworkout"]
 
 export default async function middleware(request: NextRequest){
     const session = await auth()

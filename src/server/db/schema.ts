@@ -100,6 +100,24 @@ export const users = pgTable("user", {
   image: text("image"),
   currentWorkout: integer("current_workout"),
   likes: integer('likes').array(),
+  bio: text("bio").default(""),
+  details: json("details").$type<{
+    bmi: string;
+    age: string;
+    gender: string;
+    height: string;
+    weight: string;
+    experience: string;
+  }>().$default(() => ({
+    bmi: "",
+    age: "",
+    gender: "",
+    height: "",
+    weight: "",
+    experience: ""
+  })),
+  connects:text("connects").array(),
+  numberOfConnects:integer('number_of_connects').default(0).notNull()
 })
 
 export const usersRelations = relations(users,({many})=>({
@@ -107,7 +125,8 @@ export const usersRelations = relations(users,({many})=>({
   comments:many(comments),
   replys:many(replys),
   posts:many(Posts),
-  logs:many(userLogs)
+  logs:many(userLogs),
+  notifications:many(notifications)
 }));
 export const stateEnum = pgEnum('state', ['comment', 'reply']);
 export const comments = pgTable("comments",{
@@ -264,4 +283,22 @@ export const authenticators = pgTable(
       columns: [authenticator.userId, authenticator.credentialID],
     }),
   })
+)
+
+export const notifications = pgTable(
+  "notifications",
+  {
+    id: integer("id").primaryKey().default(sql`floor(random() * 1000000)`),
+    userId: text("user_id").notNull().references(() => users.id),
+    title: varchar("title", { length: 256 }).notNull(),
+    content: text("content").notNull(),
+    time: timestamp("time", { withTimezone: true }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+    read:boolean("read").notNull().default(false)
+  }
+)
+
+export const notifRelations= relations(notifications,({one})=>({
+  users:one(users,{fields:[notifications.userId],references:[users.id]}),
+  
+})
 )

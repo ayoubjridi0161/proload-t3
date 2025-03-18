@@ -4,8 +4,8 @@ import { MoveRight } from 'lucide-react'
 import AddPost from '../neopost/AddPost'
 import Post from '../neopost/post'
 import type { publicUser } from '~/lib/types'
-import { user } from '@nextui-org/theme'
-import { getUserPosts } from '~/lib/data'
+import { getUserBioAndDetails, getUserLikes, getUserPosts } from '~/lib/data'
+import AsideTopSection from './AsideTopSection'
 function Profile({user}: {user: publicUser}) {
   return (
     <div className='w-full'>
@@ -19,10 +19,7 @@ function Profile({user}: {user: publicUser}) {
                 <p>3002 followers</p>
                 </div>
             </div>
-            <div className='flex gap-2 items-center self-center place-self-end'> 
-              <Button variant={"ghost"} style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 0.8)' }} className="rounded-none font-semibold text-[#4a4a4a] border-black border-1 px-7 py-0">FOLLOW</Button>
-              <Button variant={"ghost"} style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 0.8)' }} className="rounded-none font-semibold text-[#4a4a4a] border-black border-1 px-7 py-0">MESSAGE</Button>
-            </div>
+            
             
         </div>
         <div className='flex gap-3 '>
@@ -33,7 +30,7 @@ function Profile({user}: {user: publicUser}) {
         </div>
       </header >
       <main className='flex gap-2 '>
-        <ProfileAside />
+        <ProfileAside userID= {user.id} />
         <MainSection user = {user}/>
       </main>
     </div>
@@ -42,15 +39,11 @@ function Profile({user}: {user: publicUser}) {
 
 export default Profile
 
-export const ProfileAside = ()=>{
+export const ProfileAside = async ({userID}:{userID:string})=>{
+const details = await getUserBioAndDetails(userID)
   return (
     <aside className='w-2/5 p-3 space-y-3'>
-        <div className='shadow-bottom w-full p-2 space-y-3'>
-          <h1 className='text-xl font-bold'>Athletic Profile</h1>
-          <Button variant={"ghost"} style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 0.8)' }} className="w-full rounded-none font-semibold text-[#4a4a4a] border-black border-1 px-7 py-0">ADD BIO</Button>
-          <Button variant={"ghost"} style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 0.8)' }} className="w-full rounded-none font-semibold text-[#4a4a4a] border-black border-1 px-7 py-0">EDIT DETAILS</Button>
-          <Button variant={"ghost"} style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 0.8)' }} className="w-full rounded-none font-semibold text-[#4a4a4a] border-black border-1 px-7 py-0">ADD ACHIEVEMENTS</Button>
-        </div>
+        <AsideTopSection data={details}/>
         <div className='shadow-bottom w-full p-2 space-y-3 '>
         <div className='flex justify-between items-center'><h1 className='text-xl font-bold'>Achievements photos</h1> <MoveRight color='#a4a4a4' /></div>
         <div className='flex gap-2 flex-wrap '>
@@ -65,11 +58,12 @@ export const ProfileAside = ()=>{
 }
 
 export const MainSection = async ({user}:{user:publicUser})=>{
+  const likes = await getUserLikes(user.id)
   const FetchedPosts = await getUserPosts(user.id)
   return(
     <section className='w-3/5 p-3'>
       <AddPost image={user.image ?? "https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png"}  />
-      {FetchedPosts.map((post,i)=> <Post key={i} userImage={user.image ?? "https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png"} userName={user.name?? "Proload User"} userId={user.id} title={post.title} postContent={post.content} />)}
+      {FetchedPosts.map((post,i)=> <Post likes={post.likes} id={post.id} comments={post.comments} media={post.resources} images={post.resources} liked={!!likes?.includes(post.id)} key={i} userImage={user.image ?? "https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png"} userName={user.name?? "Proload User"} userId={user.id} title={post.title} postContent={post.content} />)}
     </section>
   )
 }

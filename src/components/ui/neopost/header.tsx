@@ -5,6 +5,7 @@ import { Button } from "../button"
 import DropDown from "../DropDown"
 import { Notifs } from "./Notifs"
 import { MessagesNotif } from "./MessagesNotif"
+import Link from "next/link"
 
 type Props = {
     name:string ,
@@ -46,7 +47,7 @@ function Header({name,image,UUID}: Props) {
   return (
     <div className='p-2 bg-white  h-[--header-height] '>
       <div className="xl:w-2/3 mx-auto flex justify-between items-center">
-        <h1 className='text-xl flex items-center'>PROLOAD <Image src="https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png" width={40} height={40}  alt="logo" /></h1>
+        <Link href={'/neopost'} className='text-xl flex items-center'>PROLOAD <Image src="https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png" width={40} height={40}  alt="logo" /></Link>
         <SearchBar />
         <div className="flex gap-2">
             <MessagesNotif/>

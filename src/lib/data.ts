@@ -1,4 +1,4 @@
-import { Posts, Reactions,    days, exerciceNames, exercices, userLogs, users, workouts } from '~/server/db/schema'
+import { Posts, Reactions,    days, exerciceNames, exercices, userLogs, users, workouts,comments ,replys,notifications} from '~/server/db/schema'
 import {db} from '../server/db/index'
 import type * as types from './types'
 import { DrizzleEntityClass, DrizzleError, and, arrayContains, asc, count, eq, sql } from 'drizzle-orm'
@@ -301,7 +301,7 @@ export const deletePost = async (postId:number) =>{
 export const getPosts = async ()=>{
     try{
         const posts = await db.query.Posts.findMany({
-            columns:{id:true,title:true,content:true,userId:true,resources:true,likes:true},
+            columns:{id:true,title:true,content:true,userId:true,resources:true,likes:true,createdAt:true},
             with:{
                 users:{columns:{name:true,image:true}},
                 comments:{columns:{content:true,id:true},
@@ -319,9 +319,9 @@ export const getUserPosts = async (id:string)=>{
     try{
         const posts = await db.query.Posts.findMany({
             where:eq(Posts.userId,id),
-            columns:{id:true,title:true,content:true,userId:true,resources:true},
+            columns:{id:true,title:true,content:true,userId:true,resources:true,likes:true,createdAt:true},
             with:{
-                
+                users:{columns:{name:true,image:true}},
                 comments:{columns:{content:true,id:true},
                           with:{replys:{columns:{content:true,id:true},with:{users:{columns:{name:true}}}},users:{columns:{name:true
                           }}}}},
@@ -414,4 +414,105 @@ export const isLiked = async (PostID:number,userID:string)=>{
 export const getUserLikes = async (userID:string)=>{
     const likes = await db.query.users.findFirst({where:eq(users.id,userID),columns:{likes:true}})
     return likes?.likes
+}
+
+export const createComment = async (userName: string, content: string, userID: string, postID?: number, workoutID?: number) => {
+    try {
+        if (postID) {
+            const res = await db.insert(comments).values({ content: content, userId: userID, postId: postID, userName: userName }).returning({ id: comments.id });
+            return res[0]?.id;
+        }
+        if (workoutID) {
+            const res = await db.insert(comments).values({ content: content, userId: userID, workoutId: workoutID, userName: userName }).returning({ id: comments.id });
+            return res[0]?.id;
+        }
+    } catch (err) {
+        throw err;
+    }
+};
+
+export const createReply = async (userName:string,content:string,userID:string,parentID:number)=>{
+    try{
+        const res = await db.insert(replys).values({content:content,userName:userName,userId:userID,commentId:parentID}).returning({time:replys.createdAt})
+        return res[0]?.time
+    }catch(err){
+        throw err
+    }
+}
+
+export const editUserBio= async (userID:string,content:string)=>{
+    try{
+        const res = await db.update(users).set({bio : content}).where(eq(users.id,userID)).returning({id:users.id})
+        return res[0]?.id
+    }catch(err){
+        throw err
+    }
+}
+
+export const editUserDetails = async (userID:string,data:{
+    bmi: string,
+    age: string,
+    gender: string,
+    height: string,
+    weight: string,
+    experience: string,
+  })=>{
+    try{
+        const res = await db.update(users).set({details:data}).where(eq(users.id,userID)).returning({id:users.id})
+        return res[0]?.id
+    }catch(err){
+        throw err
+    }
+  }
+
+export const getUserBioAndDetails = async (userID:string)=>{
+    try{
+        const res = await db.query.users.findFirst(
+        {
+        where:eq(users.id,userID),
+        columns:{bio:true,details:true}
+        }
+        )
+        return res
+    }catch(err){
+        throw err
+    }
+}
+
+export const getUserNotifs = async (userID:string)=>{
+    try {
+        const res = await db.query.notifications.findMany(
+            {
+            where: eq(notifications.userId, userID),
+            
+            }
+        )
+        return res
+    } catch (error) {
+        throw error
+    }
+
+}
+
+export const addConnect = async (userID:string,followed:string)=>{
+    try {
+        const res = await db.update(users)
+        .set({connects:sql`array_append(connects,${followed})`})
+        .where(eq(users.id,userID))
+        const res2 = await db.update(users)
+        .set({numberOfConnects:sql`number_of_connects + 1`})
+        .where(eq(users.id,followed))
+        if (res && res2) return 'success'
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+export const getFollows = async (userID:string)=>{
+    try {
+        const res = await db.query.users.findFirst({columns:{connects:true},where:eq(users.id,userID)})
+        return res?.connects 
+    } catch (error) {
+        console.error(error)
+    }
 }

@@ -1,6 +1,6 @@
 "use server"
 import { auth, signIn , signOut } from "auth"
-import { InsertDay, InsertExercice,  InsertWorkout, addLike, addLogs, addNewReaction, createPost, deleteDay, deleteRemovedExercices, fetchAllWorkouts, getDaysByWorkout, getExerciceByName, getMuscleGroups, getNumberOfWorkoutsPerUser, getProfileByID, getUserByEmail, getUserByID, getWorkoutsByUser, isLiked, removeLike, updateDay, updateExercice,  updateReactions,  updateUserProfile,  updateWorkout } from "./data"
+import { InsertDay, InsertExercice,  InsertWorkout, addConnect, addLike, addLogs, addNewReaction, createComment, createPost, createReply, deleteDay, deleteRemovedExercices, editUserBio, editUserDetails, fetchAllWorkouts, getDaysByWorkout, getExerciceByName, getFollows, getMuscleGroups, getNumberOfWorkoutsPerUser, getProfileByID, getUserByEmail, getUserByID, getUserNotifs, getWorkoutsByUser, isLiked, removeLike, updateDay, updateExercice,  updateReactions,  updateUserProfile,  updateWorkout } from "./data"
 import { redirect } from "next/navigation"
 import { AuthError } from "next-auth"
 import { user } from "./zodValidation"
@@ -288,7 +288,7 @@ export const logWorkoutAction = async (prev:any , formdata:FormData)=> {
     const session = await auth();
     const userID = session?.user?.id;
     if (!userID) throw new Error("no user found");
-    const workoutID = user?.currentWorkout
+    const workoutID = session?.user?.currentWorkout as number
     const dayName = formdata.get("dayName") as string;
     const exercises: any[] = [];
     const parsedExercises: { name: string; sets: { setIndex: string; weight: string }[] }[] = [];
@@ -319,7 +319,7 @@ export const logWorkoutAction = async (prev:any , formdata:FormData)=> {
       }
     });
     try{
-      const res = await addLogs(workoutID as number,userID,dayName,parsedExercises)
+      const res = await addLogs(workoutID,userID,dayName,parsedExercises)
       return {message:res ? "success" : "failure"}
     }catch(err){
       console.log(err)
@@ -384,54 +384,71 @@ export async function uploadToS3(formData: FormData) {
   return `https://s3.eu-north-1.amazonaws.com/${process.env.NEXT_AWS_S3_BUCKER_NAME}/${fields.key}`;
 }
 
-export const getWorkoutList = async()=>{
-  try{
-    const res = await fetchAllWorkouts()
-    const muscleGroup = await getMuscleGroups() as string[];
-    
-  const workouts = res.map(workout =>{
-    return (
-    { id:workout.id,
-      name:workout.name,
-    exercices:workout.days.map(day => day.exercices).flat().map(ex =>{return {name:ex.name,times:ex.sets*ex.reps}})}
-  )
-  })
-  const parsedWorkouts = workouts.map(w=>{
-        const res = w.exercices.map(async exercices =>{
-          if(exercices.name.length > 0){
-            const result = await getExerciceByName(exercices.name)
-            return {name:exercices.name,times:exercices.times,muscleGroup:result?.muscleGroup ?? "unknown"}
-          }
-          return null
-        })
-        return {name:w.name,id:w.id,exercices:res}
-      })
-      const validParsedWorkouts = parsedWorkouts.map(w => {return {id:w.id,name:w.name,exercices:w.exercices.filter(ex => ex !== null)}})
-  const data = validParsedWorkouts.map(w=>{
-    return{ name:w.name,id:w.id,
-    exercices:muscleGroup.map(async mg => {
-      const muscleExercices = (await Promise.all(w.exercices)).filter(ex => ex?.muscleGroup === mg)
+export const getWorkoutList = async () => {
+  try {
+    const res = await fetchAllWorkouts();
+    const muscleGroup = await getMuscleGroups();
+
+    const workouts = res.map(workout => {
+      const maxIndex = workout.numberOfDays ?? 7;
+      const dayNamesSorted = Array.from({ length: maxIndex  }, (_, index) => {
+        const day = workout.days.find(day => day.dayIndex === index+1);
+        return day ? day.name : 'rest';
+      });
+
       return {
-        mg,
-        exerciseCount: muscleExercices.reduce((acc, ex) => acc + (ex?.times ?? 0), 0)
-      }
-    })
-  }
-  })
-  
-  return data.map(async w=>{ return{
-    name:w.name,
-    id:w.id,
-    exercices: (await Promise.all(w.exercices)).filter(ex => ex.exerciseCount > 0)
-  }
-})
+        id: workout.id,
+        name: workout.name,
+        username: workout.users?.name,
+        description: workout.description,
+        numberOfDays: workout.numberOfDays,
+        dayNames: dayNamesSorted,
+        upvotes: workout.upvotes,
+        exercices: workout.days.map(day => day.exercices).flat().map(ex => {
+          return { name: ex.name, times: ex.sets * ex.reps };
+        })
+      };
+    });
 
-  // }w.exercices.filter(async ex => (await ex).exerciseCount > 0))
+    const parsedWorkouts = workouts.map(w => {
+      const res = w.exercices.map(async exercices => {
+        if (exercices.name.length > 0) {
+          const result = await getExerciceByName(exercices.name);
+          return { name: exercices.name, times: exercices.times, muscleGroup: result?.muscleGroup ?? "unknown" };
+        }
+        return null;
+      });
+      return { ...w, exercices: res };
+    });
 
-  }catch(err){
-    throw err
+    const validParsedWorkouts = parsedWorkouts.map(w => {
+      return { ...w, exercices: w.exercices.filter(ex => ex !== null) };
+    });
+
+    const data = validParsedWorkouts.map(w => {
+      return {
+        ...w,
+        exercices: muscleGroup.map(async mg => {
+          const muscleExercices = (await Promise.all(w.exercices)).filter(ex => ex?.muscleGroup === mg);
+          return {
+            mg,
+            exerciseCount: muscleExercices.reduce((acc, ex) => acc + (ex?.times ?? 0), 0)
+          };
+        })
+      };
+    });
+
+    return data.map(async w => {
+      return {
+        ...w,
+        exercices: (await Promise.all(w.exercices)).filter(ex => ex.exerciseCount > 0)
+      };
+    });
+
+  } catch (err) {
+    throw err;
   }
-}
+};
 
 export const likePost = async (postID: number) => {
   const session = await auth();
@@ -450,3 +467,100 @@ export const likePost = async (postID: number) => {
     return "failure"
   }
 };
+
+export const addComment = async (postID: number, content: string) => {
+  const session = await auth();
+  const userID = session?.user?.id;
+  const userName = session?.user?.name;
+  // console.log(userID,userName,content,postID);
+  
+  if (!userID || !userName) return "failure";
+  console.log(userID,userName,content,postID);
+  
+  try {
+    const res = await createComment(userName,content, userID,postID);
+    revalidatePath('/')
+    return res ? "success" : "failure";
+  } catch (err) {
+    throw err
+  }
+}
+
+export const addReply = async(parentID:number,content:string)=>{
+  const session = await auth();
+  const userID = session?.user?.id;
+  const userName = session?.user?.name;
+  if (!userID || !userName) return "failure";
+  console.log(userID,userName,content,parentID);
+  try{
+    const res = await createReply(userName,content,userID,parentID)
+    revalidatePath('/')
+    return res ? "success" : "failure";
+  } catch (err) {
+    throw err
+  }
+
+  
+}
+
+export const addBio = async (content:string) =>{
+  const session = await auth();
+  const userID = session?.user?.id;
+  const userName = session?.user?.name;
+  if (!userID || !userName) return "failure";
+  try{
+    const res = await editUserBio(userID,content)
+    revalidatePath('/')
+    return res ? "success" : "failure";
+  } catch (err) {
+    throw err
+  }
+}
+
+export const fetchNotifs = async ()=>{
+  const session = await auth();
+  const userID = session?.user?.id;
+  if (!userID) return "failure";
+  try{
+    const res = await getUserNotifs(userID)
+    return res
+  }catch(err){
+    console.log("error")
+    return "failure"
+  }
+}
+
+export const ConnectAction = async (followed:string)=>{
+  const session = await auth();
+  const userID = session?.user?.id;
+  if (!userID) return "failure";
+  const res =await addConnect(userID,followed)
+  return res ?? 'failure'
+}
+
+export const isFollowed = async (followed:string)=>{
+  const session = await auth();
+  const userID = session?.user?.id;
+  if (!userID) return false;
+  const res = await getFollows(userID)
+  if(res) return res.includes(followed)
+    else return false
+
+}
+
+export const addProfileDetails = async (data:{
+  bmi: string,
+  age: string,
+  gender: string,
+  height: string,
+  weight: string,
+  experience: string,
+})=>
+{
+  const session = await auth();
+  const userID = session?.user?.id;
+  if (!userID) return false;
+  try{
+  const res = await editUserDetails(userID,data)
+}catch(err) {console.error(err)}
+}

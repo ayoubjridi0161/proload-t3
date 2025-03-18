@@ -46,3 +46,19 @@ export type publicUser = {
     achievements?:string[],
     likes?:number[],
 }
+
+export type Exercise = {
+    mg: string;
+    exerciseCount: number;
+  };
+  
+export type WorkoutDetail = {
+    exercices: Exercise[]
+    id: number;
+    name: string;
+    username: string | null | undefined;
+    description: string;
+    numberOfDays: number | null;
+    dayNames: string[];
+    upvotes: number;
+}[]

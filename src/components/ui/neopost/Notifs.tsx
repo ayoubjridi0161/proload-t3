@@ -1,8 +1,43 @@
+"use client"
 import { Button } from "~/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover"
 import { Bell } from "lucide-react"
+import { useEffect, useState } from "react";
+import { fetchNotifs } from "~/lib/actions";
+import { timeAgo } from "~/lib/utils";
 
 export function Notifs() {
+  const [notifs, setNotifs] = useState<{
+    time: Date;
+    title: string;
+    id: number;
+    userId: string;
+    content: string;
+    read: boolean;
+}[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  console.log(notifs)
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      const res = await fetchNotifs();
+      if (res !== "failure") {
+        setNotifs(res);
+        setUnreadCount(res.filter((n) => !n.read).length);
+      }
+    };
+
+    // Fetch notifications immediately
+    void fetchNotifications();
+
+    // Set up an interval to fetch notifications every minute
+    const interval = setInterval(() => {
+      void fetchNotifications();
+    }, 60000);
+
+    // Clear the interval on component unmount
+    return () => clearInterval(interval);
+  }, []);
   // Sample notifications data
   const notifications = [
     {
@@ -28,7 +63,6 @@ export function Notifs() {
     },
   ]
 
-  const unreadCount = notifications.filter((n) => !n.read).length
 
   return (
     <Popover>
@@ -57,8 +91,8 @@ export function Notifs() {
           )}
         </div>
         <div className="max-h-80 overflow-y-auto">
-          {notifications.length > 0 ? (
-            notifications.map((notification) => (
+          {notifs.length > 0 ? (
+            notifs.map((notification) => (
               <div
                 key={notification.id}
                 className={`border-b px-4 py-3 last:border-0 ${!notification.read ? "bg-muted/50" : ""}`}
@@ -66,8 +100,8 @@ export function Notifs() {
                 <div className="flex items-start gap-3">
                   <div className="flex-1 space-y-1">
                     <p className="text-sm font-medium leading-none">{notification.title}</p>
-                    <p className="text-sm text-muted-foreground">{notification.description}</p>
-                    <p className="text-xs text-muted-foreground">{notification.time}</p>
+                    <p className="text-sm text-muted-foreground">{notification.content}</p>
+                    <p className="text-xs text-muted-foreground">{timeAgo(notification.time)}</p>
                   </div>
                   {!notification.read && <div className="mt-1 h-2 w-2 rounded-full bg-blue-500" />}
                 </div>

@@ -9,10 +9,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     ...authConfig,
     adapter: DrizzleAdapter(db,
             {
-              usersTable: users  as any,
-              accountsTable: accounts as any,
-              sessionsTable: sessions as any,
-              verificationTokensTable: verificationTokens as any,
+              usersTable: users ,
+              accountsTable: accounts ,
+              sessionsTable: sessions ,
+              verificationTokensTable: verificationTokens,
             }
           ),
     pages:{
@@ -26,6 +26,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     callbacks:{
       session({ session, user }) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         session.user.currentWorkout = user.currentWorkout
         return session;
       }
