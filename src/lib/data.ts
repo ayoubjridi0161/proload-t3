@@ -508,11 +508,34 @@ export const addConnect = async (userID:string,followed:string)=>{
     }
 }
 
+export const removeConnect= async (userID:string,followed:string)=>{
+    try {
+        const res = await db.update(users)
+        .set({connects:sql`array_remove(connects,${followed})`})
+        .where(eq(users.id,userID))
+        const res2 = await db.update(users)
+        .set({numberOfConnects:sql`number_of_connects - 1`})
+        .where(eq(users.id,followed))
+        if (res && res2) return 'success'
+    } catch (error) {
+        console.error(error)
+    }
+}
+
 export const getFollows = async (userID:string)=>{
     try {
         const res = await db.query.users.findFirst({columns:{connects:true},where:eq(users.id,userID)})
         return res?.connects 
     } catch (error) {
         console.error(error)
+    }
+}
+
+export const addNotification = async (userID:string,title:string,content:string)=>{
+    try {
+        const res = await db.insert(notifications).values({userId:userID,title:title,content:content}).returning({time:notifications.time})
+        return res
+    } catch (error) {
+        throw error
     }
 }

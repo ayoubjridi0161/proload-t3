@@ -1,6 +1,6 @@
 "use server"
 import { auth, signIn , signOut } from "auth"
-import { InsertDay, InsertExercice,  InsertWorkout, addConnect, addLike, addLogs, addNewReaction, createComment, createPost, createReply, deleteDay, deleteRemovedExercices, editUserBio, editUserDetails, fetchAllWorkouts, getDaysByWorkout, getExerciceByName, getFollows, getMuscleGroups, getNumberOfWorkoutsPerUser, getProfileByID, getUserByEmail, getUserByID, getUserNotifs, getWorkoutsByUser, isLiked, removeLike, updateDay, updateExercice,  updateReactions,  updateUserProfile,  updateWorkout } from "./data"
+import { InsertDay, InsertExercice,  InsertWorkout, addConnect, addLike, addLogs, addNewReaction, addNotification, createComment, createPost, createReply, deleteDay, deleteRemovedExercices, editUserBio, editUserDetails, fetchAllWorkouts, getDaysByWorkout, getExerciceByName, getFollows, getMuscleGroups, getNumberOfWorkoutsPerUser, getProfileByID, getUserByEmail, getUserByID, getUserNotifs, getWorkoutsByUser, isLiked, removeConnect, removeLike, updateDay, updateExercice,  updateReactions,  updateUserProfile,  updateWorkout } from "./data"
 import { redirect } from "next/navigation"
 import { AuthError } from "next-auth"
 import { user } from "./zodValidation"
@@ -288,7 +288,7 @@ export const logWorkoutAction = async (prev:any , formdata:FormData)=> {
     const session = await auth();
     const userID = session?.user?.id;
     if (!userID) throw new Error("no user found");
-    const workoutID = session?.user?.currentWorkout as number
+    const workoutID = formdata.get("workoutID") as unknown as number
     const dayName = formdata.get("dayName") as string;
     const exercises: any[] = [];
     const parsedExercises: { name: string; sets: { setIndex: string; weight: string }[] }[] = [];
@@ -530,13 +530,7 @@ export const fetchNotifs = async ()=>{
   }
 }
 
-export const ConnectAction = async (followed:string)=>{
-  const session = await auth();
-  const userID = session?.user?.id;
-  if (!userID) return "failure";
-  const res =await addConnect(userID,followed)
-  return res ?? 'failure'
-}
+
 
 export const isFollowed = async (followed:string)=>{
   const session = await auth();
@@ -563,4 +557,33 @@ export const addProfileDetails = async (data:{
   try{
   const res = await editUserDetails(userID,data)
 }catch(err) {console.error(err)}
+}
+
+export const sendNotification = async (userID:string,title:string,content:string)=>{
+    try{
+      const res = await addNotification(userID,title,content)
+      return res[0]?.time
+    }catch(err){
+      console.log(err)
+      return "failure"
+    }
+}
+
+export const ConnectAction = async (followed:string)=>{
+  const session = await auth();
+  const userID = session?.user?.id;
+  const user = session?.user?.name
+  if (!userID) return "failure";
+  const res =await addConnect(userID,followed)
+  await sendNotification(followed,"new Follow",`${user} just followed you`)
+  return res ?? 'failure'
+}
+
+export const unfollow = async (followed:string)=>{
+  const session = await auth();
+  const userID = session?.user?.id;
+  const user = session?.user?.name
+  if (!userID) return "failure";
+  const res =await removeConnect(userID,followed)
+  return res ?? 'failure'
 }

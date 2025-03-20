@@ -20,7 +20,7 @@ import { Button } from "~/components/ui/button"
 import { TooltipTrigger, TooltipContent, Tooltip, TooltipProvider } from "~/components/ui/tooltip"
 import { PopoverTrigger, PopoverContent, Popover } from "~/components/ui/popover"
 import { ArrowBigDownDash, ArrowBigUpDash } from "lucide-react"
-import { JSX, SVGProps } from "react"
+import { type JSX, type SVGProps } from "react"
 import { Toggle } from "~/components/ui/toggle"
 import {Clone, Downvote, Upvote} from "./Reactions"
 import { getUserReactions } from "~/lib/data"
@@ -32,7 +32,7 @@ type Props = {
 
 async function TooltipBox(props:Props) {
   if(!props.userId) return <div>no user</div>
-  let UserReactions = await getUserReactions(props.workoutId,props.userId) 
+  const UserReactions = await getUserReactions(props.workoutId,props.userId) 
 
   
   console.log("reactions:",props.Reactions)
@@ -42,9 +42,9 @@ async function TooltipBox(props:Props) {
       <TooltipProvider>
         <Clone workoutId={props.workoutId} />        
         <div className="row-start-2 col-start-1 text-sm text-gray-500 dark:text-gray-400">{props.Reactions.clones }</div>
-        <Upvote EUR= {!!UserReactions} pressed = { UserReactions?.upvote || false } workoutId = {props.workoutId}  />
+        <Upvote EUR= {!!UserReactions} pressed = { UserReactions?.upvote ?? false } workoutId = {props.workoutId}  />
         <div className="row-start-2 col-start-2 text-sm text-gray-500 dark:text-gray-400">{props.Reactions.upvotes}</div>
-        <Downvote EUR= {!!UserReactions} pressed = { UserReactions?.downvote || false } workoutId = {props.workoutId}  />
+        <Downvote EUR= {!!UserReactions} pressed = { UserReactions?.downvote ?? false } workoutId = {props.workoutId}  />
         <div className="row-start-2 col-start-3 text-sm text-gray-500 dark:text-gray-400">{props.Reactions.downvotes}</div>
         <Tooltip>
           <TooltipTrigger asChild>

@@ -27,6 +27,7 @@ export default function Track({ workout, totalSets, totalReps }: { workout: Work
     <form action={action}
       className={`${andika.className} w-full space-y-5 p-5 text-[#707877]`}
     >
+      <input type="hidden" name="workoutID" value={workout?.id}/>
       <div>
         <h1 className="text-lg font-semibold">Track my workout</h1>
         <p className="mb-3 text-sm opacity-70">Today, august 24</p>

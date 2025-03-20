@@ -51,7 +51,7 @@ export const MainSection = async ({user}:{user:publicUser})=>{
   return(
     <section className='w-3/5 p-3'>
       {/* <AddPost image={user.image ?? "https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png"}  /> */}
-      {FetchedPosts.map((post,i)=> <Post time={timeAgo(post.createdAt)} likes={post.likes} id={post.id} liked={userLikes?.includes(post.id)} key={i} userImage={user.image ?? "https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png"} comments={post.comments} images={post.resources} userName={user.name?? "Proload User"} userId={user.id} title={post.title} postContent={post.content} />)}
+      {FetchedPosts.map((post,i)=> <Post time={timeAgo(post.createdAt)} likes={post.likes} id={post.id} liked={userLikes?.includes(post.id)} key={i} userImage={user.image ?? "https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png"} comments={post.comments} media={post.resources} images={post.resources} userName={user.name?? "Proload User"} userId={user.id} title={post.title} postContent={post.content} />)}
     </section>
   )
 }

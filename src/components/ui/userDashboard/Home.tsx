@@ -3,6 +3,7 @@ import { andika } from '../font'
 import ChartData from './Chart'
 import Container from './Container'
 import { Button } from '../button'
+import WorkoutCalendar from './workoutCalendar'
 
 export default function Home() {
   return (
@@ -62,7 +63,7 @@ export default function Home() {
           </Container>
         </div>
         <div className="space-y-5">
-          <Container className="bg-xtraDark text-[#c8d8e7]">
+          {/* <Container className="bg-xtraDark text-[#c8d8e7]">
             <h1 className="text-lg font-bold">Workout Summary</h1>
             <div className="text-[#f2fcf5]">
               {[{day:"leg Day",exercises:["squats","leg extensions","sumo Deadlifts"]},{day:"Rest"},{day:"push",exercises:["bench press", "inclined dumbbell press","cable flys"]},{day:"back",exercises:["pull ups","barbell rows","bicep curls"]},{day:"Rest"},{day:"Rest"},{day:"deltoids",exercises:["military press","lateral raises","face pulls"]}].map((_,i)=>
@@ -73,8 +74,9 @@ export default function Home() {
               </div>))
               }
             </div>
-          </Container>
-          <Container className="bg-xtraDark text-[#c8d8e7]">
+          </Container> */}
+          <WorkoutCalendar/>
+          {/* <Container className="bg-xtraDark text-[#c8d8e7]">
             <h1 className="text-lg font-bold">Nutrition</h1>
             <div className="text-[#f2fcf5]">
               {[{day:"Breakfast",meal:"Oatmeal with fruits"},{day:"Lunch",meal:"Chicken salad"},{day:"Dinner",meal:"Steak with veggies"},{day:"Snack",meal:"Protein shake"}].map((_,i)=>
@@ -86,7 +88,7 @@ export default function Home() {
               }
             </div>
 
-          </Container>
+          </Container> */}
         </div>
 
       </div>

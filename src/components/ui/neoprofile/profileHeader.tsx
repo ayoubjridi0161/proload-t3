@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import Image from 'next/image'
 import { Button } from '../button'
-import { ConnectAction } from '~/lib/actions'
+import { ConnectAction, unfollow } from '~/lib/actions'
 
 type Props = {
     userImage:string|undefined,
@@ -14,9 +14,18 @@ type Props = {
 
 export default function ProfileHeader({userImage,userName,numberOfConnects,userID,isfollowed}: Props) {
     const [followed,setFollowed ] = useState(isfollowed)
+    const [isLoading,setIsLoading] = useState(false)
     async function handleFollow(): Promise<void>{
+      setIsLoading(true)
+      if(!followed){
         const res = await ConnectAction(userID)
         if(res=='success') setFollowed(true)
+        }else{
+      const res = await unfollow(userID)
+      if(res=='success') setFollowed(false)
+      }
+      setIsLoading(false)
+
     }
   return (
     <header className='h-[40dvh] grid grid-rows-10 pb-3 grid-cols-1 border-b-1 border-b-slate-300 '>
@@ -30,7 +39,7 @@ export default function ProfileHeader({userImage,userName,numberOfConnects,userI
               </div>
             </div>
             <div className='flex gap-2 items-center self-center place-self-end'> 
-              <Button disabled={followed} onClick={() => { void handleFollow(); }} variant={"ghost"} style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 0.8)' }} className="rounded-none font-semibold text-[#4a4a4a] border-black border-1 px-7 py-0">{followed ? 'FOLLOWED' : 'FOLLOW'}</Button>
+              <Button disabled={isLoading} onClick={() => { void handleFollow(); }} variant={"ghost"} style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 0.8)' }} className="rounded-none font-semibold text-[#4a4a4a] border-black border-1 px-7 py-0">{followed ? 'FOLLOWED' : 'FOLLOW'}</Button>
               <Button variant={"ghost"} style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 0.8)' }} className="rounded-none font-semibold text-[#4a4a4a] border-black border-1 px-7 py-0">MESSAGE</Button>
             </div>
             
