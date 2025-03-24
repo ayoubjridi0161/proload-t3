@@ -38,13 +38,26 @@ export type dayDetails ={
 }
 
 export type publicUser = {
-    id: string,
-    name: string | null,
-    email: string,
-    image?: string,
-    bio?:string,
-    achievements?:string[],
-    likes?:number[],
+    id: string;
+    name: string | null;
+    email: string | null;
+    emailVerified: Date | null;
+    image: string | null;
+    currentWorkout: number | null;
+    likes: number[] | null;
+    bio: string | null;
+    details: ProfileDetails | null;
+    connects: string[] | null;
+    numberOfConnects: number;
+}
+
+export type ProfileDetails = {
+    bmi: string;
+        age: string;
+        gender: string;
+        height: string;
+        weight: string;
+        experience: string;
 }
 
 export type Exercise = {

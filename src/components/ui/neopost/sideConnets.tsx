@@ -1,10 +1,10 @@
 import React from 'react'
 import { Avatar, AvatarImage ,AvatarFallback} from '../avatar'
-import { getUsers } from '~/lib/data'
 import { cn } from '~/lib/utils'
+import { getConnects } from '~/lib/actions'
 
 export default async function SideConnets({className}: {className:string}) {
-  const users = await getUsers()
+  const users = await getConnects()
   return (
     <div className={cn('p-5 h-fit mt-4 space-y-6 w-fit sticky top-0',className)}>
         <p className='text-md text-xtraDark'>Stay connected with:</p>

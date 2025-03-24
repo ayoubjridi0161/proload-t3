@@ -1,13 +1,18 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import { Button } from '~/components/ui/button'
 import { andika } from '~/components/ui/font'
 import Container from '~/components/ui/userDashboard/Container'
 import Image from 'next/image'
 import { Chip } from '@nextui-org/react'
+import WorkoutSkeleton from '~/components/ui/workoutShowCase/skeleton/workoutSkeleton'
+import Workout from '~/components/ui/workoutShowCase/Workout'
+import { getUserCurrentWorkout } from '~/lib/actions'
+
 
 type Props = {}
 
-export default function page({}: Props) {
+export default async function page({}: Props) {
+    const workout = await getUserCurrentWorkout()
   return (
     <section className={`${andika.className} w-full space-y-5 p-5 text-[#707877]`} >
           <div>
@@ -29,17 +34,13 @@ export default function page({}: Props) {
             </Container>
           </div>
           <div className='grid grid-cols-3 '>
-            <Container className='col-span-2 text-xtraGray bg-xtraDark h-fit'>
-                <h1 className='text-lg font-bold pb-5'>Current workout : arnold Split</h1>
-                <div className='space-y-3'>
-                {Array.from({length:5}).map((d,index)=> (
-                    <div key={index}>
-                        <h1 className='text-md'>push Day</h1>
-                        <p className='text-sm text-opacity-10'>bench press, inclined press , shoulder press , bicep curl</p>
-                    </div>
-                ))}
-                </div>
-            </Container>
+            {workout &&
+          <Container className="col-span-2 text-xtraGray bg-xtraDark h-fit">
+            <Suspense fallback={<WorkoutSkeleton/>}>
+                <Workout fetchedWorkout={workout} />
+            </Suspense>
+          </Container>
+          }
             <div className='p-6 space-y-3'>
                 {Array.from({length:3}).map((item,index)=>(
                     <Container className='space-y-3' key={index}>

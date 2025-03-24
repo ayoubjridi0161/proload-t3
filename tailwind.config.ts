@@ -24,7 +24,8 @@ const config = {
   		backgroundImage: {
   			'hero-image': "url('/gym2.jpeg')",
   			'yellowGym': "url('/gymYellow.jpg')",
-  			's3gym': "url('//s3.eu-north-1.amazonaws.com/proload.me/widegym.png')"
+  			's3gym': "url('//s3.eu-north-1.amazonaws.com/proload.me/widegym.png')",
+			"aiLifter":"url('/ailifter5.jpg')"
   		},
   		boxShadow: {
   			bottom: '0 4px 6px  rgba(0,0,0,0.2)',

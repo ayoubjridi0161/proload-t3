@@ -1,7 +1,7 @@
 import { Posts, Reactions,    days, exerciceNames, exercices, userLogs, users, workouts,comments ,replys,notifications} from '~/server/db/schema'
 import {db} from '../server/db/index'
 import type * as types from './types'
-import { DrizzleEntityClass, DrizzleError, and, arrayContains, asc, count, eq, sql } from 'drizzle-orm'
+import { DrizzleEntityClass, DrizzleError, and, arrayContains, asc, count, eq, inArray, name, sql } from 'drizzle-orm'
 import { unstable_noStore as noStore , unstable_cache as cached } from 'next/cache'
 import { removeRedundancy } from './utils'
 /*Read Data*/
@@ -21,6 +21,44 @@ export const fetchAllWorkouts = async()=>{
     })
     return result
 }
+ 
+export const fetchUserWorkouts = async(privacy:boolean,user:string)=>{
+    if(privacy){
+        const result = await db.query.workouts.findMany({
+        where:and(eq(workouts.userId,user),eq(workouts.published,true)),
+        columns:{published:false,userId:false},
+        with:{
+            users :{
+                columns : {name:true}
+            },
+            days : {
+                with : {exercices : {
+                }}
+            }
+        },
+        orderBy: (workouts, { desc }) => [desc(workouts.id)],
+        })
+        return result
+    }else{
+        const result = await db.query.workouts.findMany({
+            where:eq(workouts.userId,user),
+            columns:{published:false,userId:false},
+            with:{
+                users :{
+                    columns : {name:true}
+                },
+                days : {
+                    with : {exercices : {
+                    }}
+                }
+            },
+            orderBy: (workouts, { desc }) => [desc(workouts.id)],
+        })
+        return result
+    }
+}
+    
+
 
 export const getMuscleGroups = async()=>{
     const result = await db.query.exerciceNames.findMany({
@@ -36,7 +74,17 @@ export async function fetchWorkoutById(id:number){
         where : eq(workouts.id,id),
         with : {days : {
             with : {exercices : true}
-        }}
+        },comments:{
+            columns:{content:true,createdAt:true,id:true},
+            with:{
+                replys:{
+                    with:{users:{columns:{name:true}}},
+                    columns:{content:true,createdAt:true,id:true}
+                },
+                users:{columns:{name:true}}
+            }
+        }
+    }
     })
     return result
 }
@@ -44,8 +92,21 @@ export const getUserByEmail = async (email:string)=>{
     const user = await db.query.users.findFirst({where : eq(users.email,email)})
     return user?.id
 }
+
+export const getUsersByName = async (name: string) => {
+    try {
+        const usersByName = await db.query.users.findMany({
+            where: sql`LOWER(${users.name}) LIKE LOWER(${`%${name}%`})`,
+            columns: { id: true, name: true, image: true },
+            limit: 6
+        });
+        return usersByName;
+    } catch (err) {
+        throw err;
+    }
+};
 export const getUserByID = async (id:string) =>{
-    const user = await db.query.users.findFirst({where : eq(users.id,id) , columns : {name:true,image:true,id:true,likes:true}})
+    const user = await db.query.users.findFirst({where : eq(users.id,id) })
     return user
 }
 export const getWorkoutsByUser = async (uuid : string)=>{
@@ -530,6 +591,20 @@ export const getFollows = async (userID:string)=>{
         console.error(error)
     }
 }
+export const getSideConnects = async(userIDs:string[]|null|undefined)=>{
+    try{
+        if(userIDs){
+        const res = await db.query.users.findMany({
+            where: inArray(users.id, userIDs),
+            columns: { id: true, name: true, image: true },
+        });
+        return res;
+    }else{return null}
+    }catch(err){
+        console.error(err)
+        throw err
+    }
+}
 
 export const addNotification = async (userID:string,title:string,content:string)=>{
     try {
@@ -537,5 +612,15 @@ export const addNotification = async (userID:string,title:string,content:string)
         return res
     } catch (error) {
         throw error
+    }
+}
+
+export const getCurrentWorkoutID = async (userID:string)=>{
+    try {
+        const res = await db.query.users.findFirst({columns:{currentWorkout:true},where:eq(users.id,userID)})
+        return res?.currentWorkout
+    } catch (error) {
+        console.error(error);
+        
     }
 }

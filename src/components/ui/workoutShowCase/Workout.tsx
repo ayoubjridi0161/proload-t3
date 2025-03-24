@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import React, { type ReactElement } from 'react'
 import Day from './Day'
 import { fetchWorkoutById } from '~/lib/data'
 type split = 
@@ -25,16 +25,16 @@ type split =
             reps : number,
         }[] 
     }
-const Workout = async ({id,fetchedWorkout}:{id:number,fetchedWorkout:split}) => {
+const Workout =  ({fetchedWorkout}:{id?:number,fetchedWorkout:split}) => {
 
     
     if (fetchedWorkout === undefined) {
         return <div>Workout not found</div>;
     }
-    const NOD = fetchedWorkout.numberOfDays || 10
+    const NOD = fetchedWorkout.numberOfDays ?? 10
     const days = fetchedWorkout.days.sort((a,b)=> (a.dayIndex,b.dayIndex))
     function renderDays(){
-        const renderDays: any = [];
+        const renderDays: ReactElement[] = [];
     for (let i = 1, j = 0; i <= NOD; i++) {
     // Check if the current day matches the dayIndex in the days array
     if (days[j] && i === days[j]?.dayIndex) {

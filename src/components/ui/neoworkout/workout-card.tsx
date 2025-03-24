@@ -8,6 +8,7 @@ import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "~/components/ui/card"
 // No need to import ChartContainer
 import{ type WorkoutDetail } from "~/lib/types"
+import Link from "next/link"
 
 interface WorkoutCardProps {
     workout: {
@@ -32,6 +33,7 @@ interface WorkoutCardProps {
     }))
   
     return (
+      <Link href={`/workouts/${workout.id}`}>
       <Card className="h-full flex flex-col">
         <CardHeader className="pb-2">
           <div className="flex justify-between items-start">
@@ -78,6 +80,7 @@ interface WorkoutCardProps {
           </div>
         </CardFooter>
       </Card>
+      </Link>
     )
   }
   

@@ -1,25 +1,19 @@
-import { auth } from 'auth'
-import { redirect } from 'next/navigation'
-import React, { Suspense } from 'react'
-import { Button } from '~/components/ui/button'
-import CreateWorkout from '~/components/ui/workouts/CreateWorkout'
-import WorkoutBox from '~/components/ui/workouts/WorkoutBox'
-import WorkoutList from '~/components/ui/workouts/workoutList'
-import WorkoutsPage from '~/components/ui/workouts/WorkoutsPage'
+import React from 'react'
+import WorkoutCards from '~/components/ui/neoworkout/workouts-cards'
 import { getWorkoutList } from '~/lib/actions'
 
-export default async function page() {
-  
-  const workoutSummaryList  = await getWorkoutList()
-  
-  // console.log(JSON.stringify(workoutSummaryList))
-  
+type Props = {}
+
+export default async function page({}: Props) {
+    const workoutSummaryList = await getWorkoutList()
+    const workouts = await Promise.all(workoutSummaryList) 
   return (
-    <div className='h-full w-full mx-auto space-y-5'>          
-        <WorkoutList workoutSummaryList={workoutSummaryList}/>
-      
+    <div className="container py-8">
+      <h1 className="text-3xl font-bold mb-6">Workout Library</h1>
+      <p className="text-muted-foreground mb-8">
+        Browse workouts shared by the community. Find the perfect routine for your fitness goals.
+      </p>
+      <WorkoutCards workouts={workouts} />
     </div>
   )
-
-
 }

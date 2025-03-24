@@ -25,15 +25,15 @@ const EditProfile = ({user}:{user:publicUser}) => {
 
         <h1 className='text-xl font-bold'>Profile</h1>
         <div className='w-[15%]'>
-        <Image src={user?.image || "https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png"} alt="avatar" className='w-full rounded-full border-1 border-black' width={60} height={60} />
+        <Image src={user?.image ?? "https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png"} alt="avatar" className='w-full rounded-full border-1 border-black' width={60} height={60} />
         </div>
         <div className='space-y-1 '>
             <Label className='' >username:</Label>
-            <Input className='border-2 border-[#4a4a4a] shadow-sm text-black rounded-none bg-[#F0F0F0]' defaultValue={user.name || undefined} placeholder={user?.name || "Ex: Gerlok the destroyer"} name='username' required />
+            <Input className='border-2 border-[#4a4a4a] shadow-sm text-black rounded-none bg-[#F0F0F0]' defaultValue={user.name ?? undefined} placeholder={user?.name ?? "Ex: Gerlok the destroyer"} name='username' required />
         </div>
         <div className='space-y-1 '>
             <Label>Email</Label>
-            <Input className='border-2 border-[#4a4a4a] shadow-sm text-black rounded-none bg-[#E0E0E0]' value={user?.email || ""} name='email' disabled />
+            <Input className='border-2 border-[#4a4a4a] shadow-sm text-black rounded-none bg-[#E0E0E0]' value={user?.email ?? ""} name='email' disabled />
         </div>
         <div className='space-y-1 '>
             <Label>Phone number</Label>

@@ -6,6 +6,10 @@ import DropDown from "../DropDown"
 import { Notifs } from "./Notifs"
 import { MessagesNotif } from "./MessagesNotif"
 import Link from "next/link"
+import { useState ,useEffect} from "react";
+import { useDebounce } from "@uidotdev/usehooks";
+import { searchUsers } from "~/lib/actions"
+import Avatar from "~/components/component/Avatar"
 
 type Props = {
     name:string ,
@@ -13,34 +17,79 @@ type Props = {
   UUID?: string;
 }
 
-const SearchBar = ()=>{
-    return(
+const SearchBar = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [profiles, setProfiles] = useState<{name:string|null,id:string,image:string|null}[]>([]);
 
-<div className="relative w-1/3">
-  
-  <svg onClick={()=>{alert("hello")}}
-    className="size-5 absolute top-2 left-2 text-gray-500 "
-    stroke="currentColor"
-    strokeWidth="1.5"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-      strokeLinejoin="round"
-      strokeLinecap="round"
-    ></path>
-  </svg>
-  <input
-    placeholder="Search ..."
-    className="pl-12 pr-2 input bg-slate-200  focus:border-2 border-1 border-[#4a4a4a] py-1 rounded-sm w-[80%] transition-all focus:w-[100%] outline-none"
-    name="search"
-    type="search"
-  />
-</div>
+  const debouncedSearchTerm = useDebounce(searchTerm,300)
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // const value = e.target.value;
+    setSearchTerm(e.target.value);
 
-    )
+    // if (value.trim() === "") {
+    //   setProfiles([]);
+    // } else {
+    //   const filteredProfiles = mockProfiles.filter((profile) =>
+    //     profile.toLowerCase().includes(value.toLowerCase())
+    //   );
+    //   setProfiles(filteredProfiles);
+    // }
+  };
+  useEffect(() => {
+  let searchedProfiles
+    const searchHN = async () => {
+      if (debouncedSearchTerm.trim() === "") {
+      setProfiles([]);
+    } else {
+      const filteredProfiles = await searchUsers(debouncedSearchTerm.toLowerCase())
+      setProfiles(filteredProfiles ?? []);
+    }
+    };
+
+    void searchHN();
+  }, [debouncedSearchTerm]);
+
+  return (
+    <div className="relative w-1/3">
+      <svg
+        className="size-5 absolute top-2 left-2 text-gray-500"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+          strokeLinejoin="round"
+          strokeLinecap="round"
+        ></path>
+      </svg>
+      <input
+        placeholder="Search ..."
+        className="pl-12 pr-2 input bg-slate-200 focus:border-2 border-1 border-[#4a4a4a] py-1 rounded-sm w-[80%] transition-all focus:w-[100%] outline-none"
+        name="search"
+        type="search"
+        value={searchTerm}
+        onChange={handleSearch}
+      />
+      {profiles.length > 0 && (
+        <ul className="absolute bg-white border border-gray-300 rounded-md mt-1 w-full z-10">
+          {profiles.map((profile, index) => (
+            <Link
+              href={`/profile/${profile.id}`}
+              key={index}
+              className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 cursor-pointer"
+              onClick={() => {setSearchTerm("");setProfiles([])}}
+            >
+              {profile.image && (<Avatar image={profile.image}/>)}
+              <span>{profile.name}</span>
+            </Link>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
 }
 
 function Header({name,image,UUID}: Props) {

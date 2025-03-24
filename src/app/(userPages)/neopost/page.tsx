@@ -16,19 +16,20 @@ type Props = {}
 export default async function page({}: Props) {
     const posts = await getPosts();
     const session = await auth()
+    const email= session?.user?.email
     const userName= session?.user?.name
     const image = session?.user?.image
     const UUID = session?.user?.id
-    if(!UUID) throw new Error("No user ID found")
+    if(!UUID || !userName ) throw new Error("No user ID found")
     const likes = await getUserLikes(UUID)
-  
+
     
     return (
     <main className='flex gap-2 justify-around max-h-full'>
-      <AppSidebar className="sticky top-0 pt-5" />
+      <AppSidebar className=" pt-5" user={{name:userName,email:email,image:image,id:UUID}} />
       <section className='w-2/3 p-5 overflow-y-scroll'>
         <AddPost image = {image ??"https://s3.eu-north-1.amazonaws.com/proload.me/2tUwhlyV-0Os5QTONBxxQ"} />
-        {posts?.map((post)=> <Post time={timeAgo(post.createdAt)} media = {post.resources} likes={post.likes} key={post.id} id={post.id} userImage={post.users.image ?? ""} liked={likes?.includes(post.id)} userName={post.users.name ?? ""} userId={post.userId ?? -1} title={post.title} postContent={post.content} comments={post.comments} />)}
+        {posts?.map((post)=> <Post appUser={userName} time={timeAgo(post.createdAt)} media = {post.resources} likes={post.likes} key={post.id} id={post.id} userImage={post.users.image ?? ""} liked={likes?.includes(post.id)} userName={post.users.name ?? ""} userId={post.userId ?? -1} title={post.title} postContent={post.content} comments={post.comments} />)}
       </section>
       <section className='flex justify-end w-1/4'>
         <Separator orientation='vertical' />

@@ -1,6 +1,6 @@
 "use server"
 import { auth, signIn , signOut } from "auth"
-import { InsertDay, InsertExercice,  InsertWorkout, addConnect, addLike, addLogs, addNewReaction, addNotification, createComment, createPost, createReply, deleteDay, deleteRemovedExercices, editUserBio, editUserDetails, fetchAllWorkouts, getDaysByWorkout, getExerciceByName, getFollows, getMuscleGroups, getNumberOfWorkoutsPerUser, getProfileByID, getUserByEmail, getUserByID, getUserNotifs, getWorkoutsByUser, isLiked, removeConnect, removeLike, updateDay, updateExercice,  updateReactions,  updateUserProfile,  updateWorkout } from "./data"
+import { InsertDay, InsertExercice,  InsertWorkout, addConnect, addLike, addLogs, addNewReaction, addNotification, createComment, createPost, createReply, deleteDay, deleteRemovedExercices, editUserBio, editUserDetails, fetchAllWorkouts, fetchUserWorkouts, fetchWorkoutById, getCurrentWorkoutID, getDaysByWorkout, getExerciceByName, getFollows, getMuscleGroups, getNumberOfWorkoutsPerUser, getProfileByID, getSideConnects, getUserByEmail, getUserByID, getUserNotifs, getUsersByName, getWorkoutsByUser, isLiked, removeConnect, removeLike, updateDay, updateExercice,  updateReactions,  updateUserProfile,  updateWorkout } from "./data"
 import { redirect } from "next/navigation"
 import { AuthError } from "next-auth"
 import { user } from "./zodValidation"
@@ -75,17 +75,12 @@ export async function editWorkout (formData : FormData){
   }
 }
 export default async function addWorkout(formData : FormData) {
-  console.log(formData)
-  const user = await getUserByEmail(formData.get('email') as string)
-  if(!user){
-    // return {message:"user not found"}
-    throw new Error("user not found") 
-  }
-  // for now workouts don't have descroption
-  // const description = formData.get('description') as string || '';  
-   const workoutID =  await  InsertWorkout({name:formData.get('workoutName') as string,userId:user,description: 'new description',numberOfDays:parseInt(formData.get('NoD') as string),published:formData.get('published') === 'true'})
+  const session = await auth()
+  if(!session?.user?.id) throw new Error("no user found")
+  const userID = session.user.id
+  const description = formData.get("description") as string
+   const workoutID =  await  InsertWorkout({name:formData.get('workoutName') as string,userId:userID,description: description ?? 'new description',numberOfDays:parseInt(formData.get('NoD') as string),published:formData.get('published') === 'true'})
   if(typeof workoutID !== 'number'){
-    // return  {message:"failed to insert workout"}
     throw new Error("failed to insert workout") 
   }
 
@@ -383,10 +378,75 @@ export async function uploadToS3(formData: FormData) {
   revalidatePath("/"); 
   return `https://s3.eu-north-1.amazonaws.com/${process.env.NEXT_AWS_S3_BUCKER_NAME}/${fields.key}`;
 }
-
-export const getWorkoutList = async () => {
+export const getUserWorkouts =async  (privacy:boolean,user:string) =>{
   try {
-    const res = await fetchAllWorkouts();
+    const res = await fetchUserWorkouts(privacy,user)
+    const muscleGroup = await getMuscleGroups();
+
+    const workouts = res.map(workout => {
+      const maxIndex = workout.numberOfDays ?? 7;
+      const dayNamesSorted = Array.from({ length: maxIndex  }, (_, index) => {
+        const day = workout.days.find(day => day.dayIndex === index+1);
+        return day ? day.name : 'rest';
+      });
+
+      return {
+        id: workout.id,
+        name: workout.name,
+        username: workout.users?.name,
+        description: workout.description,
+        numberOfDays: workout.numberOfDays,
+        dayNames: dayNamesSorted,
+        upvotes: workout.upvotes,
+        exercices: workout.days.map(day => day.exercices).flat().map(ex => {
+          return { name: ex.name, times: ex.sets * ex.reps };
+        })
+      };
+    });
+
+    const parsedWorkouts = workouts.map(w => {
+      const res = w.exercices.map(async exercices => {
+        if (exercices.name.length > 0) {
+          const result = await getExerciceByName(exercices.name);
+          return { name: exercices.name, times: exercices.times, muscleGroup: result?.muscleGroup ?? "unknown" };
+        }
+        return null;
+      });
+      return { ...w, exercices: res };
+    });
+
+    const validParsedWorkouts = parsedWorkouts.map(w => {
+      return { ...w, exercices: w.exercices.filter(ex => ex !== null) };
+    });
+
+    const data = validParsedWorkouts.map(w => {
+      return {
+        ...w,
+        exercices: muscleGroup.map(async mg => {
+          const muscleExercices = (await Promise.all(w.exercices)).filter(ex => ex?.muscleGroup === mg);
+          return {
+            mg,
+            exerciseCount: muscleExercices.reduce((acc, ex) => acc + (ex?.times ?? 0), 0)
+          };
+        })
+      };
+    });
+
+    return data.map(async w => {
+      return {
+        ...w,
+        exercices: (await Promise.all(w.exercices)).filter(ex => ex.exerciseCount > 0)
+      };
+    });
+
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const getWorkoutList = async (user?:string) => {
+  try {
+    const res = user ? await fetchAllWorkouts(user) : await fetchAllWorkouts(null)
     const muscleGroup = await getMuscleGroups();
 
     const workouts = res.map(workout => {
@@ -479,10 +539,12 @@ export const addComment = async (postID: number, content: string) => {
   
   try {
     const res = await createComment(userName,content, userID,postID);
-    revalidatePath('/')
     return res ? "success" : "failure";
   } catch (err) {
-    throw err
+    revalidatePath('/')
+    console.error(err)
+    return "failure"
+  }finally{
   }
 }
 
@@ -494,10 +556,10 @@ export const addReply = async(parentID:number,content:string)=>{
   console.log(userID,userName,content,parentID);
   try{
     const res = await createReply(userName,content,userID,parentID)
-    revalidatePath('/')
     return res ? "success" : "failure";
   } catch (err) {
-    throw err
+    revalidatePath('/')
+    console.error(err)
   }
 
   
@@ -586,4 +648,32 @@ export const unfollow = async (followed:string)=>{
   if (!userID) return "failure";
   const res =await removeConnect(userID,followed)
   return res ?? 'failure'
+}
+
+export const getConnects= async ()=>{
+  const session = await auth();
+  const userID = session?.user?.id
+  if(!userID) return null
+  const follows = await getFollows(userID)
+  const connects = await getSideConnects(follows)
+  return connects
+}
+
+export const searchUsers = async (keyword:string)=>{
+  try{
+    const res = await getUsersByName(keyword)
+    return res 
+  }catch(err){
+    console.error(err)
+  }
+}
+
+export const getUserCurrentWorkout=async()=>{
+  const session = await auth()
+  const userID = session?.user?.id
+  if(!userID) return null
+  const current = await getCurrentWorkoutID(userID)
+  if(!current) return null
+  const res = fetchWorkoutById(current)
+  return res
 }

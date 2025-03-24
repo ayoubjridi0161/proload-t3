@@ -27,9 +27,10 @@ import {
 import { ShootingStars } from '../UIverse/shootingStarBackground/shooting-stars'
 import { StarsBackground } from '../UIverse/shootingStarBackground/stars-background'
 import { useRouter } from 'next/navigation'
+import { Textarea } from '../textarea'
 
 
-export default function CreateWorkout({user,exerciceNames}:{user:string | undefined | null, 
+export default function CreateWorkout({exerciceNames}:{
   exerciceNames: {
   name: string;
   musclesTargeted: string[];
@@ -41,7 +42,6 @@ export default function CreateWorkout({user,exerciceNames}:{user:string | undefi
     const [dayRest, setDayRest] = React.useState<{day: string ,change:number}>( )
     const [isPublished, setIsPublished] = React.useState<boolean>()
     const [days, setDays] = React.useState<ReactElement[]>([])
-    const email = user ?? 'none'
     const [removedDay,setRemovedDay] = React.useState<number>()
     const router = useRouter()
 
@@ -56,6 +56,7 @@ export default function CreateWorkout({user,exerciceNames}:{user:string | undefi
         // setDays([...days]?.filter(day => day.key != removedDay))
         setDays([...days]?.filter(day => Number(day.key) != removedDay))
       }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[removedDay])
     
     //add Day component
@@ -66,12 +67,14 @@ export default function CreateWorkout({user,exerciceNames}:{user:string | undefi
         else setDays(days => [...days , <AddRestDay remove={removeDay} id={newKey} key={newKey} />])   
         // console.log(days) 
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[newKey])
     //add Day to order
     React.useEffect(()=>{
       if(dayRest){
       setNewKey(newKey+1)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[dayRest])
     // submit form
     React.useEffect(()=>{
@@ -81,16 +84,15 @@ export default function CreateWorkout({user,exerciceNames}:{user:string | undefi
     },[isPublished])
 
     return (
-    <div className=' h-full w-full relative rounded-md bg-slate-100 shadow-sm  mx-auto'>
+    <div className=' h-full w-full relative rounded-md bg-aiLifter bg-opacity-20 bg-center shadow-sm  mx-auto'>
       {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
       <form ref={formRef} className=" h-full  rounded-lg border border-border p-4 sm:p-6 shadow-sm space-y-4" action={addWorkout}>
-        {/* ... existing hidden inputs ... */}
-        <input type="hidden" name='email' value={email} />
         <input type="hidden" name='NoD' value={days.length}  />
         <input type="hidden" name='published' value={isPublished?.toString()} />
         <div className='pt-1 flex items-center'>
           <UIverseButton name='workoutName' placeHolder="Workout name..."  />
         </div>
+        <Textarea name='description' placeholder='drop out a note for the workout'/>
         <div className='space-y-4 '>
           {days}
         </div>  

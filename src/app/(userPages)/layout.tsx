@@ -2,7 +2,6 @@ import { auth } from "auth";
 import Advertising from "~/components/component/Advertising";
 import { roboto } from "~/components/ui/font";
 import Header from "~/components/ui/neopost/header";
-import SideBar from "~/components/ui/neopost/sideBar";
 
 // export default async function RootLayout({
 //     children,
