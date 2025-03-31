@@ -1,10 +1,10 @@
 import React from 'react'
-import AthleteDashboard from '~/components/ui/userDashboard/stats'
+import Stats from '~/components/ui/userDashboard/stats'
 
-export default function page() {
+export default async function page() {
   return (
     <section>
-        <AthleteDashboard />
+        <Stats />
     </section>
 )
 }

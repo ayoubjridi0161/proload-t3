@@ -4,14 +4,21 @@ import ChartData from './Chart'
 import Container from './Container'
 import { Button } from '../button'
 import WorkoutCalendar from './workoutCalendar'
+import { fetchUserLogs, fetchWorkoutDates } from '~/lib/actions'
+import { calculateExerciseProgress } from '~/lib/analytics/analytics'
+import {type UserLog} from "~/lib/types"
 
-export default function Home() {
+export default async function Home() {
+  //  const workoutDates = await fetchWorkoutDates();
+  const userLogs = await fetchUserLogs();
+const workoutDates = userLogs?.map(log => ({date:log.date}));
+const progressResults = calculateExerciseProgress(userLogs);
   return (
     <div className={ `     p-5 ${andika.className}`}>
       <div className="text-[#4a4a4a] text-lg"><h1 className="font-bold">Good morning, Athlete</h1>
       <p className="text-sm">Track progress and plan workouts for peak performance</p>
-      </div>  
-
+      <ExerciseProgress userLogs={userLogs} />
+      </div>
       <div className="grid grid-cols-3 w-10/12 mx-auto  p-5 gap-5">
       <Container className="border-1 border-[#de4e8d1] space-y-2 shadow-md">
         <div className="rounded-full p-3 w-fit bg-[#d4fae0]">
@@ -19,7 +26,7 @@ export default function Home() {
         </div>
         <h2 className="text-md font-semibold">Weekly progress</h2>
         <h1 className="text-lg font-bold">+15% Strength Gain</h1>
-        <p className="text-sm">Your bench press improved significantly</p>
+        <p className="text-sm">Your bench improved significantly</p>
         <Button className="bg-[#256279] text-[#63949E] ">View Details</Button>
       </Container>  
       <Container className="border-1 border-[#de4e8d1] space-y-2 shadow-md"> 
@@ -43,7 +50,7 @@ export default function Home() {
       </div>
       <div className="grid grid-cols-3 gap-5">
         <div className="col-span-2 w-full space-y-5">
-          <ChartData />
+          <ChartData workoutDates = {workoutDates}  />
           <Container className=" text-[#4a4a4a]">
             <h1 className="text-lg font-bold">Today's Insights</h1>
             <div className="text-[#63949E]">
@@ -55,42 +62,14 @@ export default function Home() {
               </div>))
               }
             </div>
-        
             <h1 className="text-lg font-bold mb-3 mt-5">Quick Actions</h1>
             <Button className="mx-3 bg-[#21c55d] text-[#bfbfbf]">Check Workouts</Button>
             <Button className="mx-2 text-[#bfbfbf]">Track Progress</Button>
-            
           </Container>
         </div>
         <div className="space-y-5">
-          {/* <Container className="bg-xtraDark text-[#c8d8e7]">
-            <h1 className="text-lg font-bold">Workout Summary</h1>
-            <div className="text-[#f2fcf5]">
-              {[{day:"leg Day",exercises:["squats","leg extensions","sumo Deadlifts"]},{day:"Rest"},{day:"push",exercises:["bench press", "inclined dumbbell press","cable flys"]},{day:"back",exercises:["pull ups","barbell rows","bicep curls"]},{day:"Rest"},{day:"Rest"},{day:"deltoids",exercises:["military press","lateral raises","face pulls"]}].map((_,i)=>
-              (
-              <div key={i} className=" p-2 ">
-                <p className="font-semibold text-md">{_.day}</p>
-                <p className="opacity-70 text-sm">{_.exercises}</p>
-              </div>))
-              }
-            </div>
-          </Container> */}
-          <WorkoutCalendar/>
-          {/* <Container className="bg-xtraDark text-[#c8d8e7]">
-            <h1 className="text-lg font-bold">Nutrition</h1>
-            <div className="text-[#f2fcf5]">
-              {[{day:"Breakfast",meal:"Oatmeal with fruits"},{day:"Lunch",meal:"Chicken salad"},{day:"Dinner",meal:"Steak with veggies"},{day:"Snack",meal:"Protein shake"}].map((_,i)=>
-              (
-              <div key={i} className=" p-2 ">
-                <p className="font-semibold text-md">{_.day}</p>
-                <p className="opacity-70 text-sm">{_.meal}</p>
-              </div>))
-              }
-            </div>
-
-          </Container> */}
+          <WorkoutCalendar workoutDates = {workoutDates}/>
         </div>
-
       </div>
     </div>
   )
@@ -103,3 +82,34 @@ const ProgressIcon =()=>{
     </svg>)
   }
   
+  const ExerciseProgress = ({ userLogs }: { userLogs: UserLog[] }) => {
+    const progressResults = calculateExerciseProgress(userLogs);
+  
+    return (
+      <div className="mt-6 rounded-lg bg-white p-6 shadow-sm">
+        <h2 className="mb-4 text-xl font-semibold">Exercise Progress</h2>
+        <div className="space-y-4">
+          {progressResults.map((result) => (
+            <div
+              key={result.exerciseName}
+              className="flex items-center justify-between rounded-md bg-gray-50 p-4"
+            >
+              <span className="font-medium">{result.exerciseName}</span>
+              <div className="flex items-center gap-2">
+                <span
+                  className={`${
+                    result.increasePercentage >= 0
+                      ? "text-green-600"
+                      : "text-red-600"
+                  }`}
+                >
+                  {result.increasePercentage >= 0 ? "+" : ""}
+                  {Math.round(result.increasePercentage)}%
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };

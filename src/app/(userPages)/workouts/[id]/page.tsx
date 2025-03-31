@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import Comments from "~/components/component/Comments";
+import Comments from "~/components/component/WorkoutComments";
 import TooltipBox from "~/components/component/tooltipV0";
 
 import Workout from "~/components/ui/workoutShowCase/Workout";
@@ -36,7 +36,7 @@ const page = async ({params} : {params:{id:string}}) => {
       <TooltipBox userId = {user?.id } Reactions = {Reactions} workoutId = {parseInt(params.id)} />
       </Container>
       <Container>
-        <Comments liked workoutID={workout.id} likes={workout.upvotes} comments={workout.comments}/>
+        <Comments appUser={user?.name ?? "user"} workoutID={workout.id} comments={workout.comments}/>
       </Container>
       <Toaster />
 

@@ -3,35 +3,24 @@
 import { Calendar } from "~/components/ui/calendar"
 import { cn } from "~/lib/utils"
 import { CalendarIcon } from "lucide-react"
-
-export default function WorkoutCalendar() {
+type Props = {
+  workoutDates :{
+    date: Date;
+}[] | null | undefined
+}
+export default function WorkoutCalendar({workoutDates}:Props) {
   // Current date for comparison
   const today = new Date()
 
-  // Sample past workout data - dates when workouts were completed
-  const pastWorkouts = [
-    new Date(2025, 2, 1),
-    new Date(2025, 2, 3),
-    new Date(2025, 2, 5),
-    new Date(2025, 2, 8),
-    new Date(2025, 2, 10),
-    new Date(2025, 2, 12),
-    new Date(2025, 2, 15),
-    new Date(2025, 2, 17),
-  ]
-
-  // Sample future scheduled workouts
-  const futureWorkouts = [
-    new Date(2025, 2, 20),
-    new Date(2025, 2, 22),
-    new Date(2025, 2, 24),
-    new Date(2025, 2, 26),
-    new Date(2025, 2, 29),
-    new Date(2025, 2, 31),
-  ]
+  // Extract dates from workoutDates prop
+  const workoutDateObjects = workoutDates?.map(item => item.date) ?? []
+  
+  // Separate past and future workouts
+  const pastWorkouts = workoutDateObjects.filter(date => date <= today)
+  const futureWorkouts = workoutDateObjects.filter(date => date > today)
 
   // Find the next workout date (first future workout after today)
-  const nextWorkout = futureWorkouts.find((date) => date > today) ?? null
+  const nextWorkout = futureWorkouts.length > 0 ? futureWorkouts[0] : null
 
   // Function to check if a date is in the past workout days array
   const isPastWorkoutDay = (date: Date) => {
@@ -83,7 +72,7 @@ export default function WorkoutCalendar() {
       <div className="mb-6 text-center">
         <div className="flex items-center justify-center gap-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
           <CalendarIcon className="h-5 w-5 text-blue-500" />
-          <span className="font-medium">Next workout: {formatDate(nextWorkout)}</span>
+          <span className="font-medium">Next workout: {formatDate(nextWorkout ?? null)}</span>
         </div>
       </div>
 

@@ -20,30 +20,21 @@ type Props = {
 const SearchBar = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [profiles, setProfiles] = useState<{name:string|null,id:string,image:string|null}[]>([]);
+  const [isFocused, setIsFocused] = useState(false);
 
-  const debouncedSearchTerm = useDebounce(searchTerm,300)
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // const value = e.target.value;
     setSearchTerm(e.target.value);
-
-    // if (value.trim() === "") {
-    //   setProfiles([]);
-    // } else {
-    //   const filteredProfiles = mockProfiles.filter((profile) =>
-    //     profile.toLowerCase().includes(value.toLowerCase())
-    //   );
-    //   setProfiles(filteredProfiles);
-    // }
   };
+
   useEffect(() => {
-  let searchedProfiles
     const searchHN = async () => {
       if (debouncedSearchTerm.trim() === "") {
-      setProfiles([]);
-    } else {
-      const filteredProfiles = await searchUsers(debouncedSearchTerm.toLowerCase())
-      setProfiles(filteredProfiles ?? []);
-    }
+        setProfiles([]);
+      } else {
+        const filteredProfiles = await searchUsers(debouncedSearchTerm.toLowerCase());
+        setProfiles(filteredProfiles ?? []);
+      }
     };
 
     void searchHN();
@@ -72,17 +63,27 @@ const SearchBar = () => {
         type="search"
         value={searchTerm}
         onChange={handleSearch}
+        onFocus={() => setIsFocused(true)}
+        onBlur={(e) => {
+          if (!e.relatedTarget || !e.relatedTarget.closest("a")) {
+            setIsFocused(false);
+          }
+        }}
       />
-      {profiles.length > 0 && (
+      {isFocused && profiles.length > 0 && (
         <ul className="absolute bg-white border border-gray-300 rounded-md mt-1 w-full z-10">
           {profiles.map((profile, index) => (
             <Link
               href={`/profile/${profile.id}`}
               key={index}
               className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 cursor-pointer"
-              onClick={() => {setSearchTerm("");setProfiles([])}}
+              onClick={() => {
+                setSearchTerm("");
+                setProfiles([]);
+              }}
+              tabIndex={-1} // Prevents the link from triggering onBlur
             >
-              {profile.image && (<Avatar image={profile.image}/>)}
+              {profile.image && <Avatar image={profile.image} />}
               <span>{profile.name}</span>
             </Link>
           ))}

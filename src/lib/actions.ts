@@ -1,6 +1,6 @@
 "use server"
 import { auth, signIn , signOut } from "auth"
-import { InsertDay, InsertExercice,  InsertWorkout, addConnect, addLike, addLogs, addNewReaction, addNotification, createComment, createPost, createReply, deleteDay, deleteRemovedExercices, editUserBio, editUserDetails, fetchAllWorkouts, fetchUserWorkouts, fetchWorkoutById, getCurrentWorkoutID, getDaysByWorkout, getExerciceByName, getFollows, getMuscleGroups, getNumberOfWorkoutsPerUser, getProfileByID, getSideConnects, getUserByEmail, getUserByID, getUserNotifs, getUsersByName, getWorkoutsByUser, isLiked, removeConnect, removeLike, updateDay, updateExercice,  updateReactions,  updateUserProfile,  updateWorkout } from "./data"
+import { InsertDay, InsertExercice,  InsertWorkout, addConnect, addLike, addLogs, addNewReaction, addNotification, createComment, createPost, createReply, createWorkoutComment, deleteDay, deleteRemovedExercices, editUserBio, editUserDetails, fetchAllWorkouts, fetchUserWorkouts, fetchWorkoutById, getCurrentWorkoutID, getDaysByWorkout, getExerciceByName, getFollows, getMuscleGroups, getNumberOfWorkoutsPerUser, getProfileByID, getSideConnects, getUserByEmail, getUserByID, getUserLogs, getUserNotifs, getUsersByName, getWorkoutDates, getWorkoutsByUser, isLiked, removeConnect, removeLike, updateDay, updateExercice,  updateReactions,  updateUserProfile,  updateWorkout } from "./data"
 import { redirect } from "next/navigation"
 import { AuthError } from "next-auth"
 import { user } from "./zodValidation"
@@ -11,6 +11,25 @@ import { seedDatabase } from "~/server/db/seed"
 import {S3Client,PutObjectCommand } from "@aws-sdk/client-s3"
 import { nanoid} from "nanoid"
 import {createPresignedPost} from "@aws-sdk/s3-presigned-post"
+
+// const getUserDetails = async (args:string[]) =>{
+//   const session = await auth()
+//   if(!session?.user?.id) return null
+//   let res : {userID:string,image:string,name:string,email:string} = {userID:session?.user?.id}
+
+//   for(const arg of args){
+//     if(arg === 'email'){
+//       if(!user) return null
+//       res = {...res,email:session?.user?.email}
+//     } 
+//     if(arg === "image"){
+//       if(!user) return null
+//       const image = session?.user?.image ?? ""
+//       res = {...res,image:image}
+//     }
+//   }
+//   return res
+// }
 export async function editWorkout (formData : FormData){
   
   const user = await getUserByEmail(formData.get('email') as string)
@@ -446,7 +465,7 @@ export const getUserWorkouts =async  (privacy:boolean,user:string) =>{
 
 export const getWorkoutList = async (user?:string) => {
   try {
-    const res = user ? await fetchAllWorkouts(user) : await fetchAllWorkouts(null)
+    const res = await fetchAllWorkouts() 
     const muscleGroup = await getMuscleGroups();
 
     const workouts = res.map(workout => {
@@ -675,5 +694,34 @@ export const getUserCurrentWorkout=async()=>{
   const current = await getCurrentWorkoutID(userID)
   if(!current) return null
   const res = fetchWorkoutById(current)
+  return res
+}
+
+export const addWorkoutComment= async (workoutID:number,content:string)=>{
+  const session = await auth()
+  const userID = session?.user?.id
+  const userName = session?.user?.name
+  if(!userID) return null
+  try{
+    const res = await createWorkoutComment(userName ?? "",content,userID,workoutID)
+    revalidatePath("/")
+  }catch(err){
+    console.error(err);
+    return null
+  }
+}
+export const fetchUserLogs = async ()=>{
+  const session = await auth()
+  const userID = session?.user?.id
+  if(!userID) return null
+  const res = await getUserLogs(userID)
+  return res
+}
+
+export const fetchWorkoutDates = async ()=>{
+  const session = await auth()
+  const userID = session?.user?.id
+  if(!userID) return null
+  const res = await getWorkoutDates(userID)
   return res
 }

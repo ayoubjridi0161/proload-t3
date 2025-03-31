@@ -477,16 +477,13 @@ export const getUserLikes = async (userID:string)=>{
     return likes?.likes
 }
 
-export const createComment = async (userName: string, content: string, userID: string, postID?: number, workoutID?: number) => {
+export const createComment = async (userName: string, content: string, userID: string, postID: number) => {
     try {
-        if (postID) {
-            const res = await db.insert(comments).values({ content: content, userId: userID, postId: postID, userName: userName }).returning({ id: comments.id });
-            return res[0]?.id;
-        }
-        if (workoutID) {
-            const res = await db.insert(comments).values({ content: content, userId: userID, workoutId: workoutID, userName: userName }).returning({ id: comments.id });
-            return res[0]?.id;
-        }
+       
+         const res = await db.insert(comments).values({ content: content, userId: userID, postId: postID, userName: userName }).returning({ id: comments.id });
+         return res[0]?.id;
+        
+
     } catch (err) {
         throw err;
     }
@@ -622,5 +619,45 @@ export const getCurrentWorkoutID = async (userID:string)=>{
     } catch (error) {
         console.error(error);
         
+    }
+}
+export const getWorkoutCycle = async (workoutID:number)=>{
+    try {
+        const res = await db.query.workouts.findFirst({columns:{numberOfDays:true},with:{days:{
+            columns:{dayIndex:true,name:true}
+        }},where:eq(workouts.id,workoutID)})
+        return res
+    } catch (error) {
+        console.error(error);
+
+    }
+}
+export const createWorkoutComment = async (userName: string, content: string, userID: string, WorkoutID: number) => {
+    try {
+       
+         const res = await db.insert(comments).values({ content: content, userId: userID, workoutId: WorkoutID, userName: userName }).returning({ id: comments.id });
+         return res[0]?.id;
+        
+
+    } catch (err) {
+        throw err;
+    }
+};
+export const getUserLogs = async (userID:string)=>{
+    try {
+        const res = await db.query.userLogs.findMany({where:eq(userLogs.userId,userID)})
+        return res
+    } catch (error) {
+        console.error(error);
+
+    }
+}
+export const getWorkoutDates = async (userID:string)=>{
+    try {
+        const res = await db.query.userLogs.findMany({where:eq(userLogs.userId,userID),columns:{date:true}})
+        return res
+    } catch (error) {
+        console.error(error);
+
     }
 }

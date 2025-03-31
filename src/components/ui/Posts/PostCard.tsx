@@ -1,6 +1,6 @@
 import React from 'react'
 import "./postCard.css"
-import Comments from '~/components/component/Comments';
+import Comments from '~/components/component/WorkoutComments';
 import { ReplyIcon, HeartIcon, MessageSquare } from 'lucide-react';
 import { Button } from '../button';
 import { Textarea } from '../textarea';

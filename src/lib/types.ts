@@ -75,3 +75,18 @@ export type WorkoutDetail = {
     dayNames: string[];
     upvotes: number;
 }[]
+
+export type UserLog = {
+    id: number
+    userId: string
+    workoutId: number
+    date: string
+    duration: number
+    logs: {
+      name: string
+      sets: {
+        setIndex: string
+        weight: string
+      }[]
+    }[]
+  }

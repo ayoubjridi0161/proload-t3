@@ -1,8 +1,8 @@
 import React, { useOptimistic, useState } from 'react'
-import { Textarea } from '../textarea'
-import { Button } from '../button'
 import Link from 'next/link';
 import { addReply } from '~/lib/actions';
+import { Textarea } from '../ui/textarea';
+import { Button } from '../ui/button';
 type Comment = {
     content: string;
     id: number;
@@ -32,16 +32,17 @@ export default function Replies({ comment,appUser }: Props) {
                 users:{name:appUser}
             })
             await addReply(comment.id,replyContent)
-            setReplyingTo(null)
         }
   
     return (
 
-        <div className="flex flex-col gap-2 m-0">
-                <Button variant={"link"} size="sm" className="text-xs text-[#4a4a4a] self-start p-0 my-0 ml-2"
+        <div className="flex flex-col gap-2 mt-2">
+             <div className="flex gap-4 mt-1 ml-2">
+                <Button variant={"ghost"} size="sm" className="text-xs text-[#4a4a4a] hover:text-blue-400"
                     onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}>
                      {replyingTo === comment.id ? "Cancel" : "Reply"}
                 </Button>
+            </div>
             {replyingTo &&<form action={addReplyAction} className="flex gap-2">
                 <Textarea
                 name='content'
@@ -58,11 +59,11 @@ export default function Replies({ comment,appUser }: Props) {
                 </div>
             </form>}
             {optimisticReplies && optimisticReplies.length > 0 && (
-            <div className="ml-6 mt-0 space-y-3">
+            <div className="ml-6 mt-2 space-y-3">
             {optimisticReplies?.map((reply) => (
                 <div key={reply.id} className="flex gap-2">
                 <div className="flex-1">
-                    <div className="bg-gray-100/60 p-2 rounded-lg">
+                    <div className="bg-gray-100 p-2 rounded-lg">
                     <div className="flex justify-between">
                         <Link
                         href={`/profile/${reply.users?.name}`}
