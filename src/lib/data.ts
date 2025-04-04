@@ -661,3 +661,12 @@ export const getWorkoutDates = async (userID:string)=>{
 
     }
 }
+export const getLastUserLog = async (userID:string)=>{
+    try {
+        const res = await db.query.userLogs.findFirst({where:eq(userLogs.userId,userID),orderBy:(userLogs,{desc})=>[desc(userLogs.date)]})
+        return res
+    } catch (error) {
+        console.error(error);
+
+    }
+}

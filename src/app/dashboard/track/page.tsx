@@ -1,4 +1,4 @@
-import { fetchWorkoutById } from "~/lib/data";
+import { fetchWorkoutById, getLastUserLog } from "~/lib/data";
 import Track from "~/components/ui/userDashboard/track";
 import { auth } from "auth";
 
@@ -6,7 +6,7 @@ export type WorkoutDetails = Awaited<ReturnType<typeof fetchWorkoutById>>;
 const page = async () => {
   const session= await auth();
   const user = session?.user
-  console.log(user)
+  if(!user?.id) return (<div>No user found!</div>)
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   const workout: WorkoutDetails = await fetchWorkoutById(user?.currentWorkout);
   const totalExercices = workout?.days.flatMap((day) => day.exercices) ?? [];
@@ -17,11 +17,12 @@ const page = async () => {
   const totalReps = totalExercices.reduce(
     (acc, exercice) => acc + exercice.sets * exercice.reps,
     0,
-  );
+  )
+  const lastSession = await getLastUserLog(user?.id);
   // const totalSets = totalSetsPerDay.reduce((acc,sets)=>acc+sets,0)
 
   return (
-    <Track workout={workout} totalSets={totalSets} totalReps={totalReps}  />
+    <Track workout={workout} totalSets={totalSets} totalReps={totalReps} lastSession = {lastSession}  />
   );
 };
 

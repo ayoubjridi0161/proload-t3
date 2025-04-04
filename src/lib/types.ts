@@ -90,3 +90,7 @@ export type UserLog = {
       }[]
     }[]
   }
+export type WorkoutLog = {
+    name: string;
+    sets: { setIndex: string; weight: string }[];
+  }[]
