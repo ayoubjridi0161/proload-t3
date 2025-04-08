@@ -10,9 +10,10 @@ import {type UserLog} from "~/lib/types"
 
 export default async function Home() {
   //  const workoutDates = await fetchWorkoutDates();
-  const userLogs = await fetchUserLogs();
+  const userLogs = await fetchUserLogs() ?? []
+  
 const workoutDates = userLogs?.map(log => ({date:log.date}));
-const progressResults = calculateExerciseProgress(userLogs);
+const progressResults = calculateExerciseProgress(userLogs  );
   return (
     <div className={ `     p-5 ${andika.className}`}>
       <div className="text-[#4a4a4a] text-lg"><h1 className="font-bold">Good morning, Athlete</h1>

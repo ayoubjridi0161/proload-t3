@@ -19,9 +19,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         signIn:"/login",
     },
     events:{
-      signOut: async (message)=>{
-        console.log("signout",message)
-        redirect("/")
+      async signOut({ session }) {
+        // Server-side cleanup logic
       }
     },
     callbacks:{
