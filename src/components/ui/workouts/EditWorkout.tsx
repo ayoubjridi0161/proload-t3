@@ -99,13 +99,15 @@ export default function EditWorkout(props : Props ) {
 
     return (
     <div className='bg-primary-foreground rounded-lg h-full'>
-     <form action={editWorkout}  className="h-full rounded-lg border border-border  p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800 space-y-2" >
+     <form action={async (formData: FormData) => {
+       await editWorkout(formData);
+     }} className="h-full rounded-lg border border-border p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800 space-y-2">
         <input type="hidden" name='email' value={email} />
         <input type="hidden" name='NoD' value={days.length}  />
         <input type="hidden" name='workoutID' value={props.id} />
         {/* <input type="hidden" name='published' value={isPublished?.toString()} /> */}
           <div className='pt-1 flex items-center'>
-          <UIverseButton defaultval={props.name}  name='workoutName' placeHolder="Workout name..." />
+          <UIverseButton defaultval={props.name} name='workoutName' placeHolder="Workout name..." aria-label={'workout name...'} />
           </div>
           <div className='space-y-4'>
           {days}
