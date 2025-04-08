@@ -670,3 +670,13 @@ export const getLastUserLog = async (userID:string)=>{
 
     }
 }
+
+export const getFullUser = async (userID:string)=>{
+    try {
+        const res = await db.query.users.findFirst({where:eq(users.id,userID)})
+        return res
+    } catch (error) {
+        console.error(error);
+
+    }
+}

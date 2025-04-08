@@ -1,6 +1,6 @@
 "use server"
 import { auth, signIn , signOut } from "auth"
-import { InsertDay, InsertExercice,  InsertWorkout, addConnect, addLike, addLogs, addNewReaction, addNotification, createComment, createPost, createReply, createWorkoutComment, deleteDay, deleteRemovedExercices, editUserBio, editUserDetails, fetchAllWorkouts, fetchUserWorkouts, fetchWorkoutById, getCurrentWorkoutID, getDaysByWorkout, getExerciceByName, getFollows, getMuscleGroups, getNumberOfWorkoutsPerUser, getProfileByID, getSideConnects, getUserByEmail, getUserByID, getUserLogs, getUserNotifs, getUsersByName, getWorkoutDates, getWorkoutsByUser, isLiked, removeConnect, removeLike, updateDay, updateExercice,  updateReactions,  updateUserProfile,  updateWorkout } from "./data"
+import { InsertDay, InsertExercice,  InsertWorkout, addConnect, addLike, addLogs, addNewReaction, addNotification, createComment, createPost, createReply, createWorkoutComment, deleteDay, deleteRemovedExercices, editUserBio, editUserDetails, fetchAllWorkouts, fetchUserWorkouts, fetchWorkoutById, getCurrentWorkoutID, getDaysByWorkout, getExerciceByName, getFollows, getFullUser, getMuscleGroups, getNumberOfWorkoutsPerUser, getProfileByID, getSideConnects, getUserByEmail, getUserByID, getUserLogs, getUserNotifs, getUsersByName, getWorkoutDates, getWorkoutsByUser, isLiked, removeConnect, removeLike, updateDay, updateExercice,  updateReactions,  updateUserProfile,  updateWorkout } from "./data"
 import { redirect } from "next/navigation"
 import { AuthError } from "next-auth"
 import { user } from "./zodValidation"
@@ -724,4 +724,13 @@ export const fetchWorkoutDates = async ()=>{
   if(!userID) return null
   const res = await getWorkoutDates(userID)
   return res
+}
+
+export const fetchFullUser = async ()=>{
+  const session = await auth()
+  const userID = session?.user?.id
+  if(!userID) return null
+  const res = await getFullUser(userID)
+  return res
+  
 }
