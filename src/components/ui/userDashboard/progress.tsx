@@ -38,9 +38,12 @@ export default function AthleteDashboard(props:Props) {
 
 
 
-  
-  const weeklyVolumeChange = weeklyVolumeData.length > 1 ? weeklyVolumeData[weeklyVolumeData.length - 1].volume - weeklyVolumeData[weeklyVolumeData.length - 2].volume : 0
-  const lastWeekVolume : number = weeklyVolumeData.length > 0 ? weeklyVolumeData[weeklyVolumeData.length - 1].volume : 0
+  const aux = weeklyVolumeData[weeklyVolumeData.length - 1]
+  const aux2 = weeklyVolumeData[weeklyVolumeData.length - 2]
+  let weeklyVolumeChange = 0
+  if(aux && aux2)
+  weeklyVolumeChange =  aux.volume - aux2.volume 
+  const lastWeekVolume : number =aux ? aux.volume : 0
 
   const [date, setDate] = useState<Date | undefined>(new Date())
 
