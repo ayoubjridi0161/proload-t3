@@ -30,36 +30,44 @@ interface Props {
 export default function AddPost({ image }: Props) {
   const [open, setOpen] = useState(false)
   const [postText, setPostText] = useState("")
-  const [selectedImage, setSelectedImage] = useState<string | null>(null)
-  // const [state, action] = useFormState(uploadFiles, { status: "pending", message: "", url: "", text: "" })
-  // console.log(state.message)
+  const [selectedImages, setSelectedImages] = useState<string[]>([])
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const imageUrl = URL.createObjectURL(file)
-      setSelectedImage(imageUrl)
+    const files = e.target.files
+    if (files) {
+      const newImages = Array.from(files).map(file => URL.createObjectURL(file))
+      setSelectedImages(prev => [...prev, ...newImages])
     }
   }
 
   const handleShare = async () => {
+    if (isSubmitting) return;
+    
     try {
-      const response = await fetch(selectedImage ?? "");
-      const blob = await response.blob();
-      const file = new File([blob], "image.jpg", { type: blob.type });
-
+      setIsSubmitting(true);
       const formData = new FormData();
-      formData.append("file", file);
+
+      // Handle multiple images
+      for (const imageUrl of selectedImages) {
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+        const file = new File([blob], `image-${Date.now()}.jpg`, { type: blob.type });
+        formData.append("files", file);
+      }
+      
       formData.append("text", postText);
 
       const res = await addPostAction(formData);
       console.log(res);
+      setOpen(false);
+      setPostText("");
+      setSelectedImages([]);
     } catch (error) {
       console.error("Error sharing post:", error)
+    } finally {
+      setIsSubmitting(false);
     }
-    setOpen(false)
-    setPostText("")
-    setSelectedImage(null)
   }
 
   return (
@@ -94,7 +102,7 @@ export default function AddPost({ image }: Props) {
             size={"sm"}
             variant={"ghost"}
             style={{ boxShadow: "2px 2px 0px rgba(0, 0, 0, 0.8)" }}
-            className="rounded-none border-black border-1 px-6 py-0 text-sm text-[#353434] font-light"
+            className="rounded-none border-black border-1 bg-white px-6 py-0 text-sm text-[#353434] font-light"
           >
             SHARE
           </Button>
@@ -109,6 +117,7 @@ export default function AddPost({ image }: Props) {
             <DialogDescription>Share what's on your mind with your followers</DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
+          </div>
             <Textarea
               placeholder="What's on your mind athlete"
               className="min-h-[120px] resize-none"
@@ -116,16 +125,25 @@ export default function AddPost({ image }: Props) {
               onChange={(e) => setPostText(e.target.value)}
               name="text"
             />
-
-            {selectedImage && (
-              <div className="relative">
-                <Image
-                  src={selectedImage || "/placeholder.svg"}
-                  alt="Selected"
-                  className="w-full h-auto max-h-[200px] object-contain rounded-md"
-                  width={500}
-                  height={200}
-                />
+            {selectedImages.length > 0 && (
+              <div className="grid grid-cols-2 gap-2">
+                {selectedImages.map((img, index) => (
+                  <div key={index} className="relative">
+                    <Image
+                      src={img}
+                      alt={`Selected ${index + 1}`}
+                      className="w-full h-auto max-h-[200px] object-contain rounded-md"
+                      width={500}
+                      height={200}
+                    />
+                    <button
+                      onClick={() => setSelectedImages(prev => prev.filter((_, i) => i !== index))}
+                      className="absolute top-2 right-2 bg-black/50 text-white rounded-full p-1"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
               </div>
             )}
 
@@ -136,7 +154,15 @@ export default function AddPost({ image }: Props) {
                   <span>Add Image</span>
                 </div>
               </Label>
-              <Input id="image-upload" type="file" accept="image/*" className="hidden" name="file" onChange={handleImageUpload} />
+              <Input 
+                id="image-upload" 
+                type="file" 
+                accept="image/*" 
+                multiple
+                className="hidden" 
+                name="file" 
+                onChange={handleImageUpload} 
+              />
 
               <Label className="cursor-pointer">
                 <div className="flex items-center gap-2 text-[#b4b4b4] hover:text-primary">
@@ -145,16 +171,15 @@ export default function AddPost({ image }: Props) {
                 </div>
               </Label>
             </div>
-          </div>
           <DialogFooter>
             <Button
             type="submit"
-              // eslint-disable-next-line @typescript-eslint/no-misused-promises
-              onClick={handleShare}
+              onClick={() => void handleShare()}
+              disabled={isSubmitting}
               style={{ boxShadow: "2px 2px 0px rgba(0, 0, 0, 0.8)" }}
-              className="rounded-none border-black border-1 px-6 py-0 text-sm text-[#353434] font-light"
+              className="rounded-none bg-white border-black border-1 px-6 py-0 text-sm text-[#353434] font-light"
             >
-              SHARE
+              {isSubmitting ? "SHARING..." : "SHARE"}
             </Button>
           </DialogFooter>
           {/* </form> */}

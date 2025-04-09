@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+// Add useEffect to imports
+import { useState, useEffect } from "react"
 import { Button } from "~/components/ui/button"
 import { Textarea } from "~/components/ui/textarea"
 import {
@@ -15,6 +16,13 @@ import {
 import { Input } from "~/components/ui/input"
 import { Label } from "~/components/ui/label"
 import { addBio, addProfileDetails } from "~/lib/actions"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select"
 type Props = {
   data: {
     bio: string | null;
@@ -42,15 +50,49 @@ export default function AthleticProfile({data}:Props) {
     setShowBioForm(false)
     await addBio(bio)
   }
+  console.log(details)
+
+  // Add this state for tracking save operation
+  const [isSaving, setIsSaving] = useState(false)
 
   const handleSaveDetails = async () => {
     if (details){
-      setSavedDetails({ ...details })
-      if(savedDetails) { const res = await addProfileDetails(savedDetails) }
+      setIsSaving(true)
+      try {
+        setSavedDetails({ ...details })
+        const res = await addProfileDetails(details)
+        setShowDetailsDialog(false)
+      } catch (error) {
+        console.error('Failed to save details:', error)
+      } finally {
+        setIsSaving(false)
+      }
     }
-    setShowDetailsDialog(false)
   }
-
+  useEffect(() => {
+    if (details.weight && details.height) {
+      const weightValue = parseFloat(details.weight.replace(/[^0-9.]/g, ''));
+      const heightValue = parseFloat(details.height.replace(/[^0-9.]/g, ''));
+      
+      if (!isNaN(weightValue) && !isNaN(heightValue)) {
+        let bmiValue: number;
+        
+        if (details.weight.includes('kg') && details.height.includes('cm')) {
+          // Convert cm to meters and calculate BMI
+          bmiValue = weightValue / Math.pow(heightValue / 100, 2);
+        } else if (details.weight.includes('lbs') && details.height.includes('ft')) {
+          // Convert lbs and ft to kg and meters
+          const weightKg = weightValue * 0.453592;
+          const heightM = heightValue * 0.3048;
+          bmiValue = weightKg / Math.pow(heightM, 2);
+        } else {
+          return;
+        }
+        
+        setDetails(prev => ({ ...prev, bmi: bmiValue.toFixed(1) }));
+      }
+    }
+  }, [details.weight, details.height]);
   return (
     <div className="shadow-bottom w-full p-2 space-y-3">
       <h1 className="text-xl font-bold">Athletic Profile</h1>
@@ -125,7 +167,7 @@ export default function AthleticProfile({data}:Props) {
             )}
             {savedDetails.age && (
               <>
-                <span className="font-semibold">.age:</span>
+                <span className="font-semibold">age:</span>
                 <span>{savedDetails.age}</span>
               </>
             )}
@@ -133,6 +175,12 @@ export default function AthleticProfile({data}:Props) {
               <>
                 <span className="font-semibold">Experience:</span>
                 <span>{savedDetails.experience}</span>
+              </>
+            )}
+            {savedDetails.bmi && (
+              <>
+                <span className="font-semibold">bmi:</span>
+                <span>{savedDetails.bmi}</span>
               </>
             )}
           </div>
@@ -158,25 +206,67 @@ export default function AthleticProfile({data}:Props) {
               <Label htmlFor="height" className="text-right">
                 Height
               </Label>
-              <Input
-                id="height"
-                value={details?.height}
-                onChange={(e) => setDetails({ ...details, height: e.target.value })}
-                className="col-span-3"
-                placeholder="e.g., 150cm"
-              />
+              <div className="col-span-3 flex gap-2">
+                <Input
+                  id="height"
+                  type="number"
+                  value={details.height?.replace(/[^0-9.]/g, '')}
+                  onChange={(e) => {
+                    const unit = details.height?.includes('cm') ? 'cm' : 'ft';
+                    setDetails({ ...details, height: `${e.target.value}${unit}` });
+                  }}
+                  className="flex-1"
+                  placeholder={details.height?.includes('cm') ? "e.g., 150" : "e.g., 5.9"}
+                />
+                <Select 
+                  value={details.height?.includes('cm') ? 'cm' : 'ft'} 
+                  onValueChange={(unit) => {
+                    const value = details.height?.replace(/[^0-9.]/g, '') || '';
+                    setDetails({ ...details, height: `${value}${unit}` });
+                  }}
+                >
+                  <SelectTrigger className="w-24 bg-white">
+                    <SelectValue placeholder="Unit" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="cm">cm</SelectItem>
+                    <SelectItem value="ft">ft</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="weight" className="text-right">
                 Weight
               </Label>
-              <Input
-                id="weight"
-                value={details.weight}
-                onChange={(e) => setDetails({ ...details, weight: e.target.value })}
-                className="col-span-3"
-                placeholder="e.g., 185 kg"
-              />
+              <div className="col-span-3 flex gap-2">
+                <Input
+                  id="weight"
+                  type="number"
+                  value={details.weight?.replace(/[^0-9.]/g, '')}
+                  onChange={(e) => {
+                    const unit = details.weight?.includes('kg') ? 'kg' : 'lbs';
+                    setDetails({ ...details, weight: `${e.target.value}${unit}` });
+                  }}
+                  className="flex-1"
+                  placeholder={details.weight?.includes('kg') ? "e.g., 75" : "e.g., 165"}
+                />
+                <Select 
+                  value={details.weight?.includes('kg') ? 'kg' : 'lbs'} 
+                  onValueChange={(unit) => {
+                    const value = details.weight?.replace(/[^0-9.]/g, '') || '';
+                    setDetails({ ...details, weight: `${value}${unit}` });
+                  }}
+                >
+                  <SelectTrigger className="w-24 bg-white">
+                    <SelectValue placeholder="Unit" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="kg">kg</SelectItem>
+                    <SelectItem value="lbs">lbs</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="age" className="text-right">
@@ -199,20 +289,25 @@ export default function AthleticProfile({data}:Props) {
                 value={details.experience}
                 onChange={(e) => setDetails({ ...details, experience: e.target.value })}
                 className="col-span-3"
-                placeholder="e.g., Point Guard"
+                placeholder="e.g., 2 years"
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="" className="text-right">
                   gender
               </Label>
-              <Input
-                id="gender"
-                value={details.gender}
-                onChange={(e) => setDetails({ ...details, gender: e.target.value })}
-                className="col-span-3"
-                placeholder="e.g., male"
-              />
+              <Select 
+                value={details.gender} 
+                onValueChange={(value) => setDetails({ ...details, gender: value })}
+              >
+                <SelectTrigger className="col-span-3 bg-white">
+                  <SelectValue placeholder="Select gender" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="male">Male</SelectItem>
+                  <SelectItem value="female">Female</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="" className="text-right">
@@ -232,8 +327,9 @@ export default function AthleticProfile({data}:Props) {
               onClick={()=>{void handleSaveDetails()}}
               style={{ boxShadow: "2px 2px 0px rgba(0, 0, 0, 0.8)" }}
               className="rounded-none font-semibold border-black border-1"
+              disabled={isSaving}
             >
-              Save Details
+              {isSaving ? 'Saving...' : 'Save Details'}
             </Button>
           </DialogFooter>
         </DialogContent>

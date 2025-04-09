@@ -348,16 +348,31 @@ export const logWorkoutAction = async (prev:any , formdata:FormData)=> {
 
 export const addPostAction = async (formData:FormData) => {
   const session = await auth()
-    const url = await uploadToS3(formData)
-    const content = formData.get("text") as string
-    const userID = session?.user?.id
-    if(!userID) throw new Error("no user found")        
-    try{
-      const res = await createPost({content:content,resources:[url],userId:userID,title:""})
-      return res
-    }catch(err){
-      throw err
+  const userID = session?.user?.id
+  if(!userID) throw new Error("no user found")
+
+  try {
+    const files = formData.getAll("files");
+    const urls = [];
+    
+    for (const file of files) {
+      const newFormData = new FormData();
+      newFormData.append("file", file);
+      const url = await uploadToS3(newFormData);
+      urls.push(url);
     }
+
+    const content = formData.get("text") as string
+    const res = await createPost({
+      content: content,
+      resources: urls,
+      userId: userID,
+      title: ""
+    })
+    return res
+  } catch (err) {
+    throw err
+  }
 };
 
 

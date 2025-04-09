@@ -16,6 +16,7 @@ import { addComment, addReply, likePost } from '~/lib/actions'
 import { Textarea } from '../textarea'
 import { Button } from '../button'
 import Comments from './comments'
+import DisplayImages from './displayImages'
 type Comment = {
   content: string;
   id: number;
@@ -84,13 +85,14 @@ export default function Post({userImage,userName,userId,postContent,media,likes,
         </div>
         <p>{postContent}</p>
         
-        {/* <div className='grid grid-cols-2  gap-5 w-full'> */}
-        {media?.map((src,index) => (
-          <div key={index} className='relative w-full h-64'>
+        {/* <div className='grid grid-cols-2  gap-5 w-full'>
+        {media && media.length > 0 && media.map((src,index) => (
+          <div key={index} className='relative  w-full h-64'>
             <Image src={src} alt={`media-${index}`} layout='fill' objectFit='cover' />
           </div>
         ))}
-        {/* </div> */}
+        </div> */}
+        {media && media.length > 0 && <DisplayImages media={media} />}
         <div className=' flex justify-between items-center '>
             {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
             <div onClick={handleLike} className={'flex gap-2 items-center cursor-pointer transition-transform duration-300 ease-in-out transform hover:scale-110'}>
