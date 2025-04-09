@@ -18,19 +18,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     pages:{
         signIn:"/login",
     },
-    events:{
-      signOut: async (message)=>{
-        console.log("signout",message)
-        redirect("/")
-      }
-    },
-    callbacks:{
-      session({ session, user }) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        session.user.currentWorkout = user.currentWorkout
-        return session;
-      }
-    }
+    
         })
   
   

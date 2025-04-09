@@ -90,7 +90,7 @@ export default function CreateWorkout({exerciceNames}:{
         <input type="hidden" name='NoD' value={days.length}  />
         <input type="hidden" name='published' value={isPublished?.toString()} />
         <div className='pt-1 flex items-center'>
-          <UIverseButton name='workoutName' placeHolder="Workout name..."  />
+          <UIverseButton name='workoutName' placeHolder="Workout name..." aria-label="Enter workout name" />
         </div>
         <Textarea name='description' placeholder='drop out a note for the workout'/>
         <div className='space-y-4 '>

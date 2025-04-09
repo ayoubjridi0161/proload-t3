@@ -10,7 +10,7 @@ interface Friend {
   id: number
   name: string
   avatar: string
-  status: "online" | "offline" | "away"
+  status: string
   mutualFriends: number
   lastActive: string
   tags: string[]

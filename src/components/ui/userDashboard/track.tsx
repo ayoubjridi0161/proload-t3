@@ -14,7 +14,7 @@ import { logWorkoutAction } from "~/lib/actions";
 import { type WorkoutDetails } from "~/app/dashboard/track/page";
 import { useFormState } from "react-dom";
 import { Button } from "../button";
-import { useForm} from "react-hook-form";
+import { useForm } from "react-hook-form"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 import { type WorkoutLog} from "~/lib/types";
@@ -87,7 +87,7 @@ export default function Track({ workout, totalSets, totalReps,lastSession }: Pro
           <TableHeader>
             <TableRow>
               <TableHead>Exercise</TableHead>
-              {Array.from({ length: Math.max(...(lastSession.logs as WorkoutLog).map(ex => ex.sets.length)) }).map((_, i) => (
+              {Array.from({ length: Math.max(...(lastSession.logs as WorkoutLog[]).map(ex => ex.sets.length)) }).map((_, i) => (
                 <TableHead key={i}>Set {i + 1}</TableHead>
               ))}
             </TableRow>

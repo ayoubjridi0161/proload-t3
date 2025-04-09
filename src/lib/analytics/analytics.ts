@@ -1,33 +1,25 @@
-type UserLog = {
-    id: number
-    userId: string
-    workoutId: number
-    date: string
-    duration: number
-    logs: {
-      name: string
-      sets: {
-        setIndex: string
-        weight: string
-      }[]
-    }[]
-  }
+import { UserLog , WorkoutLog } from "~/lib/types";
 interface ProgressResult {
   exerciseName: string;
   increasePercentage: number;
 }
-const flattenLogs = (userLogs:UserLog[]) => {
-  return userLogs.flatMap(log => 
-  log.logs.map(exercise => ({
-    name: exercise.name,
-    date: log.date,
-    maxWeight: Math.max(...exercise.sets.map(set => Number(set.weight) || 0))
-  })));
+const flattenLogs = (userLogs: UserLog[]): Array<{ name: string; date: string; maxWeight: number }> => {
+  return userLogs.flatMap((log): Array<{ name: string; date: string; maxWeight: number }> =>
+    (log.logs as WorkoutLog[]).map(workoutLog => ({
+      name: workoutLog.name,
+      date: log.date.toString(),
+      maxWeight: Math.max(...workoutLog.sets.map(set => Number(set.weight) || 0))
+    }))
+  );
 }
+
 export function calculateExerciseProgress(userLogs: UserLog[]): ProgressResult[] {
+  if (!userLogs?.length) {
+    return [];
+  }
   if (userLogs.length < 2) {
     return [{
-      exerciseName: userLogs[0]?.logs[0]?.name ?? '',
+      exerciseName: (userLogs[0]?.logs as WorkoutLog[])?.[0]?.name ?? '',
       increasePercentage: 0
     }];
   }
@@ -36,21 +28,28 @@ export function calculateExerciseProgress(userLogs: UserLog[]): ProgressResult[]
   const flattenedLogs = flattenLogs(userLogs);
 
   // Group by exercise name and count frequency
-  const exerciseGroups = flattenedLogs.reduce((acc, curr) => {
-    if (!acc[curr.name]) {
-      acc[curr.name] = {
-        name: curr.name,
+  const exerciseGroups = flattenedLogs.reduce<Record<string, { 
+    name: string; 
+    count: number; 
+    weights: { weight: number; date: string }[] 
+  }>>((acc, curr) => {
+    const name = curr.name?.trim() || 'Unknown';
+    if (!acc[name]) {
+      acc[name] = {
+        name,
         count: 0,
         weights: []
       };
     }
-    acc[curr.name].count++;
-    acc[curr.name].weights.push({
-      weight: curr.maxWeight,
-      date: curr.date
-    });
+    acc[name].count++;
+    if (curr.maxWeight !== undefined && curr.date) {
+      acc[name].weights.push({
+        weight: curr.maxWeight,
+        date: curr.date
+      });
+    }
     return acc;
-  }, {} as Record<string, { name: string; count: number; weights: { weight: number; date: string }[] }>);
+  }, {});
 
   // Calculate progress for all exercises
   return Object.values(exerciseGroups).map(exercise => {
@@ -78,19 +77,19 @@ const calculateFirstDayOfWeek = (dateStr: string): string => {
   return firstDay.toISOString().split('T')[0] ?? ''; // Format as YYYY-MM-DD
 };
 export function calculateWeeklyVolume(userLogs: UserLog[]): { week: string; volume: number }[] {
-  if (userLogs.length === 0) {
+  if (!userLogs?.length || !Array.isArray(userLogs)) {
     return [];
   }
   // Group logs by week and calculate total volume
   const weeklyVolumes = userLogs.reduce((acc, log) => {
-    const weekFirstDay = calculateFirstDayOfWeek(log.date);
+    const weekFirstDay = calculateFirstDayOfWeek(log.date.toString());
     
     if (!acc[weekFirstDay]) {
       acc[weekFirstDay] = 0;
     }
     
     // Calculate volume for this log (sum of weight for all sets)
-    const logVolume = log.logs.reduce((exerciseVolume, exercise) => {
+    const logVolume = (log.logs as WorkoutLog[]).reduce((exerciseVolume, exercise) => {
       const exerciseTotal = exercise.sets.reduce((setVolume, set) => {
         return setVolume + (Number(set.weight) || 0);
       }, 0);
@@ -227,15 +226,19 @@ export function calculateWeeklyWeightProgress(userLogs: UserLog[]) {
   return calculateOverallWeeklyProgress(weeklyProgressPerExercise);
 }
 
-export function getMainLiftsProgress(weeklyProgressPerExercise:{
+export function getMainLiftsProgress(weeklyProgressPerExercise: {
   name: string;
   weeklyProgress: {
-      weekStart: string;
-      averageWeight: number;
+    weekStart: string;
+    averageWeight: number;
   }[];
-}[]){
+}[]) {
+  if (!weeklyProgressPerExercise?.length) {
+    return [];
+  }
+
   const ExerciseNames = [
-    'squats', 'bench press', 'deadlift', 'overhead press', 
+    'squats', 'bench press', 'deadlift', 'overhead press'
   ];
   const mainLifts = weeklyProgressPerExercise.filter(exercise =>
     ExerciseNames.includes(exercise.name.toLowerCase())
@@ -279,6 +282,17 @@ export function getMainLiftsProgress(weeklyProgressPerExercise:{
 }
 
 export function calculateWorkoutFrequencyPerDay(userLogs: UserLog[]) {
+  if (!userLogs?.length) {
+    return [];
+  }
+
+  const workoutDates = userLogs.map(log => {
+    const date = new Date(log.date);
+    if (isNaN(date.getTime())) {
+      return new Date().getTime(); // fallback to current date if invalid
+    }
+    return date.getTime();
+  });
   // Count workouts for each day of the week
   const dayCount = userLogs.reduce((acc, log) => {
     const date = new Date(log.date);
@@ -309,14 +323,14 @@ export function calculateWeeklyWorkoutVolume(userLogs: UserLog[]) {
 
   // Group logs by week and count sets
   const weeklyVolumes = userLogs.reduce((acc, log) => {
-    const weekFirstDay = calculateFirstDayOfWeek(log.date);
+    const weekFirstDay = calculateFirstDayOfWeek(log.date.toString());
     
     if (!acc[weekFirstDay]) {
       acc[weekFirstDay] = 0;
     }
     
     // Count total sets for this log
-    const totalSets = log.logs.reduce((exerciseSets, exercise) => {
+    const totalSets = (log.logs as WorkoutLog[]).reduce((exerciseSets, exercise) => {
       return exerciseSets + exercise.sets.length;
     }, 0);
     
@@ -332,5 +346,3 @@ export function calculateWeeklyWorkoutVolume(userLogs: UserLog[]) {
     }))
     .sort((a, b) => a.week.localeCompare(b.week));
 }
-
-

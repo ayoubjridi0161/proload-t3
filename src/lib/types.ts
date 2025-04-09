@@ -78,19 +78,14 @@ export type WorkoutDetail = {
 
 export type UserLog = {
     id: number
-    userId: string
-    workoutId: number
-    date: string
-    duration: number
-    logs: {
-      name: string
-      sets: {
-        setIndex: string
-        weight: string
-      }[]
-    }[]
+    userId: string | null
+    workoutId: number |null
+    date: Date
+    duration: number | null
+    logs: unknown
+    
   }
 export type WorkoutLog = {
     name: string;
     sets: { setIndex: string; weight: string }[];
-  }[]
+  }
