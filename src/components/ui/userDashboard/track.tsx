@@ -11,7 +11,7 @@ import { andika, lalezar } from "~/components/ui/font";
 import Container from "~/components/ui/userDashboard/Container";
 import { Input } from "@nextui-org/react";
 import { logWorkoutAction } from "~/lib/actions";
-import { type WorkoutDetails } from "~/app/dashboard/track/page";
+import { type WorkoutDetails } from "~/app/(userPages)/(sideBars)/dashboard/track/page";
 import { useFormState } from "react-dom";
 import { Button } from "../button";
 import { useForm } from "react-hook-form"

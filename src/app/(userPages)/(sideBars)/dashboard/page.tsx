@@ -1,6 +1,6 @@
 import PersonalRecords from "~/components/ui/userDashboard/PR"
-import { AppSidebar } from "../../components/app-sidebar"
-import { SiteHeader } from "../../components/site-header"
+import { AppSidebar } from "../../../../components/app-sidebar"
+import { SiteHeader } from "../../../../components/site-header"
 import { SidebarInset, SidebarProvider } from "~/components/ui/sidebar"
 import { Button } from "react-day-picker"
 import { andika } from "~/components/ui/font"

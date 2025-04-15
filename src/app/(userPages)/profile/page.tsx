@@ -8,7 +8,7 @@ export default async function page() {
   if(!user.id) throw new Error("no user found")
   
   return (
-    <div className=" mx-auto">
+    <div className="grid place-items-center mx-auto">
         <Profile user = {user}/>
     </div>
   )

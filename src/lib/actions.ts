@@ -1,35 +1,15 @@
 "use server"
 import { auth, signIn , signOut } from "auth"
-import { InsertDay, InsertExercice,  InsertWorkout, addConnect, addLike, addLogs, addNewReaction, addNotification, createComment, createPost, createReply, createWorkoutComment, deleteDay, deleteRemovedExercices, editUserBio, editUserDetails, fetchAllWorkouts, fetchUserWorkouts, fetchWorkoutById, getCurrentWorkoutID, getDaysByWorkout, getExerciceByName, getFollows, getFullUser, getMuscleGroups, getNumberOfWorkoutsPerUser, getProfileByID, getSideConnects, getUserByEmail, getUserByID, getUserLogs, getUserNotifs, getUsersByName, getWorkoutDates, getWorkoutsByUser, isLiked, removeConnect, removeLike, updateDay, updateExercice,  updateReactions,  updateUserProfile,  updateWorkout } from "./data"
-import { redirect } from "next/navigation"
+import { InsertDay, InsertExercice,  InsertWorkout, addConnect, addLike, addLogs, addNewReaction, addNotification, createComment, createPost, createReply, createWorkoutComment, deleteDay, deleteRemovedExercices, editUserBio, editUserDetails, fetchAllWorkouts, fetchUserWorkouts, fetchWorkoutById, getCurrentWorkoutID, getDaysByWorkout, getExerciceByName, getFollows, getFullUser, getMuscleGroups, getNumberOfWorkoutsPerUser, getProfileByID, getSharedPostByID, getSideConnects, getUserByEmail, getUserByID, getUserLogs, getUserNotifs, getUserPrs, getUsersByName, getWorkoutDates, getWorkoutsByUser, isLiked, removeConnect, removeLike, sharePost, updateDay, updateExercice,  updateReactions,  updateUserProfile,  updateUserPrs,  updateWorkout } from "./data"
 import { AuthError } from "next-auth"
-import { user } from "./zodValidation"
-import { ZodError, any } from "zod"
+import { ZodError } from "zod"
 import { revalidatePath } from "next/cache"
 import { DrizzleError } from "drizzle-orm"
-import { seedDatabase } from "~/server/db/seed"
-import {S3Client,PutObjectCommand } from "@aws-sdk/client-s3"
+import {S3Client } from "@aws-sdk/client-s3"
 import { nanoid} from "nanoid"
 import {createPresignedPost} from "@aws-sdk/s3-presigned-post"
+import {type UserLog,type WorkoutLog} from "~/lib/types"
 
-// const getUserDetails = async (args:string[]) =>{
-//   const session = await auth()
-//   if(!session?.user?.id) return null
-//   let res : {userID:string,image:string,name:string,email:string} = {userID:session?.user?.id}
-
-//   for(const arg of args){
-//     if(arg === 'email'){
-//       if(!user) return null
-//       res = {...res,email:session?.user?.email}
-//     } 
-//     if(arg === "image"){
-//       if(!user) return null
-//       const image = session?.user?.image ?? ""
-//       res = {...res,image:image}
-//     }
-//   }
-//   return res
-// }
 export async function editWorkout (formData : FormData){
   
   const user = await getUserByEmail(formData.get('email') as string)
@@ -94,35 +74,31 @@ export async function editWorkout (formData : FormData){
   }
 }
 export default async function addWorkout(formData : FormData) {
+  console.log(formData);
   const session = await auth()
   if(!session?.user?.id) throw new Error("no user found")
-  const userID = session.user.id
+  const userID = session?.user?.id
   const description = formData.get("description") as string
    const workoutID =  await  InsertWorkout({name:formData.get('workoutName') as string,userId:userID,description: description ?? 'new description',numberOfDays:parseInt(formData.get('NoD') as string),published:formData.get('published') === 'true'})
   if(typeof workoutID !== 'number'){
     throw new Error("failed to insert workout") 
   }
-
   const days = formData.getAll('day')
   console.log(days)
-  
-
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-return
   const parsedDays : {name:string,index:number,dayID:number}[]= days.map((day)=>JSON.parse(day as string))
   //cast the indexes to integers
   
-  const sortedDays = parsedDays.sort((a, b) => (a.index - b.index)).filter(day => day.name !== "rest")
+  const sortedDays = parsedDays.map((day,index)=>({name:day.name,index:index+1})).filter(day => day.name !== "rest")
   
 
   for(const eachDay of sortedDays){
     const dayID = await InsertDay({name:eachDay.name,index:eachDay.index},workoutID)
     if(typeof dayID !== 'number'){
-      // return {message:"failed to insert day"}
       throw new Error("failed to insert day")
     }
     
     const exercices = formData.getAll(eachDay.index.toString())
-    // console.log(exercices)
     for(const exercice of exercices){
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const parsed : {name:string,sets:number,reps:number,id:number} = JSON.parse(exercice as string)
@@ -130,7 +106,6 @@ export default async function addWorkout(formData : FormData) {
     }
   }
 }
-
 
 export const login = async (previous : any , formData : FormData)=>{
   // console.log(formData)
@@ -150,22 +125,7 @@ export const login = async (previous : any , formData : FormData)=>{
     
   }
 }
-// export const signup = async (prev : any ,formData : FormData)=>{
-//   try{
-//     console.log(formData)
-//    const parsed = user.safeParse({username:formData.get('username') as string,email:formData.get('email') as string,password:formData.get('password') as string})
-//   if(parsed.success){
-//     const response = await InsertUser(parsed.data)
-//     return {message:"success"}
-    
-//   }
-//   }catch(err){
-//     if(err instanceof DrizzleError){
-//       console.log(err)
-//     return {message:err.cause?.constraint }
-//   }
-//   }
-// }
+
 export const signout = async ()=>{
   await signOut()
   revalidatePath('/')
@@ -624,9 +584,7 @@ export const fetchNotifs = async ()=>{
     console.log("error")
     return "failure"
   }
-}
-
-
+} 
 
 export const isFollowed = async (followed:string)=>{
   const session = await auth();
@@ -748,4 +706,63 @@ export const fetchFullUser = async ()=>{
   const res = await getFullUser(userID)
   return res
   
+}
+
+export const refreshPRs = async (previousState:any,formData:FormData)=>{
+  const session = await auth()
+  const userID = session?.user?.id
+  if(!userID) return null
+  const userLogs = await getUserLogs(userID);
+  if (!userLogs) return null
+  const logs  = userLogs.map(log => log.logs as WorkoutLog[]);
+
+// Create a map to track max weight for each exercise
+  const exerciseRecords: { exercise: string, record: number }[] = [];
+
+// Iterate through each workout log
+  logs.forEach(log => {
+    log.forEach(exercise => {
+      const weight = Math.max(...exercise.sets.map(set => parseFloat(set.weight) || 0));
+
+      // Check if the exercise is already in the map
+      const existingRecord = exerciseRecords.find(record => record.exercise === exercise.name);
+
+      if (existingRecord) {
+        // If the weight is higher than the existing record, update the record
+        if (weight > existingRecord.record) {
+          existingRecord.record = weight;
+        }  
+      }else{
+        // If the exercise is not in the map, add it with the current weight as the record
+        if(weight >  50)
+        exerciseRecords.push({ exercise: exercise.name, record: weight });
+      }
+    }) 
+  })
+  const res = await updateUserPrs(userID,exerciseRecords)
+  revalidatePath("/")
+  return res
+}
+
+export const fetchPersonalRecords = async ()=>{
+  const session = await auth()
+  const userID = session?.user?.id
+  if(!userID) return null
+  const res = await getUserPrs(userID)
+  return res
+}
+
+export const sharePostAction = async (postID:number,shareText:string,proprietairy:string)=>{
+ const session = await auth()
+ const userID = session?.user?.id
+ if(!userID) return null
+ const res = await sharePost(postID,userID,shareText) 
+ await sendNotification(proprietairy,"new Share",`${session.user?.name} just shared your post`)
+ revalidatePath("/")
+ return res 
+}
+
+export const getSharedPost = async (postID:number)=>{
+  const res = await getSharedPostByID(postID)
+  return res
 }

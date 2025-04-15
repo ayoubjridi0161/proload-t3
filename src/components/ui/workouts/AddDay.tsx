@@ -9,19 +9,14 @@ import { cn } from '~/lib/utils'
 import Container from '../Container'
 import { ButtonBlack, ButtonWhite } from '../UIverse/Buttons'
 import { Input } from '../input'
+import { type ExerciseNames } from '~/lib/types'
 
 
 type Props = {
-    muscles: string,
-    id: number,
-    remove: (id:number)=>void,
-    exerciceNames:{
-      name: string;
-      musclesTargeted: string[];
-      muscleGroup: string;
-      equipment: string[];
-  }[]
-
+    muscles: string
+    remove: (id:number)=>void
+    id: number
+    exerciseNames: ExerciseNames
 }
 type exercice = {
   exName: string,
@@ -37,15 +32,8 @@ export default function AddDay(props : Props) {
     const [nbrExercices,setNbrExercices] = React.useState(0)
     const dayNameProps = useRef<HTMLInputElement>(null)
     const dayIndex = props.id
-
-    /*function addExercice (item : exercice){
-      setExercices(prev => [...prev,<div key={JSON.stringify(item)}>
-        <h1><span>{item.exName}</span> : <span>{item.sets}</span> : <span>{item.reps}</span></h1>
-      </div>])
-      setIsExercice(false)
-    }*/
   return (
-    <div className='bg-slate-200 rounded-lg px-4 space-y-4'>
+    <div className='bg-slate-200 z-10 rounded-lg px-4 space-y-4'>
         <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
             <div className="flex items-center space-x-4">
             {/*dumbbell*/}
@@ -74,7 +62,7 @@ export default function AddDay(props : Props) {
           <div className={isEdit ?  "flex flex-wrap gap-2  px-3 pb-1 pt-3 w-full" : "hidden"}>
             {exercices }
           </div>{isEdit &&
-          <ButtonWhite className='m-3' type='button' onClick={()=>{setNbrExercices(prev => prev+1);setExercices(prev => [...prev,<AddExercice exerciceName={props.exerciceNames}  dayIndex={dayIndex}  dayName={dayNameProps.current?.value} key={`day${props.id}-exercice${nbrExercices}`} id={`day${props.id}-exercice${nbrExercices}`}/> ])}}>Add exercice</ButtonWhite>
+          <ButtonWhite className='m-3' type='button' onClick={()=>{setNbrExercices(prev => prev+1);setExercices(prev => [...prev,<AddExercice exerciceName={props.exerciseNames}  dayIndex={dayIndex}  dayName={dayNameProps.current?.value} key={`day${props.id}-exercice${nbrExercices}`} id={`day${props.id}-exercice${nbrExercices}`}/> ])}}>Add exercice</ButtonWhite>
           }
           </div>
         

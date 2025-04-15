@@ -89,3 +89,13 @@ export type WorkoutLog = {
     name: string;
     sets: { setIndex: string; weight: string }[];
   }
+export type ExerciseNames = {
+    video: string | null;
+    name: string;
+    description: string | null;
+    musclesTargeted: string[];
+    muscleGroup: string;
+    equipment: string | null;
+    images: string[];
+    rating: number | null;
+}[]

@@ -4,12 +4,13 @@ import { TrashIcon } from 'lucide-react'
 import ExerciceCard from './Exercice'
 import { ButtonBlack } from '../UIverse/Buttons'
 import { Autocomplete, AutocompleteItem, AutocompleteSection } from '@nextui-org/autocomplete'
+import { type ExerciseNames } from '~/lib/types'
 
 type Props = {
     id : string
     dayIndex:number
     dayName : string | undefined
-    exerciceName: exerciceNames[]
+    exerciceName: ExerciseNames
 }
 type exercice = {
     name : string,
@@ -17,13 +18,7 @@ type exercice = {
     reps : number
 
 }
-type exerciceNames = {
-  id?:number,
-  name:string,
-  muscleGroup:string,
-  musclesTargeted:string[],
-  equipment:string[]
-}
+
 
 export default function AddExercice(props: Props) {
   const muscleGroups = ['chest', 'back', 'shoulders', 'legs', 'arms', 'core']
@@ -55,14 +50,6 @@ export default function AddExercice(props: Props) {
         >
           Exercise Name
         </label>
-        {/* <input
-          required
-          className="block w-52 rounded-md border-gray-300 bg-white p-2 text-sm text-gray-900 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary-500 dark:focus:ring-primary-500"
-          id="exerciseName"
-          placeholder="e.g. Deadlifts"
-          type="text"
-          value={Exercice.name}
-        /> */}
         <Autocomplete 
           label="Select an exercice" 
         className="max-w-xs" 
@@ -71,11 +58,6 @@ export default function AddExercice(props: Props) {
         onSelectionChange={setValue as any}
 
       >
-        {/* {props.exerciceName.map((exercice) => (
-          <AutocompleteItem key={exercice.name} value={exercice.name}>
-            {exercice.name}
-          </AutocompleteItem>
-        ))} */}
         {muscleGroups.map((group) => (
           <AutocompleteSection key={group} showDivider title={group}>
             {props.exerciceName

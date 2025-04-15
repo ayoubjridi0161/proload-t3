@@ -3,70 +3,69 @@ import { andika, lalezar } from '../font'
 import Container from './Container'
 import {Table,TableBody,TableCell,TableHead,TableHeader, TableRow} from '~/components/ui/table'
 import { Button } from '../button'
-type Props = {}
+import RefreshButton from './RefreshButton'
+type Props = {
+    personalRecords : {
+        exercise: string;
+        records: number[];
+    }[]
+}
 
-const PersonalRecords = (props: Props) => {
+const PersonalRecords =(props: Props) => {
+    
   return (
     <div className={`w-full ${andika.className} space-y-5 `}>
-        <Tabs defaultValue="All PR" className={`w-full `} >
-            <TabsList className='bg-transparent text-[#b4b4b4]  space-x-10'>
-            <TabsTrigger value='All PR' className='text-md'>All PR</TabsTrigger>
-            <TabsTrigger value='Upper Body' className='text-md'>Upper Body</TabsTrigger>
-            <TabsTrigger value='Lower Body' className='text-md'>Lower Body</TabsTrigger>
-            <TabsTrigger value='Core' className='text-md'>Core</TabsTrigger>
-            </TabsList>
-            <TabsContent value='All PR' className='gap-3 grid-cols-2 grid '>
-            <Container className='border-1 border-slate-200 text-[#707877] space-y-3'>
-                    <div className='rounded-full w-fit p-2 bg-green-100'><Dumbbell /></div>
-                    <h3 className='text-xs'>Latest Achievement</h3>
-                    <h1 className='text-lg font-bold'>Deadlift: 215kg</h1>
-                    <p className='text-sm'>Achieved Today - 15kg increase </p>
-                    <Button className='bg-[#256200] text-orange-200 font-bold'>Share</Button>
-                </Container>
-                <Container className='border-1 border-slate-200 text-[#707877] space-y-3'>
-                    <div className='rounded-full w-fit p-2 bg-green-100'><Dumbbell /></div>
-                    <h3 className='text-xs'>Most improved</h3>
-                    <h1 className='text-lg font-bold'>Bench Press: 120kg</h1>
-                    <p className='text-sm'>+25% in last 20 days </p>
-                    <Button className='bg-[#256200] text-orange-200 font-bold'>View Progress</Button>
-                </Container>
-            </TabsContent>
-            <TabsContent value='Upper Body'>upper Body</TabsContent>
-            <TabsContent value='Lower Body'>Lower Body</TabsContent>
-            <TabsContent value='Core'>Core</TabsContent>
-            
-        </Tabs>
-
         <div className='space-y-2 p-4 '>
-            <h1 className='text-lg '>All Personal Records</h1>
-            <Table className='bg-[#f2fcf5]'>
-                <TableBody>
-                    <TableRow>
-                    <TableCell>Deadlift</TableCell>
-                    <TableCell>210 kg</TableCell>
-                    <TableCell>Sep 15,2024</TableCell>
-                    <TableCell>+10 kg</TableCell>
-                    </TableRow>
-                    <TableRow>
-                    <TableCell>Bench press</TableCell>
-                    <TableCell>100 kg</TableCell>
-                    <TableCell>Sep 15,2024</TableCell>
-                    <TableCell>+10 kg</TableCell>
-                    </TableRow>
-                    <TableRow>
-                    <TableCell>Squat</TableCell>
-                    <TableCell>150 kg</TableCell>
-                    <TableCell>Sep 15,2024</TableCell>
-                    <TableCell>+10 kg</TableCell>
-                    </TableRow>
-                    <TableRow>
-                    <TableCell>Shoulder Press</TableCell>
-                    <TableCell>55 kg</TableCell>
-                    <TableCell>Sep 15,2024</TableCell>
-                    <TableCell>+10 kg</TableCell>
-                    </TableRow>
-                </TableBody>
-            </Table>
+            <div className='flex justify-between items-center'>
+                <h1 className='text-lg '>All Personal Records</h1>
+                <RefreshButton/>
+            </div>
+            <div className="max-h-[400px] overflow-y-auto">
+                <Table className='bg-[#f2fcf5]'>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Exercise</TableHead>
+                            <TableHead>Best Record</TableHead>
+                            <TableHead>Improvement</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {props.personalRecords
+                            .sort((a, b) => Math.max(...b.records) - Math.max(...a.records))
+                            .slice(0, 8)
+                            .map((record, index) => (
+                                <TableRow key={index}>
+                                    <TableCell>{record.exercise}</TableCell>
+                                    <TableCell>{Math.max(...record.records)} kg</TableCell>
+                                    <TableCell>
+                                        {record.records.length > 1 
+                                            ? `+${Math.max(...record.records) - (record.records[record.records.length - 2] ?? 0)} kg`
+                                            : '-'
+                                        }
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        }
+                        {props.personalRecords.length > 8 && 
+                            props.personalRecords
+                                .sort((a, b) => Math.max(...b.records) - Math.max(...a.records))
+                                .slice(8)
+                                .map((record, index) => (
+                                    <TableRow key={index + 8}>
+                                        <TableCell>{record.exercise}</TableCell>
+                                        <TableCell>{Math.max(...record.records)} kg</TableCell>
+                                        <TableCell>
+                                            {record.records.length > 1 
+                                                ? `+${Math.max(...record.records) - (record.records[record.records.length - 2] ?? 0)} kg`
+                                                : '-'
+                                            }
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                        }
+                    </TableBody>
+                </Table>
+            </div>
             
         </div>
         <div className='space-y-4 p-4 '>

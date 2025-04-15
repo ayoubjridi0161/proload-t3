@@ -9,8 +9,8 @@ const Exercice = ({exercice}:{exercice:exerciceDetails}) => {
     
   return (
 <div className="flex items-center flex-wrap sm:flex-nowrap">
-                <div  className="mr-4 w-14 h-14 bg-gradient-to-br from-[#D9D9D9] to-[#CFCFCF] dark:from-[#3A3A3A] dark:to-[#323232] rounded-md flex items-center justify-center flex-shrink-0">
-                  <PlayIcon className="w-8 h-8 text-[#8C8C8C] dark:text-[#A0A0A0]" />
+                <div  className="mr-4 w-10 h-10 bg-gradient-to-br from-[#D9D9D9] to-[#CFCFCF] dark:from-[#3A3A3A] dark:to-[#323232] rounded-md flex items-center justify-center flex-shrink-0">
+                  <PlayIcon className="w-6 h-6 text-[#8C8C8C] dark:text-[#A0A0A0]" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="text-sm font-medium mb-1 text-[#333333] dark:text-[#CCCCCC] truncate">{exercice.name}</h4>

@@ -28,15 +28,12 @@ import { ShootingStars } from '../UIverse/shootingStarBackground/shooting-stars'
 import { StarsBackground } from '../UIverse/shootingStarBackground/stars-background'
 import { useRouter } from 'next/navigation'
 import { Textarea } from '../textarea'
+import { type ExerciseNames } from '~/lib/types'
 
 
-export default function CreateWorkout({exerciceNames}:{
-  exerciceNames: {
-  name: string;
-  musclesTargeted: string[];
-  muscleGroup: string;
-  equipment: string[];
-}[]}) 
+export default function CreateWorkout({exerciseNames}:{
+  exerciseNames: ExerciseNames
+}) 
 {
     const [newKey, setNewKey] = React.useState(0) 
     const [dayRest, setDayRest] = React.useState<{day: string ,change:number}>( )
@@ -51,9 +48,9 @@ export default function CreateWorkout({exerciceNames}:{
         setRemovedDay(id)
     }
     //remove Day
-    React.useEffect(()=>{
+    
+    React.useEffect(()=>{      
       if(removedDay){
-        // setDays([...days]?.filter(day => day.key != removedDay))
         setDays([...days]?.filter(day => Number(day.key) != removedDay))
       }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -63,7 +60,7 @@ export default function CreateWorkout({exerciceNames}:{
     React.useEffect(()=>{
       if(newKey)
         if(dayRest?.day === 'train')
-        setDays(days => [...days , <AddDay exerciceNames = {exerciceNames} remove={removeDay} id={newKey} key={newKey} muscles='legs,arms,chest'  />])
+        setDays(days => [...days , <AddDay exerciseNames = {exerciseNames} remove={removeDay} id={newKey} key={newKey} muscles='legs,arms,chest'  />])
         else setDays(days => [...days , <AddRestDay remove={removeDay} id={newKey} key={newKey} />])   
         // console.log(days) 
 
@@ -84,15 +81,15 @@ export default function CreateWorkout({exerciceNames}:{
     },[isPublished])
 
     return (
-    <div className=' h-full w-full relative rounded-md bg-aiLifter bg-opacity-20 bg-center shadow-sm  mx-auto'>
-      {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
-      <form ref={formRef} className=" h-full  rounded-lg border border-border p-4 sm:p-6 shadow-sm space-y-4" action={addWorkout}>
+    <div className='bg-xtraContainer h-full w-full relative z-10 rounded-md  shadow-sm mx-auto'>
+      {/* <div className="absolute inset-0 bg-aiLifter bg-center bg-cover filter opacity-5 blur-sm z-0" /> */}
+      <form ref={formRef} className=" z-30 h-full bg-transparent  rounded-lg border border-border p-4 sm:p-6 shadow-sm space-y-4" action={async (formData: FormData) => { await addWorkout(formData); }}>
         <input type="hidden" name='NoD' value={days.length}  />
         <input type="hidden" name='published' value={isPublished?.toString()} />
         <div className='pt-1 flex items-center'>
           <UIverseButton name='workoutName' placeHolder="Workout name..." aria-label="Enter workout name" />
         </div>
-        <Textarea name='description' placeholder='drop out a note for the workout'/>
+        <Textarea name='description' className='z-10' placeholder='drop out a note for the workout'/>
         <div className='space-y-4 '>
           {days}
         </div>  

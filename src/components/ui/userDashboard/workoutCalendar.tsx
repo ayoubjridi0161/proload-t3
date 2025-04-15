@@ -59,34 +59,34 @@ export default function WorkoutCalendar({workoutDates}:Props) {
   const formatDate = (date: Date | null) => {
     if (!date) return "No upcoming workouts"
     return date.toLocaleDateString("en-US", {
-      weekday: "long",
-      month: "long",
+      weekday: "short", // Changed from 'long' to 'short'
+      month: "short",   // Changed from 'long' to 'short'
       day: "numeric",
     })
   }
 
   return (
-    <div className="flex flex-col items-center p-6 rounded-lg mx-auto bg-xtraDark w-full">
-      <h1 className="text-2xl font-bold mb-2">Workout Calendar</h1>
+    <div className="mt-5 flex flex-col items-center p-2 rounded-lg mx-auto   w-full text-xs">
+      <h2 className="text-sm font-bold mb-1">Workout Calendar</h2>
 
-      <div className="mb-6 text-center">
-        <div className="flex items-center justify-center gap-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
-          <CalendarIcon className="h-5 w-5 text-blue-500" />
-          <span className="font-medium">Next workout: {formatDate(nextWorkout ?? null)}</span>
+      <div className="mb-2 text-center w-full">
+        <div className="flex items-center justify-center gap-1 p-1 bg-blue-50 rounded-lg border border-blue-200 text-xs">
+          <CalendarIcon className="h-3 w-3 text-blue-500" />
+          <span className="font-medium text-xs">Next: {formatDate(nextWorkout ?? null)}</span>
         </div>
       </div>
 
-      <div className="border rounded-lg p-4 bg-[#f2fcf5] shadow-md grid place-items-center w-full">
+      <div className="border rounded-lg bg-xtraDark shadow-sm  grid place-items-center w-full">
         <Calendar
           mode="single"
-          className="rounded-md"
+          className="rounded-md bg-white scale-95"
           components={{
             DayContent: ({ date }) => (
               <div
                 className={cn(
-                  "flex h-9 w-9 items-center justify-center rounded-md",
+                  "flex h-6 w-6 items-center justify-center rounded-md text-xs",
                   isPastWorkoutDay(date) && "bg-green-500 text-white",
-                  isNextWorkoutDay(date) && "bg-blue-500 text-white font-bold ring-2 ring-blue-300",
+                  isNextWorkoutDay(date) && "bg-blue-500 text-white font-bold ring-1 ring-blue-300",
                   isFutureWorkoutDay(date) && "bg-blue-100 text-blue-800",
                 )}
               >
@@ -97,18 +97,18 @@ export default function WorkoutCalendar({workoutDates}:Props) {
         />
       </div>
 
-      <div className="mt-6 flex flex-col gap-2">
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-full bg-green-500"></div>
-          <span className="text-sm">Completed workouts</span>
+      <div className="mt-2 flex flex-wrap gap-2 justify-center text-xs">
+        <div className="flex items-center gap-1">
+          <div className="w-2 h-2 rounded-full bg-green-500"></div>
+          <span className="text-xs">Completed</span>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-full bg-blue-500"></div>
-          <span className="text-sm">Next scheduled workout</span>
+        <div className="flex items-center gap-1">
+          <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+          <span className="text-xs">Next</span>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-full bg-blue-100"></div>
-          <span className="text-sm">Future scheduled workouts</span>
+        <div className="flex items-center gap-1">
+          <div className="w-2 h-2 rounded-full bg-blue-100"></div>
+          <span className="text-xs">Future</span>
         </div>
       </div>
     </div>

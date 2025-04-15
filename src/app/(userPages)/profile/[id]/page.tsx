@@ -4,7 +4,7 @@ import {getUserByID} from '~/lib/data'
 export default async function page({params}:{params:{id:string}}) {
     const userInfo : publicUser = await getUserByID(params.id) as publicUser
   return (
-    <div className="w-full mx-auto">
+    <div className="grid place-items-center mx-auto ">
        {userInfo ? <PublicProfile user = {userInfo}/> : <div>user Not found</div>}
     </div>
   )

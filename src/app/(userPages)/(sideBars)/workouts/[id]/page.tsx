@@ -11,6 +11,7 @@ import { fetchWorkoutById } from "~/lib/data";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Toaster } from "~/components/ui/sonner";
 import Container from "~/components/ui/Container";
+import { Separator } from "~/components/ui/separator";
 
 
 const page = async ({params} : {params:{id:string}}) => {
@@ -20,27 +21,23 @@ const page = async ({params} : {params:{id:string}}) => {
     if(!workout) throw new Error ("failed to fetch workout")
     const Reactions = {upvotes : workout.upvotes ,downvotes:workout.downvotes , clones:workout.clones }
     return (
-            <div className="grid grid-cols-5 gap-5 mt-5">
-      <Container className="col-span-3">
+            <div className="w-2/3 p-5 mt-5 space-y-3">
+      <Container className="bg-xtraContainer col-span-3">
       <Suspense fallback={<WorkoutSkeleton/>}>
           <Workout fetchedWorkout={workout} id={parseInt(params.id)} />
       </Suspense>
       </Container>
-      <div className="space-y-5 col-span-2">
-      <Container>
-        <Suspense fallback={<div>loading user</div>}>
+      <Container className="bg-xtraContainer space-y-3">
+      <Suspense fallback={<div>loading user</div>}>
       <UserDeatails userID = {workout.userId} />
+      <Separator className="w-3/4 mx-auto"/>
+      <TooltipBox userId = {user?.id } Reactions = {Reactions} workoutId = {parseInt(params.id)} />
       </Suspense>
       </Container>
-      <Container>
-      <TooltipBox userId = {user?.id } Reactions = {Reactions} workoutId = {parseInt(params.id)} />
-      </Container>
-      <Container>
+      <Container className="bg-xtraContainer">
         <Comments appUser={user?.name ?? "user"} workoutID={workout.id} comments={workout.comments}/>
       </Container>
       <Toaster />
-
-        </div>
       </div>
     )
 }

@@ -11,8 +11,8 @@ export default async function page() {
   
   
   return (
-    <div className='h-full '>
-      <CreateWorkout exerciceNames = {exerciceNames} />
+    <div className='h-full w-full p-5 '>
+      <CreateWorkout exerciseNames={exerciceNames} />
     </div>
   )
 

@@ -1,9 +1,10 @@
-import { Posts, Reactions,    days, exerciceNames, exercices, userLogs, users, workouts,comments ,replys,notifications} from '~/server/db/schema'
+import { Posts, Reactions,    days, exerciceNames, exercices, userLogs, users, workouts,comments ,replys,notifications, exerciseLibrary} from '~/server/db/schema'
 import {db} from '../server/db/index'
 import type * as types from './types'
 import { DrizzleEntityClass, DrizzleError, and, arrayContains, asc, count, eq, inArray, name, sql } from 'drizzle-orm'
 import { unstable_noStore as noStore , unstable_cache as cached } from 'next/cache'
 import { removeRedundancy } from './utils'
+import { String } from 'aws-sdk/clients/acm'
 /*Read Data*/
 export const fetchAllWorkouts = async()=>{
     const result = await db.query.workouts.findMany({
@@ -362,12 +363,13 @@ export const deletePost = async (postId:number) =>{
 export const getPosts = async ()=>{
     try{
         const posts = await db.query.Posts.findMany({
-            columns:{id:true,title:true,content:true,userId:true,resources:true,likes:true,createdAt:true},
+            columns:{id:true,title:true,content:true,userId:true,resources:true,likes:true,createdAt:true,sharedPostId:true,shares:true},
             with:{
                 users:{columns:{name:true,image:true}},
                 comments:{columns:{content:true,id:true},
                           with:{replys:{columns:{content:true,id:true},with:{users:{columns:{name:true}}}},users:{columns:{name:true
-                          }}}}},
+                          }}}},
+            },
             orderBy:(Posts,{desc})=>[desc(Posts.id)]
         })
         return posts
@@ -396,7 +398,7 @@ export const getUserPosts = async (id:string)=>{
 
 export const getExerciceNames = async ()=>{
     try{
-        const exercices = await db.query.exerciceNames.findMany({columns:{name:true,muscleGroup:true,musclesTargeted:true,equipment:true}})
+        const exercices = await db.query.exerciseLibrary.findMany()
         return exercices
     }catch(err){
         throw err
@@ -446,6 +448,14 @@ export const getUsers = async ()=>{
 export const addLogs= async (workoutID:number,userID:string,dayName:string,logs:{ name: string; sets: { setIndex: string; weight: string }[] }[])=>{
     try{
         const res = await db.insert(userLogs).values({userId:userID,logs:logs,workoutId:workoutID}).returning()
+        return res
+    }catch(err){
+        throw err
+    }
+}
+export const addLogsWithDate= async (Wdate:Date,workoutID:number,userID:string,dayName:string,logs:{ name: string; sets: { setIndex: string; weight: string }[] }[])=>{
+    try{
+        const res = await db.insert(userLogs).values({userId:userID,logs:logs,workoutId:workoutID,date:Wdate}).returning()
         return res
     }catch(err){
         throw err
@@ -542,7 +552,7 @@ export const getUserNotifs = async (userID:string)=>{
         const res = await db.query.notifications.findMany(
             {
             where: eq(notifications.userId, userID),
-            
+            orderBy: (notifications, { desc }) => [desc(notifications.time)],
             }
         )
         return res
@@ -678,5 +688,82 @@ export const getFullUser = async (userID:string)=>{
     } catch (error) {
         console.error(error);
 
+    }
+}
+export const updateUserPrs = async (userID: string, records: { exercise: string, record: number }[]) => {
+    try {
+        const res = await db.transaction(async (tx) => {
+            const user = await tx.query.users.findFirst({
+                where: eq(users.id, userID),
+                columns: { personalRecords: true }
+            });
+
+            let updatedRecords : Array<{exercise: string, records: number[]}>  = user?.personalRecords as Array<{exercise: string, records: number[]}> ?? [];
+            
+            for (const { exercise, record } of records) {
+                if (!updatedRecords || !Array.isArray(updatedRecords)) {
+                    updatedRecords = [{ exercise: exercise, records: [record] }];
+                    continue;
+                }
+                
+                const existingExerciseIndex = updatedRecords.findIndex(item => item.exercise === exercise);
+                
+                if (existingExerciseIndex === -1) {
+                    updatedRecords.push({ exercise: exercise, records: [record] });
+                } else {
+const lastRecord = updatedRecords[existingExerciseIndex]?.records?.[updatedRecords[existingExerciseIndex]?.records?.length - 1];
+if (!lastRecord || record > lastRecord) {
+    updatedRecords[existingExerciseIndex]?.records?.push(record) ?? (updatedRecords[existingExerciseIndex] = { exercise: exercise, records: [record] });
+}
+                }
+            }
+
+            return await tx.update(users)
+                .set({ personalRecords: updatedRecords })
+                .where(eq(users.id, userID))
+                .returning({ id: users.id });
+        });
+        return res[0]?.id
+    } catch (error) {
+        console.error(error);
+        return "error in updating"
+    }
+}
+
+export const getUserPrs = async (userID:string)=>{
+    try {
+        const res = await db.query.users.findFirst({where:eq(users.id,userID),columns:{personalRecords:true}})
+        return res?.personalRecords as Array<{exercise: string, records: number[]}>?? []
+    } catch (error) {
+        console.error(error);
+
+    }
+}
+
+export async function sharePost(postID:number,userID:string,sharedText:String){
+    try {
+        const res = await db.insert(Posts).values({
+            userId: userID,
+            sharedPostId: postID,
+            content: sharedText,
+            title: `Shared Post ${postID}` // Adding required title field
+        }).returning({id: Posts.id})
+        await db.update(Posts).set({shares:sql`shares + 1`}).where(eq(Posts.id,postID))
+        return res[0]?.id
+    }
+    catch(err){
+        throw err
+    }
+}
+
+export async function getSharedPostByID(postID:number){
+    try {
+        const res = await db.query.Posts.findFirst({where:eq(Posts.id,postID),columns:{id:true,content:true,userId:true,resources:true},with:{
+            users:{columns:{name:true,image:true}}, 
+        }}) 
+        return res
+
+    }catch(err){
+        throw err
     }
 }

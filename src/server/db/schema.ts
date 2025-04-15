@@ -17,6 +17,8 @@ import {
   boolean as pgBoolean,
   text,
   boolean,
+  real,
+  AnyPgColumn,
 } from "drizzle-orm/pg-core";
 import { number } from "zod";
 
@@ -117,6 +119,12 @@ export const users = pgTable("user", {
     weight: "",
     experience: ""
   })),
+  personalRecords: json("personal_records")
+  .$type<{
+    exercise: string;
+    records: number[];}>()
+  .array()
+  .$default(() => []),
   connects:text("connects").array(),
   numberOfConnects:integer('number_of_connects').default(0).notNull()
 })
@@ -187,12 +195,15 @@ export const Posts = pgTable(
   'Posts',{
     id:serial('id').primaryKey(),
     title: varchar('title',{length:250}).notNull(),
+    sharedPostId: integer('shared_post_id').references((): AnyPgColumn => Posts.id),
     likes:integer('likes').default(0).notNull(),
+    shares:integer('shares').default(0).notNull(),
     content:varchar('content',{length:3000}).notNull(),
     resources: text('resources').array().notNull()
     .default(sql`ARRAY[]::text[]`),
     userId : text('user_id').notNull().references(()=> users.id),
-    createdAt:timestamp('created_at',{withTimezone:true}).default(sql`CURRENT_TIMESTAMP`).notNull()
+    createdAt:timestamp('created_at',{withTimezone:true}).default(sql`CURRENT_TIMESTAMP`).notNull(),
+
     
   }
 )
@@ -214,6 +225,19 @@ export const exerciceNames = pgTable(
     description: text('description')
   },
 );
+export const exerciseLibrary = pgTable(
+  'exercise_library',
+  {
+    name: varchar('name', { length: 256 }).notNull().primaryKey(),
+    musclesTargeted: text('muscles_targeted').array().notNull().default(sql`ARRAY[]::text[]`),
+    muscleGroup: varchar('muscle_group', { length: 256 }).notNull(),
+    equipment:text('equipment'),
+    video: varchar('video', { length: 256 }),
+    images: text('images').array().notNull().default(sql`ARRAY[]::text[]`),
+    description: text('description'),
+    rating: real('rating'),
+  }
+)
 export const exerciceNamesRelations = relations(exerciceNames, ({ many }) => ({
   exercices: many(exercices),
 }));

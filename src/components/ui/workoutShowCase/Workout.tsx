@@ -51,11 +51,11 @@ const Workout =  ({fetchedWorkout}:{id?:number,fetchedWorkout:split}) => {
     }
   return (
     <div className="">
-      <h2 className="text-2xl font-bold mb-6 text-[#006400] dark:text-[#00FF00]">
+      <h2 className="text-2xl font-bold mb-4 text-[#006400] dark:text-[#00FF00]">
         {fetchedWorkout?.name || "Workout"}
       </h2>
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 gap-6">
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 gap-4">
         {renderDays()}
         </div>
     </div>

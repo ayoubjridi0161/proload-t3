@@ -7,6 +7,7 @@ import WorkoutCalendar from './workoutCalendar'
 import { fetchUserLogs, fetchWorkoutDates } from '~/lib/actions'
 import { calculateExerciseProgress } from '~/lib/analytics/analytics'
 import {type UserLog} from "~/lib/types"
+import { Sidebar, SidebarContent } from '../sidebar'
 
 export default async function Home() {
   //  const workoutDates = await fetchWorkoutDates();
@@ -15,10 +16,11 @@ export default async function Home() {
 const workoutDates = userLogs?.map(log => ({date:log.date}));
 const progressResults = calculateExerciseProgress(userLogs  );
   return (
-    <div className={ `     p-5 ${andika.className}`}>
+    <>
+    <div className={ `    w-full p-5 ${andika.className}`}>
       <div className="text-[#4a4a4a] text-lg"><h1 className="font-bold">Good morning, Athlete</h1>
       <p className="text-sm">Track progress and plan workouts for peak performance</p>
-      <ExerciseProgress userLogs={userLogs} />
+      {/* <ExerciseProgress userLogs={userLogs} /> */}
       </div>
       <div className="grid grid-cols-3 w-10/12 mx-auto  p-5 gap-5">
       <Container className="border-1 border-[#de4e8d1] space-y-2 shadow-md">
@@ -49,7 +51,6 @@ const progressResults = calculateExerciseProgress(userLogs  );
         <Button className="bg-[#256279] text-[#63949E]">View Calebdar</Button>
       </Container>
       </div>
-      <div className="grid grid-cols-3 gap-5">
         <div className="col-span-2 w-full space-y-5">
           <ChartData workoutDates = {workoutDates}  />
           <Container className=" text-[#4a4a4a]">
@@ -68,11 +69,10 @@ const progressResults = calculateExerciseProgress(userLogs  );
             <Button className="mx-2 text-[#bfbfbf]">Track Progress</Button>
           </Container>
         </div>
-        <div className="space-y-5">
-          <WorkoutCalendar workoutDates = {workoutDates}/>
-        </div>
-      </div>
+        
     </div>
+    <LocalSideBar workoutDates = {workoutDates} />
+    </>
   )
 }
 
@@ -114,3 +114,17 @@ const ProgressIcon =()=>{
       </div>
     );
   };
+
+
+  const LocalSideBar = ({workoutDates}:{workoutDates:{
+    date: Date;
+}[]
+})=>{
+    return(
+      <Sidebar side='right'  className="border-left-1 px-3 bg-[#f2fcf5] top-[--header-height] !h-[calc(100svh-var(--header-height))]" >
+      <SidebarContent className='bg-[#f2fcf5]'>
+          <WorkoutCalendar workoutDates = {workoutDates}/>
+      </SidebarContent>
+    </Sidebar>
+    )
+  }

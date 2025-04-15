@@ -14,7 +14,7 @@ import { timeAgo } from '~/lib/utils'
 
 function Profile({user}: {user: publicUser}) {
   return (
-    <div className='w-full'>
+    <div className='w-2/3'>
       <header className='relative h-auto min-h-[200px] md:min-h-[300px] mb-6'>
         {/* Background cover photo */}
         <div className='absolute inset-0 h-3/4 bg-slate-200 bg-s3gym bg-bottom bg-cover'></div>

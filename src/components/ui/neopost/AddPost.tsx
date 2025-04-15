@@ -72,7 +72,7 @@ export default function AddPost({ image }: Props) {
 
   return (
     <>
-      <div className="w-full bg-white/70 p-3" >
+      <div className="w-full bg-xtraContainer rounded-md shadow-md p-3" >
         <div className="flex gap-2 w-full p-2">
           <Avatar >
             <Image src={image ?? ""} alt="user" width={40} height={40} />

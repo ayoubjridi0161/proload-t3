@@ -19,7 +19,7 @@ import WorkoutSection from './workoutSection'
 async function PublicProfile({user}: {user: publicUser}) {
   const isfollowed = await isFollowed(user.id)
   return (
-    <div className='w-full'>
+    <div className='w-full md:w-5/6 lg:w-2/3 mx-auto'>
       <ProfileHeader 
         userID={user.id} 
         isfollowed={isfollowed} 
@@ -27,10 +27,9 @@ async function PublicProfile({user}: {user: publicUser}) {
         userImage={user.image ?? ""} 
         userName={user.name}
       />
-      <main className='flex flex-col md:flex-row gap-4 px-2'>
+      <main className='flex w-full flex-col md:flex-row gap-4 px-2'>
       <Tabs defaultValue="Profile" className="w-full">
-        <div className="overflow-x-auto">
-          <TabsList className='bg-transparent whitespace-nowrap min-w-max'>
+          <TabsList className='flex justify-start gap-3 bg-transparent whitespace-nowrap min-w-full'>
             <TabsTrigger 
               value="Profile" 
               style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 0.8)' }} 
@@ -53,28 +52,30 @@ async function PublicProfile({user}: {user: publicUser}) {
               Achievements
             </TabsTrigger>
           </TabsList>
-        </div>
         
         <Separator className='mt-3'/>
         
-        <TabsContent value="Profile" className='min-w-full'>
+        <TabsContent value="Profile" className='w-full min-h-[300px]'>
           <main className='flex flex-col lg:flex-row gap-4'>
             <ProfileAside profileDetails={user.details} savedBio={user.bio ?? ""} />
             <MainSection user={user} />
           </main>
         </TabsContent>
         
-        <TabsContent value="Workouts" className='min-w-full'>
-          <Suspense fallback={<div>loading..</div>}>
-          <WorkoutSection privacy={true} userID={user.id} />
+        <TabsContent value="Workouts" className='w-full min-h-[300px]'>
+          <Suspense fallback={<div className="w-full min-h-[200px] flex items-center justify-center">loading..</div>}>
+            <div className="w-full">
+              <WorkoutSection privacy={true} userID={user.id} />
+            </div>
           </Suspense>
         </TabsContent>
         
-        <TabsContent value="Achievements" className='min-w-full'>
-        <div className='p-4'>
-            <h2 className='text-xl font-bold'>Workouts Section</h2>
-            <p>Details about user workouts will go here.</p>
-          </div>
+        <TabsContent value="Achievements" className='w-full min-h-[300px]'>
+        <Suspense fallback={<div className="w-full min-h-[200px] flex items-center justify-center">loading..</div>}>
+            <div className="w-full">
+            <div className='w-[100vw] overflow-x-hidden max-w-full'>No Workouts</div>
+            </div>
+          </Suspense>
         </TabsContent>
       </Tabs>
       </main>

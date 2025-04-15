@@ -16,7 +16,6 @@ export function Notifs() {
     read: boolean;
 }[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  console.log(notifs)
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -33,7 +32,7 @@ export function Notifs() {
     // Set up an interval to fetch notifications every minute
     const interval = setInterval(() => {
       void fetchNotifications();
-    }, 60000);
+    }, 300000);
 
     // Clear the interval on component unmount
     return () => clearInterval(interval);
