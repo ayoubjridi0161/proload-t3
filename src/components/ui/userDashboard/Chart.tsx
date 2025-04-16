@@ -125,7 +125,10 @@ const ChartData = (props: Props) => {
         displayColors: false,
         callbacks: {
           title: () => 'Workouts',
-          label: (context: TooltipItem<'line'>) => `${context.raw} workout${Number(context.raw) !== 1 ? 's' : ''}`
+          label: (context: TooltipItem<'line'>) => {
+            const value = context.raw as number;
+            return `${value} workout${value !== 1 ? 's' : ''}`;
+          }
         }
       }
     },
@@ -173,17 +176,7 @@ const ChartData = (props: Props) => {
               aria-label="Workout frequency chart"
             />
           </div>
-          <div className="flex justify-around">
-            {chartData.labels.map((label, index) => (
-              <p 
-                key={index} 
-                className="text-[#4e9750] text-[13px] font-bold leading-normal tracking-[0.015em]"
-                aria-label={`Week of ${label}`}
-              >
-                {label}
-              </p>
-            ))}
-          </div>
+          {/* Removed the duplicate date labels div */}
         </div>
       </div>
     </Container>

@@ -143,6 +143,8 @@ export const MainSection = async ({user}:{user:publicUser}) => {
       <AddPost image={user.image ?? "https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png"} />
       {FetchedPosts.map((post,i) => (
         <Post 
+        shares={post.shares}
+        sharedPostId={post.sharedPostId}
         time={timeAgo(post.createdAt)}
         appUser={user.id}
           likes={post.likes} 

@@ -382,7 +382,7 @@ export const getUserPosts = async (id:string)=>{
     try{
         const posts = await db.query.Posts.findMany({
             where:eq(Posts.userId,id),
-            columns:{id:true,title:true,content:true,userId:true,resources:true,likes:true,createdAt:true},
+            columns:{id:true,title:true,content:true,userId:true,resources:true,likes:true,createdAt:true,shares:true,sharedPostId:true},
             with:{
                 users:{columns:{name:true,image:true}},
                 comments:{columns:{content:true,id:true},

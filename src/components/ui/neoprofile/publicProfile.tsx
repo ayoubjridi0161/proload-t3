@@ -167,6 +167,8 @@ export const MainSection = async ({user}: {user: publicUser}) => {
       ) : (
         FetchedPosts.map((post, i) => (
           <Post appUser={appUser}
+          sharedPostId={post.sharedPostId}
+          shares={post.shares}
             time={timeAgo(post.createdAt)} 
             likes={post.likes} 
             id={post.id} 

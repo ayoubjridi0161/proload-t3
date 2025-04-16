@@ -12,7 +12,7 @@ import { getUserCurrentWorkout } from '~/lib/actions'
 type Props = {}
 
 export default async function page({}: Props) {
-    const workout = await getUserCurrentWorkout()
+      const workout =  await getUserCurrentWorkout()
   return (
     <section className={`${andika.className} w-full space-y-5 p-5 text-[#707877]`} >
           <div>

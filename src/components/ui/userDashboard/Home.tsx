@@ -48,7 +48,7 @@ const progressResults = calculateExerciseProgress(userLogs  );
         <h2 className="text-md font-semibold">Streak</h2>
         <h1 className="text-lg font-bold">12 Days!</h1>
         <p className="text-sm">Keep up the consistency</p>
-        <Button className="bg-[#256279] text-[#63949E]">View Calebdar</Button>
+        <Button className="bg-[#256279] text-[#63949E]">View Calendar</Button>
       </Container>
       </div>
         <div className="col-span-2 w-full space-y-5">
