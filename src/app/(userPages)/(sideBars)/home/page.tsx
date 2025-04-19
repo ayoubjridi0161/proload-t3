@@ -10,9 +10,10 @@ import SideConnets from '~/components/ui/neopost/sideConnets'
 import { Separator } from '~/components/ui/separator'
 import { Sidebar, SidebarContent, SidebarHeader } from '~/components/ui/sidebar'
 import WorkoutCalendar from '~/components/ui/userDashboard/workoutCalendar'
-import { fetchWorkoutDates } from '~/lib/actions'
+import { fetchWorkoutDates } from '~/lib/actions/userLogsActions'
 import { getPosts, getUserLikes } from '~/lib/data'
 import { timeAgo } from '~/lib/utils'
+
 
 type Props = {}
 

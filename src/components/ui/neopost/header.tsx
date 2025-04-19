@@ -8,8 +8,8 @@ import { MessagesNotif } from "./MessagesNotif"
 import Link from "next/link"
 import { useState ,useEffect} from "react";
 import { useDebounce } from "@uidotdev/usehooks";
-import { searchUsers } from "~/lib/actions"
 import Avatar from "~/components/component/Avatar"
+import { searchUsers } from "~/lib/actions/userActions"
 
 type Props = {
     name:string ,

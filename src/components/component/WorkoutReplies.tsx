@@ -1,8 +1,8 @@
 import React, { useOptimistic, useState } from 'react'
 import Link from 'next/link';
-import { addReply } from '~/lib/actions';
 import { Textarea } from '../ui/textarea';
 import { Button } from '../ui/button';
+import { addReply } from '~/lib/actions/socialActions';
 type Comment = {
     content: string;
     id: number;

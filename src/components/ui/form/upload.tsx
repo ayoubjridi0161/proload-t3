@@ -4,8 +4,8 @@ import { useState } from "react"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { Label } from "~/components/ui/label"
-import { uploadFiles } from "~/lib/actions"
 import Image from 'next/image'
+import { uploadFiles } from "~/lib/actions/s3Actions"
 
 type Props = {}
 export default function Upload({}: Props) {

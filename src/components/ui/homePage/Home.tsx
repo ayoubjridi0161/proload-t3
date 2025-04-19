@@ -1,11 +1,9 @@
-import Link from 'next/link'
 import React from 'react'
 import { Button } from '../button'
 import { roboto } from "~/components/ui/font";
 import { Input } from '../input';
 import HeaderNav from './HeaderNav';
 import { TextGenerateEffectDemo } from './Generate-hero-Text';
-import { newsLetter } from '~/lib/actions';
 
 export const Home = () => {
   return (

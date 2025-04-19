@@ -1,6 +1,10 @@
+import { Separator } from "@radix-ui/react-separator";
 import { auth } from "auth";
 import { AppSidebar } from "~/components/ui/neopost/sideBar";
 import SideConnets from "~/components/ui/neopost/sideConnets";
+import { Sidebar, SidebarContent } from "~/components/ui/sidebar";
+import WorkoutCalendar from "~/components/ui/userDashboard/workoutCalendar";
+import { fetchWorkoutDates } from "~/lib/actions/userLogsActions";
 export default async function RootLayout({
   children,
 }: {
@@ -15,6 +19,7 @@ export default async function RootLayout({
     <main className='flex justify-between '>
       <AppSidebar className=" pt-5" user={{name:userName ?? "",email:email,image:image,id:UUID ?? ""}} />
         {children} 
+       
       {/* <SideConnets className="" /> */}
     </main>
   );

@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import Image from 'next/image'
 import { Button } from '../button'
-import { ConnectAction, unfollow } from '~/lib/actions'
+import { ConnectAction, unfollow } from '~/lib/actions/userInteractions'
 
 type Props = {
     userImage:string|undefined,

@@ -1,6 +1,6 @@
 import React from 'react'
 import AthleteDashboard from '~/components/ui/userDashboard/progress'
-import { fetchUserLogs } from '~/lib/actions'
+import { fetchUserLogs } from '~/lib/actions/userLogsActions'
 import { type UserLog } from '~/lib/types'
 
 export default async function page() {

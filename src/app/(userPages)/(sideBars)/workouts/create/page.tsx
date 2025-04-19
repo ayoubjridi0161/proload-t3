@@ -1,9 +1,5 @@
-import { auth } from 'auth'
-import { redirect } from 'next/navigation'
-import React, { Suspense } from 'react'
-import { Button } from '~/components/ui/button'
+import React from 'react'
 import CreateWorkout from '~/components/ui/workouts/CreateWorkout'
-import WorkoutsPage from '~/components/ui/workouts/WorkoutsPage'
 import { getExerciceNames } from '~/lib/data'
 
 export default async function page() {

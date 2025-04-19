@@ -1,6 +1,5 @@
 import { auth } from "auth";
 import Header from "~/components/ui/neopost/header";
-import { AppSidebar } from "~/components/ui/neopost/sideBar";
 import { SidebarInset, SidebarProvider } from "~/components/ui/sidebar"
 export default async function RootLayout({
   children,

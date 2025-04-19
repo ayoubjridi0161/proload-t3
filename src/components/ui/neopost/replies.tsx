@@ -2,7 +2,7 @@ import React, { useOptimistic, useState } from 'react'
 import { Textarea } from '../textarea'
 import { Button } from '../button'
 import Link from 'next/link';
-import { addReply } from '~/lib/actions';
+import { addReply } from '~/lib/actions/socialActions';
 type Comment = {
     content: string;
     id: number;

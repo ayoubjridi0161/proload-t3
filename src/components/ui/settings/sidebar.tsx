@@ -1,14 +1,20 @@
+"use client"
 import * as Tabs from "@radix-ui/react-tabs";
 import { useState } from "react";
 import { PrivacySettings } from "./privacy-settings";
 import { GeneralSettings } from "./general-settings";
 import { AccountSettings } from "./account-settings";
+type Data = {
+  name: string;
+  image: string;
+  email: string;
+}
 
-const Sidebar = () => {
+const Settings = ({data}:{data: Data}) => {
   const [selectedTab, setSelectedTab] = useState("general settings");
   const tabItems = [
     "general settings",
-    "account settings",
+    // "account settings",
     "privacy settings"
 
   ];
@@ -62,18 +68,11 @@ const Sidebar = () => {
           ))}
         </select>
       </div>
-      {/* {tabItems.map((item, idx) => (
-        <Tabs.Content key={idx} className="py-6" value={item}>
-          <p className="text-xs leading-normal">
-            This is <b>{item}</b> Tab
-          </p>
-        </Tabs.Content>
-      ))} */}
       <Tabs.Content className="w-full" value="account settings"><AccountSettings/></Tabs.Content>
-      <Tabs.Content className="w-full" value="general settings"><GeneralSettings/></Tabs.Content>
+      <Tabs.Content className="w-full" value="general settings"><GeneralSettings userData={data}/></Tabs.Content>
       <Tabs.Content className="w-full" value="privacy settings"><PrivacySettings/></Tabs.Content>
       
     </Tabs.Root>
   );
 };
-export default Sidebar
+export default Settings

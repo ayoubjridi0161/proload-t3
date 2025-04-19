@@ -1,9 +1,9 @@
 import React from 'react'
-import { githubSignIn, signInWithResend,googleSignIn } from '~/lib/actions'
 import { Button } from '../button'
 import { Input } from '../input'
 import { Github, } from 'lucide-react'
 import './emailLogin.css'
+import { githubSignIn, googleSignIn, signInWithResend } from '~/lib/actions/authentication'
 
 const Hello = () => {
   return (

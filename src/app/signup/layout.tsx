@@ -1,4 +1,3 @@
-import { auth } from "auth";
 import HeaderNav from "~/components/ui/homePage/HeaderNav";
 
 export default function RootLayout({

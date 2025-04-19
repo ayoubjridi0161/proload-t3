@@ -1,14 +1,8 @@
 import React from 'react'
 import "./postCard.css"
-import Comments from '~/components/component/WorkoutComments';
-import { ReplyIcon, HeartIcon, MessageSquare } from 'lucide-react';
-import { Button } from '../button';
-import { Textarea } from '../textarea';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../tooltip';
-import TooltipBox from '~/components/component/tooltipV0';
 import { Downvote, Upvote , Comment } from '~/components/component/Reactions';
 import { Avatar,AvatarFallback,AvatarImage } from '../avatar';
-import { Toggle } from '../toggle';
 import Commentbox from '../commentBox/commentbox';
 
 interface PostCardProps {

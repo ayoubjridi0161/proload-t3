@@ -1,9 +1,6 @@
 "use client"
 import type * as React from "react"
-import {Medal , Users, HomeIcon, Bell,LifeBuoy, MessageCircle, Send,CircleGauge, Settings2,Dumbbell ,BookOpen , Bot , CircleUserRound } from "lucide-react"
-
-import { NavMain } from "~/components/nav-main"
-import { NavProjects } from "~/components/nav-projects"
+import {Medal , Users, HomeIcon, Bell,LifeBuoy, Send,CircleGauge, Settings2,Dumbbell ,BookOpen , CircleUserRound } from "lucide-react"
 import { NavSecondary } from "~/components/nav-secondary"
 import { NavUser } from "~/components/nav-user"
 import {
@@ -12,16 +9,11 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupLabel,
-  SidebarHeader,
   SidebarMenu,
-  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
 } from "~/components/ui/sidebar"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../collapsible"
+import { Collapsible} from "../collapsible"
 import { Separator } from "../separator"
 import Link from "next/link"
 export const WeightLifterIcon = ()=>{

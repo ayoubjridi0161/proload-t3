@@ -1,7 +1,7 @@
 import React from 'react'
 import { Avatar, AvatarImage ,AvatarFallback} from '../avatar'
 import { cn } from '~/lib/utils'
-import { getConnects } from '~/lib/actions'
+import { getConnects } from '~/lib/actions/userActions'
 import { Sidebar, SidebarContent } from '../sidebar'
 
 export default async function SideConnets({className}: {className?:string}) {

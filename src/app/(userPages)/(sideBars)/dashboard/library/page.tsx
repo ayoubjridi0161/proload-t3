@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { Chip } from '@nextui-org/react'
 import WorkoutSkeleton from '~/components/ui/workoutShowCase/skeleton/workoutSkeleton'
 import Workout from '~/components/ui/workoutShowCase/Workout'
-import { getUserCurrentWorkout } from '~/lib/actions'
+import { getUserCurrentWorkout } from '~/lib/actions/workout'
 
 
 type Props = {}

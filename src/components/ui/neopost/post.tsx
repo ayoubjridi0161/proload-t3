@@ -7,12 +7,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCommentDots, faPaperPlane, faThumbsUp } from '@fortawesome/free-solid-svg-icons'
 import { Label } from '../label'
 import Link from 'next/link'
-import { likePost, sharePostAction ,getSharedPost} from '~/lib/actions'
 import { Textarea } from '../textarea'
 import { Button } from '../button'
 import Comments from './comments'
 import DisplayImages from './displayImages'
 import { toast } from 'sonner'
+import { getSharedPost, sharePostAction } from '~/lib/actions/socialActions'
+import { likePost } from '~/lib/actions/userInteractions'
 type Comment = {
   content: string;
   id: number;

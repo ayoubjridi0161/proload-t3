@@ -1,11 +1,6 @@
 
-import { auth } from 'auth'
 import React from 'react'
-import { ButtonBlack, ButtonWhite } from '~/components/ui/UIverse/Buttons';
-import { Button } from '~/components/ui/button';
 import EmailLogin from '~/components/ui/form/emailLogin';
-import { Login } from '~/components/ui/form/login'
-import { signout } from '~/lib/actions';
 
 const page =  () => {
   return (
@@ -21,8 +16,6 @@ const page =  () => {
             <EmailLogin />
           </div>
         </div>
-    
-    
     </div>
     </>
 

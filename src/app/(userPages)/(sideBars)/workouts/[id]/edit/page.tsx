@@ -3,7 +3,7 @@ import React from 'react'
 import { fetchWorkoutById, getExerciceNames } from '~/lib/data'
 import {auth} from 'auth'
 import EditWorkout from '~/components/ui/workouts/EditWorkout'
-import { getWorkoutByUser } from '~/lib/actions'
+import { getWorkoutByUser } from '~/lib/actions/workout'
 const Page = async ({params} : {params:{id:string}}) => {
   const session = await auth()
   const email = session?.user?.email

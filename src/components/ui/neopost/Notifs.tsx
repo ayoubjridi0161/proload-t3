@@ -3,8 +3,8 @@ import { Button } from "~/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover"
 import { Bell } from "lucide-react"
 import { useEffect, useState } from "react";
-import { fetchNotifs } from "~/lib/actions";
 import { timeAgo } from "~/lib/utils";
+import { fetchNotifs } from "~/lib/actions/notifications";
 
 export function Notifs() {
   const [notifs, setNotifs] = useState<{

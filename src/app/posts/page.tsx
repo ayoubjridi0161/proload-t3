@@ -6,5 +6,4 @@ const page = () => {
     <CreatePost />
   )
 }
-
 export default page

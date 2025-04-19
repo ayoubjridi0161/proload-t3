@@ -1,7 +1,7 @@
 "use client"
 import React from 'react'
 import { Button } from '../button'
-import { refreshPRs } from '~/lib/actions'
+import { refreshPRs } from '~/lib/actions/userLogsActions'
 import { useFormState, useFormStatus } from 'react-dom'
 
 type Props = {}

@@ -10,7 +10,7 @@ import React from "react";
 import { andika, lalezar } from "~/components/ui/font";
 import Container from "~/components/ui/userDashboard/Container";
 import { Input } from "@nextui-org/react";
-import { logWorkoutAction } from "~/lib/actions";
+import { logWorkoutAction } from "~/lib/actions/userLogsActions"
 import { type WorkoutDetails } from "~/app/(userPages)/(sideBars)/dashboard/track/page";
 import { useFormState } from "react-dom";
 import { Button } from "../button";

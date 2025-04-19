@@ -56,7 +56,7 @@ export default async function PostManager() {
           //   <p className="mt-2">{post.content}</p>
           // </div>
           <>
-          <PostCard userImage={post.users.image} author={post.users.name ||"unknown"} description={post.content} publishDate="2 sep 2003" title={post.title} readingTime="3mn"  key={index}  />
+          <PostCard userImage={post.users.image} author={post.users.name ?? "unknown"} description={post.content} publishDate="2 sep 2003" title={post.title} readingTime="3mn"  key={index}  />
           {/* <Commentbox /> */}
           </>
         ))}

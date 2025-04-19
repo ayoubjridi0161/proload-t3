@@ -1,11 +1,6 @@
 import Link from 'next/link'
 import React from 'react'
-import { Avatar, AvatarFallback } from '../avatar';
-import { redirect } from 'next/navigation'
-import { getUserByEmail } from '~/lib/data';
 import DropDown from '../DropDown';
-import { signout } from '~/lib/actions';
-import { Button } from '../button';
 import { auth } from 'auth';
 
 
@@ -15,9 +10,6 @@ const HeaderNav = async () => {
   const image = session?.user?.image
   const UUID = session?.user?.id
   // console.log("uuid is:",UUID)
-  
-  
-  
   return (
     <nav className=' flex items-center justify-between text-white  px-[10%] py-3'>
             <h1 className=' text-2xl'>Proload</h1>

@@ -1,5 +1,5 @@
 import React from 'react'
-import { getUserWorkouts, getWorkoutList } from '~/lib/actions'
+import { getUserWorkouts, getWorkoutList } from '~/lib/actions/workout'
 import WorkoutCards from '../neoworkout/workouts-cards'
 import { WorkoutCard } from '../neoworkout/workout-card'
 

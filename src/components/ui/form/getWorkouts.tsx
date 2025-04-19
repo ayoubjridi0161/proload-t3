@@ -1,5 +1,5 @@
 "use client"
-import { postWorkouts } from "~/lib/actions"
+import { postWorkouts } from "~/lib/actions/workout"
 import { Button } from "../button"
 import { useFormState } from "react-dom"
 

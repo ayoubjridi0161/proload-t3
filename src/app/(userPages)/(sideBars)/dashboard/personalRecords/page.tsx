@@ -7,7 +7,7 @@ import { SidebarContent,Sidebar, SidebarHeader } from "~/components/ui/sidebar"
 import Container from "~/components/ui/userDashboard/Container"
 import PersonalRecords from "~/components/ui/userDashboard/PR"
 import RefreshButton from "~/components/ui/userDashboard/RefreshButton"
-import { fetchPersonalRecords } from "~/lib/actions"
+import { fetchPersonalRecords } from "~/lib/actions/userLogsActions"
 
 const page = async () => {
     const personalRecords = await fetchPersonalRecords()

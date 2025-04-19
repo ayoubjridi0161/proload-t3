@@ -19,9 +19,9 @@ import {
 import { Textarea } from "~/components/ui/textarea"
 import { Label } from "~/components/ui/label"
 import { Input } from "~/components/ui/input"
-import { addPostAction, uploadFiles, uploadToS3 } from "~/lib/actions"
 import { useFormState } from "react-dom"
 import { Avatar } from "../avatar"
+import { addPostAction } from "~/lib/actions/socialActions"
 
 interface Props {
   image?: string

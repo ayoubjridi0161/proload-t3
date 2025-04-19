@@ -1,27 +1,3 @@
-// "use server"
-
-// import { auth } from "auth"
-// import { fetchAllWorkouts, getWorkoutsByUser } from "~/lib/data"
-// import WorkoutBox from "../workouts/WorkoutBox"
-
-// const ProfilePage = async ({id}:{id:string}) => {
-//     const session = await auth()        
-//     const workoutsList = await getWorkoutsByUser(id)
-//   return (
-//     <>
-//     <div className="grid grid-cols-5  gap-2">
-//         {workoutsList  && workoutsList.map( workout => 
-//             <WorkoutBox key={workout.id} workoutSummary={workout} />
-//        )}
-//     </div>
-    
-//     <hr />
-//     <div>{session && JSON.stringify(session.user)}</div>
-//     </>
-//   )
-// }
-
-// export default ProfilePage
 
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 import { Card, CardHeader, CardContent, CardFooter } from "~/components/ui/card"
@@ -31,7 +7,7 @@ import { type JSX, type SVGProps } from "react"
 import { auth } from "auth"
 import { getPosts, getWorkoutsByUser } from "~/lib/data"
 import PostCard from "../Posts/PostCard"
-import { getUserProfile } from "~/lib/actions"
+import { getUserProfile } from "~/lib/actions/userActions"
 
 export default async function Component({id}:{id:string}) {
     const session = await auth()        

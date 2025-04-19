@@ -1,11 +1,11 @@
 "use client"
 import React, { useOptimistic, useState } from 'react'
-import {  addWorkoutComment } from '~/lib/actions'
 import Link from 'next/link';
 import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
 import Replies from '../ui/neopost/replies';
 import { cn } from '~/lib/utils';
+import { addWorkoutComment } from '~/lib/actions/socialActions';
 type Comment = {
     content: string;
     id: number;

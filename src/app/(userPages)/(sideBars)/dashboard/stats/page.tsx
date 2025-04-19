@@ -1,7 +1,7 @@
 import React from 'react'
 import Stats from '~/components/ui/userDashboard/stats'
 
-export default async function page() {
+export default function page() {
   return (
     <section>
         <Stats />

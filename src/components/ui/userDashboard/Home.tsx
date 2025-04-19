@@ -4,7 +4,7 @@ import ChartData from './Chart'
 import Container from './Container'
 import { Button } from '../button'
 import WorkoutCalendar from './workoutCalendar'
-import { fetchUserLogs, fetchWorkoutDates } from '~/lib/actions'
+import { fetchUserLogs, fetchWorkoutDates } from '~/lib/actions/userLogsActions'
 import { calculateExerciseProgress } from '~/lib/analytics/analytics'
 import {type UserLog} from "~/lib/types"
 import { Sidebar, SidebarContent } from '../sidebar'

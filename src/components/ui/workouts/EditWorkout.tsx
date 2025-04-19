@@ -1,18 +1,10 @@
 "use client"
 import React, { MouseEventHandler, type ReactElement } from 'react'
-import { Input } from '../input'
-import {ButtonBlack,ButtonWhite} from '~/components/ui/UIverse/Buttons'
 import '~/components/ui/UIverse/Button.css'
-
 import { Button } from '../button'
-import { Label } from '../label'
 import AddDay from './AddDay'
 import AddEditDay from './AddEditDay'
-
-import { DeleteIcon, GrabIcon, TrashIcon } from 'lucide-react'
-import { Accordion } from '../accordion'
-import addWorkout from '~/lib/actions'
-import { editWorkout } from '~/lib/actions'
+import { editWorkout } from '~/lib/actions/workout'
 import UIverseButton from '~/components/UIverseButton'
 import AddRestDay from './AddRestDay'
 import Container from '../Container'

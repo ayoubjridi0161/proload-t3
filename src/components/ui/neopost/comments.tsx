@@ -1,10 +1,10 @@
 import { getSession } from 'next-auth/react'
 import React, { useOptimistic, useState } from 'react'
-import { addReply, addComment } from '~/lib/actions'
 import { Textarea } from '../textarea'
 import { Button } from '../button';
 import Link from 'next/link';
 import Replies from './replies';
+import { addComment } from '~/lib/actions/socialActions';
 type Comment = {
     content: string;
     id: number;

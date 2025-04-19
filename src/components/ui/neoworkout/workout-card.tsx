@@ -1,6 +1,6 @@
 "use client"
 
-import { PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart } from "recharts"
+import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from "recharts"
 import { Clock, Dumbbell, Heart, Share2 } from "lucide-react"
 
 import { Badge } from "~/components/ui/badge"

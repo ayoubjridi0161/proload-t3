@@ -418,7 +418,7 @@ export const getExerciceByName = async (name:string)=>{
     }
 }
 export const getProfileByID = async (id:string)=>{
-    const res = await db.query.users.findFirst({where:eq(users.id,id),columns:{name:true,image:true},with:{workouts:{
+    const res = await db.query.users.findFirst({where:eq(users.id,id),with:{workouts:{
         columns:{numberOfDays:true,name:true,id:true,published:true,description:true,downvotes:true,upvotes:true,createdAt:true},
     },posts:{
         columns:{userId:false}
@@ -427,9 +427,14 @@ export const getProfileByID = async (id:string)=>{
     return res
 }
 
-export const updateUserProfile = async (data:{username:string},id:string)=>{
+export const updateUserProfile = async (data:{username:string,profilePic:string},id:string)=>{
     try{
-        const res = await db.update(users).set({name:data.username}).where(eq(users.id,id)).returning()
+        const updateData: { name: string; image?: string } = { name: data.username };
+        if (data.profilePic) {
+            updateData.image = data.profilePic;
+        }
+        console.log(updateData)
+        const res = await db.update(users).set(updateData).where(eq(users.id,id)).returning()
         return {message : res }
     }catch(err){
         throw err
@@ -594,6 +599,27 @@ export const getFollows = async (userID:string)=>{
     try {
         const res = await db.query.users.findFirst({columns:{connects:true},where:eq(users.id,userID)})
         return res?.connects 
+    } catch (error) {
+        console.error(error)
+    }
+}
+export const getFriendList = async (userID:string)=>{
+    try {
+        const res = await db.query.users.findFirst({columns:{connects:true},where:eq(users.id,userID)})
+if(res?.connects){
+    const profiles = await db.query.users.findMany({
+        where: inArray(users.id, res.connects),
+        columns: {
+            id: true,
+            name: true, 
+            image: true,
+            numberOfConnects: true
+        }
+    })
+    return profiles
+} else {
+    return null
+}
     } catch (error) {
         console.error(error)
     }

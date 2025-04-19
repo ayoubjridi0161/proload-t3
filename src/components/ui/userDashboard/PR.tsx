@@ -1,8 +1,6 @@
-import {TabsContent,Tabs,TabsList,TabsTrigger} from '~/components/ui/tabs'
 import { andika, lalezar } from '../font'
 import Container from './Container'
 import {Table,TableBody,TableCell,TableHead,TableHeader, TableRow} from '~/components/ui/table'
-import { Button } from '../button'
 import RefreshButton from './RefreshButton'
 type Props = {
     personalRecords : {
@@ -10,9 +8,7 @@ type Props = {
         records: number[];
     }[]
 }
-
 const PersonalRecords =(props: Props) => {
-    
   return (
     <div className={`w-full ${andika.className} space-y-5 `}>
         <div className='space-y-2 p-4 '>

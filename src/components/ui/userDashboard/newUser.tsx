@@ -1,9 +1,7 @@
 import React from 'react'
 import { andika } from '../font'
-import ChartData from './Chart'
 import Container from './Container'
 import { Button } from '../button'
-import WorkoutCalendar from './workoutCalendar'
 import { PlusCircle, Dumbbell, Target } from 'lucide-react'
 
 export default function NewUser() {
