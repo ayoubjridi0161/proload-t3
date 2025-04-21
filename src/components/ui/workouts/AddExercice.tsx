@@ -16,12 +16,11 @@ type exercice = {
     name : string,
     sets : number,
     reps : number
-
 }
 
 
 export default function AddExercice(props: Props) {
-  const muscleGroups = ['chest', 'back', 'shoulders', 'legs', 'arms', 'core']
+  const muscleGroups = [...new Set(props.exerciceName.map(ex => ex.muscleGroup))]
     const [Exercice,setExercice] = React.useState<exercice>({name:'',sets:1,reps:1})
     const [showExercice,setShowExercice] = React.useState(false)  
     const [deleteEx,setDeleteEx] = React.useState(false)
@@ -39,7 +38,7 @@ export default function AddExercice(props: Props) {
     {showExercice ? 
     <div className=' items-center flex justify-between '>
       <input type="hidden" disabled={deleteEx} name={`${props.dayIndex}`} value={JSON.stringify({...Exercice,id:-1})} /> 
-      <ExerciceCard className={deleteEx ? "hidden" : " bg-slate-300 border-border opacity-80"} delete={()=>{setDeleteEx(true)}}  name={Exercice.name} sets={Exercice.sets} reps={Exercice.reps} edit={()=>{setShowExercice(prev => !prev)}} />
+      <ExerciceCard className={deleteEx ? "hidden" : "bg-white text-xtraText border-border opacity-80"} delete={()=>{setDeleteEx(true)}} image={props.exerciceName.find(ex => Exercice.name == ex.name)?.images[0] ?? null}  name={Exercice.name} sets={Exercice.sets} reps={Exercice.reps} edit={()=>{setShowExercice(prev => !prev)}} />
     </div> :   
 <div className="flex items-center h-fit rounded-lg w-full border border-border bg-slate-300 p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
  <div className="flex items-center space-x-4 ">

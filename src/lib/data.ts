@@ -1,10 +1,9 @@
-import { Posts, Reactions,    days, exerciceNames, exercices, userLogs, users, workouts,comments ,replys,notifications, exerciseLibrary} from '~/server/db/schema'
+import { Posts, Reactions,    days, exercices, userLogs, users, workouts,comments ,replys,notifications, exerciseLibrary} from '~/server/db/schema'
 import {db} from '../server/db/index'
 import type * as types from './types'
 import { DrizzleEntityClass, DrizzleError, and, arrayContains, asc, count, eq, inArray, name, sql } from 'drizzle-orm'
 import { unstable_noStore as noStore , unstable_cache as cached } from 'next/cache'
 import { removeRedundancy } from './utils'
-import { String } from 'aws-sdk/clients/acm'
 /*Read Data*/
 export const fetchAllWorkouts = async()=>{
     const result = await db.query.workouts.findMany({
@@ -62,7 +61,7 @@ export const fetchUserWorkouts = async(privacy:boolean,user:string)=>{
 
 
 export const getMuscleGroups = async()=>{
-    const result = await db.query.exerciceNames.findMany({
+    const result = await db.query.exerciseLibrary.findMany({
         columns: { muscleGroup: true },
     })
     const flatted = result.map (exercice => exercice.muscleGroup)
@@ -406,9 +405,9 @@ export const getExerciceNames = async ()=>{
 }
 export const getExerciceByName = async (name:string)=>{
     try{
-        const res =await db.query.exerciceNames.findFirst(
+        const res =await db.query.exerciseLibrary.findFirst(
             {where:
-                eq(exerciceNames.name,name),
+                eq(exerciseLibrary.name,name),
             columns:
                 {name:true,muscleGroup:true,musclesTargeted:true,equipment:true}
             }) 
@@ -529,6 +528,8 @@ export const editUserDetails = async (userID:string,data:{
     height: string,
     weight: string,
     experience: string,
+    fitnessLevel: string,
+    fitnessGoal: string,
   })=>{
     try{
         const res = await db.update(users).set({details:data}).where(eq(users.id,userID)).returning({id:users.id})
@@ -737,10 +738,10 @@ export const updateUserPrs = async (userID: string, records: { exercise: string,
                 if (existingExerciseIndex === -1) {
                     updatedRecords.push({ exercise: exercise, records: [record] });
                 } else {
-const lastRecord = updatedRecords[existingExerciseIndex]?.records?.[updatedRecords[existingExerciseIndex]?.records?.length - 1];
-if (!lastRecord || record > lastRecord) {
-    updatedRecords[existingExerciseIndex]?.records?.push(record) ?? (updatedRecords[existingExerciseIndex] = { exercise: exercise, records: [record] });
-}
+                    const lastRecord = updatedRecords[existingExerciseIndex]?.records?.[updatedRecords[existingExerciseIndex]?.records?.length - 1];
+                    if (!lastRecord || record > lastRecord) {
+                        updatedRecords[existingExerciseIndex]?.records?.push(record) ?? (updatedRecords[existingExerciseIndex] = { exercise: exercise, records: [record] });
+                    }
                 }
             }
 
@@ -793,3 +794,43 @@ export async function getSharedPostByID(postID:number){
         throw err
     }
 }
+
+
+export const updateNotificationStatus = async (notificationId: number) => {
+    try {
+      const res =await db.update(notifications)
+      .set({ read: true })
+      .where(eq(notifications.id, notificationId)).returning();
+      return res
+    } catch (err) {
+      throw err
+    }
+  }
+
+export const updateUserTotalWeight = async (userID:string,weight:number)=>{
+    try {
+        const res = await db.transaction(async (tx) => {
+            const user = await tx.query.users.findFirst({
+                where: eq(users.id, userID),
+                columns: { personalRecords: true }
+            });
+            const updatedRecords : Array<{exercise: string, records: number[]}>  = user?.personalRecords as Array<{exercise: string, records: number[]}> ?? [];
+            
+            const existingExerciseIndex = updatedRecords.findIndex(item => item.exercise === "totalWeight");
+            if (existingExerciseIndex === -1) {
+                updatedRecords.push({ exercise: "totalWeight", records: [weight] });
+            } else {
+                const lastRecord = updatedRecords[existingExerciseIndex]?.records?.[updatedRecords[existingExerciseIndex]?.records?.length - 1];
+                lastRecord ? updatedRecords[existingExerciseIndex]?.records?.push(weight+lastRecord) : updatedRecords[existingExerciseIndex]?.records?.push(weight)
+            }
+            return await tx.update(users)
+                .set({ personalRecords: updatedRecords })
+                .where(eq(users.id, userID))
+                .returning({ id: users.id });
+        });
+        return res[0]?.id
+    } catch (error) {
+        throw error
+    }
+}
+

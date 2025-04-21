@@ -1,6 +1,6 @@
 "use client"
 import React from 'react'
-
+import Image from "next/image"
 import { Button } from "~/components/ui/button"
 import { CardTitle, CardDescription, CardHeader, CardContent, Card } from "~/components/ui/card"
 
@@ -11,6 +11,7 @@ type Props = {
     reps:number
     delete:()=>void
     className:string 
+    image:string | null
 }
 
 export default function ExerciceCard(props: Props) {
@@ -22,19 +23,27 @@ export default function ExerciceCard(props: Props) {
               <CardTitle className='min-h-8'>{props.name}</CardTitle>
               <CardDescription>Back, Biceps</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Sets: {props.sets}</span>
-                <span className="text-sm font-medium">Reps: {props.reps}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <Button type='button' onClick={props.edit} size="sm" variant="ghost">
+            
+            <CardContent className="grid grid-cols-3 grid-rows-2 gap-4">
+                <span className="col-start-1 row-start-1 text-sm self-center place-self-center font-medium">Sets: {props.sets}</span>
+                <Button className='col-start-1 row-start-2' type='button' onClick={props.edit} size="sm" variant="ghost">
                   Edit
                 </Button>
-                <Button onClick={props.delete} type='button' color="destructive" size="sm" variant="ghost">
+              {props.image && (
+                <div className="row-span-2 flex items-center justify-center">
+                  <Image 
+                    src={props.image} 
+                    alt={props.name}
+                    width={20}
+                    height={20}
+                    className="max-h-40 w-20 object-contain"
+                  />
+                </div>
+              )}
+                <span className="col-start-3 text-sm font-medium place-self-center self-center">Reps: {props.reps}</span>
+                <Button className='col-start-3 row-start-2' onClick={props.delete} type='button' color="destructive" size="sm" variant="ghost">
                   Delete
                 </Button>
-              </div>
             </CardContent>
           </Card>
   )

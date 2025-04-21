@@ -37,32 +37,6 @@ export function Notifs() {
     // Clear the interval on component unmount
     return () => clearInterval(interval);
   }, []);
-  // Sample notifications data
-  const notifications = [
-    {
-      id: 1,
-      title: "New message received",
-      description: "You have a new message from Sarah",
-      time: "5 minutes ago",
-      read: false,
-    },
-    {
-      id: 2,
-      title: "Project update",
-      description: "Changes were made to your project",
-      time: "1 hour ago",
-      read: false,
-    },
-    {
-      id: 3,
-      title: "Reminder",
-      description: "Meeting with the team at 3 PM",
-      time: "2 hours ago",
-      read: true,
-    },
-  ]
-
-
   return (
     <Popover>
       <PopoverTrigger asChild>

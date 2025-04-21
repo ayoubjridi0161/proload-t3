@@ -9,9 +9,18 @@ import { calculateExerciseProgress } from '~/lib/analytics/analytics'
 import {type UserLog} from "~/lib/types"
 import { Sidebar, SidebarContent } from '../sidebar'
 
-export default async function Home() {
+export default function Home({userLogs}:{userLogs:
+  {
+    date: Date;
+    id: number;
+    userId: string | null;
+    workoutId: number | null;
+    logs: unknown;
+    duration: number | null;
+}[]
+}) {
   //  const workoutDates = await fetchWorkoutDates();
-  const userLogs = await fetchUserLogs() ?? []
+  
   
 const workoutDates = userLogs?.map(log => ({date:log.date}));
 const progressResults = calculateExerciseProgress(userLogs  );

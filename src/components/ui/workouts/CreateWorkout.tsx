@@ -1,22 +1,15 @@
 "use client"
-import React, { MouseEventHandler, type ReactElement } from 'react'
-import { Input } from '../input'
-import {ButtonBlack,ButtonWhite} from '~/components/ui/UIverse/Buttons'
+import React, { type ReactElement } from 'react'
 import '~/components/ui/UIverse/Button.css'
 
 import { Button } from '../button'
-import { Label } from '../label'
 import AddDay from './AddDay'
-import { DeleteIcon, GrabIcon, TrashIcon } from 'lucide-react'
-import { Accordion } from '../accordion'
 import addWorkout from '~/lib/actions/workout'
 import UIverseButton from '~/components/UIverseButton'
 import AddRestDay from './AddRestDay'
-import Container from '../Container'
 import {
   AlertDialog,
   AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -24,8 +17,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog"
-import { ShootingStars } from '../UIverse/shootingStarBackground/shooting-stars'
-import { StarsBackground } from '../UIverse/shootingStarBackground/stars-background'
 import { useRouter } from 'next/navigation'
 import { Textarea } from '../textarea'
 import { type ExerciseNames } from '~/lib/types'

@@ -18,7 +18,7 @@ import {
   text,
   boolean,
   real,
-  AnyPgColumn,
+  type AnyPgColumn,
 } from "drizzle-orm/pg-core";
 import { number } from "zod";
 
@@ -66,7 +66,7 @@ export const daysRelations = relations(days,({one,many})=> ({
 }))
 export const exercices = pgTable("exercises",{
   id:serial('id').primaryKey(),
-  name: varchar('exercice_name',{length:256}).references(()=>exerciceNames.name).notNull(),
+  name: varchar('exercice_name',{length:256}).references(()=>exerciseLibrary.name).notNull(),
   sets: integer('sets').notNull(),
   reps: integer('reps').notNull(),
   dayId:integer('day_id').notNull().references(()=>days.id),
@@ -76,9 +76,9 @@ export const exercicesRelations= relations(exercices, ({one}) => (
   fields:[exercices.dayId],
   references:[days.id],
   }),
-  exerciceNames: one(exerciceNames,{
+  exerciseLibrary: one(exerciseLibrary,{
     fields:[exercices.name],
-    references:[exerciceNames.name]
+    references:[exerciseLibrary.name]
   })
 }
 ));
@@ -104,6 +104,7 @@ export const users = pgTable("user", {
   currentWorkout: integer("current_workout"),
   likes: integer('likes').array(),
   bio: text("bio").default(""),
+  achievements: json("achievements").$type<{name:string,date:string}>().array(),
   details: json("details").$type<{
     bmi: string;
     age: string;
@@ -111,13 +112,17 @@ export const users = pgTable("user", {
     height: string;
     weight: string;
     experience: string;
-  }>().$default(() => ({
+    fitnessGoal:string;
+    fitnessLevel:string;
+    }>().$default(() => ({
     bmi: "",
     age: "",
     gender: "",
     height: "",
     weight: "",
-    experience: ""
+    experience: "",
+    fitnessGoal:"",
+    fitnessLevel:"",
   })),
   personalRecords: json("personal_records")
   .$type<{
@@ -213,18 +218,7 @@ export const PostsRelations= relations(Posts,({many,one})=>({
 })
 )
 
-export const exerciceNames = pgTable(
-  'exerciceNames',
-  {
-    name: varchar('name', { length: 256 }).notNull().primaryKey(),
-    musclesTargeted: text('muscles_targeted').array().notNull().default(sql`ARRAY[]::text[]`),
-    muscleGroup: varchar('muscle_group', { length: 256 }).notNull(),
-    equipment:text('equipment').array().notNull().default(sql`ARRAY[]::text[]`),
-    video: varchar('video', { length: 256 }),
-    image: varchar('image', { length: 256 }),
-    description: text('description')
-  },
-);
+
 export const exerciseLibrary = pgTable(
   'exercise_library',
   {
@@ -238,7 +232,7 @@ export const exerciseLibrary = pgTable(
     rating: real('rating'),
   }
 )
-export const exerciceNamesRelations = relations(exerciceNames, ({ many }) => ({
+export const exerciseLibraryRelations = relations(exerciseLibrary, ({ many }) => ({
   exercices: many(exercices),
 }));
 

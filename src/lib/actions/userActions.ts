@@ -30,6 +30,8 @@ import { uploadToS3 } from "./s3Actions"
     height: string,
     weight: string,
     experience: string,
+    fitnessLevel: string,
+    fitnessGoal: string,
   })=>
   {
     const session = await auth();
@@ -37,6 +39,7 @@ import { uploadToS3 } from "./s3Actions"
     if (!userID) return false;
     try{
     const res = await editUserDetails(userID,data)
+    revalidatePath("/dashboard/recommendations")
   }catch(err) {console.error(err)}
   }
 

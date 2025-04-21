@@ -2,8 +2,9 @@
 
 import { auth } from "auth"
 import { revalidatePath } from "next/cache"
-import { getUserLogs, getWorkoutDates, updateUserPrs, getUserPrs, addLogs } from "../data"
+import { getUserLogs, getWorkoutDates, updateUserPrs, getUserPrs, addLogs, updateUserTotalWeight } from "../data"
 import { type WorkoutLog } from "../types"
+import { redirect } from "next/navigation"
 
 export const fetchUserLogs = async ()=>{
     const session = await auth()
@@ -74,7 +75,7 @@ export const fetchUserLogs = async ()=>{
       const dayName = formdata.get("dayName") as string;
       const exercises: any[] = [];
       const parsedExercises: { name: string; sets: { setIndex: string; weight: string }[] }[] = [];
-  
+      let totalWeight = 0;
       formdata.forEach((value, key) => {
         if (key.startsWith("ex.")) {
           exercises.push(key);
@@ -96,12 +97,23 @@ export const fetchUserLogs = async ()=>{
           if (setIndex) {
             if (exercise) {
               exercise.sets.push({ setIndex, weight });
+              totalWeight += parseFloat(weight) || 0;
             }
           }
         }
       });
+      
+      // Create array with max weight for each exercise
+      const maxWeight = parsedExercises.map(exercise => {
+        const max = Math.max(...exercise.sets.map(set => parseFloat(set.weight) || 0));
+        return { exercise: exercise.name, record: max };
+      });
+      
       try{
+        await updateUserPrs(userID,maxWeight)
         const res = await addLogs(workoutID,userID,dayName,parsedExercises)
+        await updateUserTotalWeight(userID,totalWeight)
+        redirect("/dashboard")
         return {message:res ? "success" : "failure"}
       }catch(err){
         console.log(err)
@@ -113,3 +125,4 @@ export const fetchUserLogs = async ()=>{
       return { message: "failure" };
     }
   };
+

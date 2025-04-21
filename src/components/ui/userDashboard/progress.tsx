@@ -1,5 +1,4 @@
 "use client"
-
 import { use, useState } from "react"
 import { CalendarIcon, ChevronDown, Dumbbell, LineChart, TrendingUp, User, Weight } from "lucide-react"
 import { Button } from "~/components/ui/button"
@@ -26,17 +25,42 @@ type Props = {
 }
 export default function AthleteDashboard(props:Props) {
   const { userLogs } = props
-  const weeklyVolumeData = calculateWeeklyVolume(userLogs ?? [])
-  const weeklyProgressPerExercise = calculateWeeklyProgressPerExercise(userLogs ?? []);
+  const [timeframe, setTimeframe] = useState("8weeks")
+  const filterLogsByTimeframe = (logs: UserLog[], timeframe: string) => {
+    if (!logs || logs.length === 0) return logs;
+    
+    const now = new Date();
+    const lastLogDate = new Date(logs[logs.length - 1].date);
+    let weeksToSubtract = 8;
+    
+    switch(timeframe) {
+      case "4weeks": weeksToSubtract = 4; break;
+      case "8weeks": weeksToSubtract = 8; break;
+      case "12weeks": weeksToSubtract = 12; break;
+      case "6months": weeksToSubtract = 26; break;
+      case "1year": weeksToSubtract = 52; break;
+    }
+    
+    const cutoffDate = new Date(lastLogDate);
+    cutoffDate.setDate(cutoffDate.getDate() - (weeksToSubtract * 7));
+    
+    return logs.filter(log => new Date(log.date) >= cutoffDate);
+  }
+  const filteredLogs = filterLogsByTimeframe(userLogs ?? [], timeframe);
+  const weeklyVolumeData = calculateWeeklyVolume(filteredLogs)
+  const weeklyProgressPerExercise = calculateWeeklyProgressPerExercise(filteredLogs);
   const weeklyWeightProgress = calculateOverallWeeklyProgress(weeklyProgressPerExercise);
   const MainLiftsProgress = getMainLiftsProgress(weeklyProgressPerExercise)
-  const workoutFrequency = calculateWorkoutFrequencyPerDay(userLogs ?? [])
-  const weeklyVolume = calculateWeeklyWorkoutVolume(userLogs ?? [])
-  const JSONB = calculateWeeklyWorkoutVolume(userLogs ?? [])
+  const workoutFrequency = calculateWorkoutFrequencyPerDay(filteredLogs)
+  const weeklyVolume = calculateWeeklyWorkoutVolume(filteredLogs)
+  const JSONB = calculateWeeklyWorkoutVolume(filteredLogs)
   const [selectedExercise, setSelectedExercise] = useState(weeklyProgressPerExercise[0]?.name ?? "")
 
-
-
+  // Filter userLogs based on selected timeframe
+  
+  
+  
+  
   const aux = weeklyVolumeData[weeklyVolumeData.length - 1]
   const aux2 = weeklyVolumeData[weeklyVolumeData.length - 2]
   let weeklyVolumeChange = 0
@@ -44,40 +68,7 @@ export default function AthleteDashboard(props:Props) {
   weeklyVolumeChange =  aux.volume - aux2.volume 
   const lastWeekVolume : number =aux ? aux.volume : 0
 
-  const [date, setDate] = useState<Date | undefined>(new Date())
 
-  // Sample data for charts
-  const weightProgressData = [
-    { week: "Week 1", weight: 180 },
-    { week: "Week 2", weight: 182 },
-    { week: "Week 3", weight: 183 },
-    { week: "Week 4", weight: 185 },
-    { week: "Week 5", weight: 186 },
-    { week: "Week 6", weight: 188 },
-    { week: "Week 7", weight: 190 },
-    { week: "Week 8", weight: 192 },
-  ]
-
-  const strengthProgressData = [
-    { week: "Week 1", bench: 185, squat: 225, deadlift: 275 },
-    { week: "Week 2", bench: 190, squat: 235, deadlift: 285 },
-    { week: "Week 3", bench: 195, squat: 245, deadlift: 295 },
-    { week: "Week 4", bench: 200, squat: 255, deadlift: 305 },
-    { week: "Week 5", bench: 205, squat: 265, deadlift: 315 },
-    { week: "Week 6", bench: 210, squat: 275, deadlift: 325 },
-    { week: "Week 7", bench: 215, squat: 285, deadlift: 335 },
-    { week: "Week 8", bench: 225, squat: 295, deadlift: 345 },
-  ]
-
-  const workoutFrequencyData = [
-    { day: "Mon", sessions: 2 },
-    { day: "Tue", sessions: 1 },
-    { day: "Wed", sessions: 2 },
-    { day: "Thu", sessions: 1 },
-    { day: "Fri", sessions: 2 },
-    { day: "Sat", sessions: 1 },
-    { day: "Sun", sessions: 0 },
-  ]
 
   return (
     <div className={`flex min-h-screen w-full flex-col ${andika.className}`}>
@@ -151,7 +142,11 @@ export default function AthleteDashboard(props:Props) {
               <TabsTrigger value="volume">Volume</TabsTrigger>
             </TabsList>
             {/* duration */}
-            <Select defaultValue="8weeks" >
+            <Select 
+              defaultValue="8weeks" 
+              value={timeframe}
+              onValueChange={setTimeframe}
+            >
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Select timeframe" />
               </SelectTrigger>
@@ -402,8 +397,8 @@ export default function AthleteDashboard(props:Props) {
                       <Line
                         type="monotone"
                         dataKey="averageWeight"
-                        stroke={`var(--color-${selectedExercise.toLowerCase().replace(/\s+/g, '')})`}
-                        strokeWidth={2}
+                        stroke="#1b512d"
+                        strokeWidth={3}
                         dot={{ r: 4 }}
                         activeDot={{ r: 6 }}
                         connectNulls={true}

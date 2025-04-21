@@ -21,9 +21,10 @@ import {type WorkoutDetail} from "~/lib/types"
 type SortField = "name" | "days" | "likes"
 type SortOrder = "asc" | "desc"
 
-type Props = { workouts: {
+type Props = { 
+  workouts: {
     exercices: {
-        mg: string;
+        mg: unknown;
         exerciseCount: number;
     }[];
     id: number;
@@ -33,7 +34,8 @@ type Props = { workouts: {
     numberOfDays: number | null;
     dayNames: string[];
     upvotes: number;
-}[]}
+}[]
+}
 
 export default function WorkoutCards({workouts}:Props) {
   const [searchQuery, setSearchQuery] = useState("")

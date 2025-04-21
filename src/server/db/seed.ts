@@ -23,6 +23,6 @@ export async function seedExercisesFromCSV() {
   const logs = JSON.parse(rawData) as Workout[];
   for (const workout of logs) {
 const workoutDate = new Date(workout.date);
-    const res = await addLogsWithDate(workoutDate, 10,"bed66c87-88b0-45c5-9eea-4c505a818f64",workout.workoutName,workout.exercises)
+    const res = await addLogsWithDate(workoutDate, 17,"c6f2836c-5e58-4d5b-9afe-c00c0c3a9b5e",workout.workoutName,workout.exercises)
   }
 }

@@ -12,23 +12,23 @@ import Link from "next/link"
 
 interface WorkoutCardProps {
     workout: {
-        exercices: {
-            mg: string;
-            exerciseCount: number;
-        }[];
-        id: number;
-        name: string;
-        username: string | null | undefined;
-        description: string;
-        numberOfDays: number | null;
-        dayNames: string[];
-        upvotes: number;
-    }
+      exercices: {
+          mg: unknown;
+          exerciseCount: number;
+      }[];
+      id: number;
+      name: string;
+      username: string | null | undefined;
+      description: string;
+      numberOfDays: number | null;
+      dayNames: string[];
+      upvotes: number;
+  }
 }
   export function WorkoutCard({ workout }: WorkoutCardProps) {
     const { name,dayNames,description,exercices,id,numberOfDays,upvotes,username} = workout
     const muscleGroups = exercices?.map(ex => ({
-        name:ex.mg,
+        name:ex.mg as string,
         value:ex.exerciseCount
     }))
   

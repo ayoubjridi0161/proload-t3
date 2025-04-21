@@ -12,6 +12,7 @@ type Props = {}
 export default async function page({}: Props) {
   const dates = await fetchWorkoutDates()
     const workoutSummaryList = await getWorkoutList()
+    if(!workoutSummaryList) return null
     const workouts = await Promise.all(workoutSummaryList) 
   return (
     <>
@@ -20,7 +21,7 @@ export default async function page({}: Props) {
       <p className="text-muted-foreground mb-8">
         Browse workouts shared by the community. Find the perfect routine for your fitness goals.
       </p>
-      <WorkoutCards workouts={workouts} />
+      {workouts ? <WorkoutCards workouts={workouts} /> : <div>no workouts found</div>}
     </div>
     <Sidebar side='right'  className="border-left-1 px-3 bg-[#f2fcf5] top-[--header-height] !h-[calc(100svh-var(--header-height))]" >
     <SidebarContent className='bg-[#f2fcf5] space-y-3'>

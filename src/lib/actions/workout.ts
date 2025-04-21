@@ -18,6 +18,7 @@ import { deleteDay,
     updateDay, 
     updateExercice, 
     updateWorkout } from "../data"
+import { redirect } from "next/navigation"
 
   export async function editWorkout (formData : FormData){
   
@@ -115,6 +116,7 @@ import { deleteDay,
         await InsertExercice({name:parsed.name,sets:parsed.sets,reps:parsed.reps},dayID)
       }
     }
+    redirect('/workouts')
   }
 
   export const postWorkouts = async (prev : any , formData : FormData) =>{
