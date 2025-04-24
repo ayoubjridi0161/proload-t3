@@ -26,12 +26,15 @@ export default function CreateWorkout({exerciseNames}:{
   exerciseNames: ExerciseNames
 }) 
 {
+  
     const [newKey, setNewKey] = React.useState(0) 
     const [dayRest, setDayRest] = React.useState<{day: string ,change:number}>( )
     const [isPublished, setIsPublished] = React.useState<boolean>()
     const [days, setDays] = React.useState<ReactElement[]>([])
     const [removedDay,setRemovedDay] = React.useState<number>()
     const router = useRouter()
+    console.log(isPublished);
+    
 
     const formRef = React.useRef<HTMLFormElement>(null)
 
@@ -66,6 +69,8 @@ export default function CreateWorkout({exerciseNames}:{
     },[dayRest])
     // submit form
     React.useEffect(()=>{
+      console.log("submit");
+      
       if( typeof isPublished === 'boolean' )
         formRef.current?.requestSubmit()
         // router.push('/workouts')

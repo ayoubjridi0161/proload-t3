@@ -13,61 +13,9 @@ type Props = {}
 
 export default async function page({}: Props) {
       const workout =  await getUserCurrentWorkout()
+      
   return (
-    <section className={`${andika.className} w-full space-y-5 p-5 text-[#707877]`} >
-          <div>
-            <h1 className="text-lg font-semibold">workout library</h1>
-            <p className="mb-3 text-sm opacity-70">Today, august 24</p>
-          </div>
-          <div className='grid grid-cols-2 w-9/12 mx-auto gap-7'>
-            <Container className='shadow-md space-y-3'>
-                    <div className='p-2 rounded-full bg-slate-200 w-fit'><DumbbellIcon/></div>
-                    <h1 className='font-bold text-lg'>Next Wrokout</h1>
-                    <p className='text-xs'>Achieved today - 15kg increase</p>
-                    <Button className='bg-xtraGreen'>Share</Button>
-            </Container>
-            <Container className='shadow-md space-y-3'>
-                    <div className='p-2 rounded-full bg-slate-200 w-fit'><DumbbellIcon/></div>
-                    <h1 className='font-bold text-lg'>Next Wrokout</h1>
-                    <p className='text-xs'>Achieved today - 15kg increase</p>
-                    <Button className='bg-xtraGreen'>Share</Button>
-            </Container>
-          </div>
-          <div className='grid grid-cols-3 '>
-            {workout &&
-          <Container className="col-span-2 text-xtraGray bg-xtraDark h-fit">
-            <Suspense fallback={<WorkoutSkeleton/>}>
-                <Workout fetchedWorkout={workout} />
-            </Suspense>
-          </Container>
-          }
-            <div className='p-6 space-y-3'>
-                {Array.from({length:3}).map((item,index)=>(
-                    <Container className='space-y-3' key={index}>
-                    <div className='flex'>
-                        <div>
-                        <Image src="https://s3.eu-north-1.amazonaws.com/proload.me/ach3.jpg" width={180} height={180} alt='hello'/>
-                        </div>
-                        <div className='px-5 space-y-1'>
-                            <h1 className='text-md font-bold'>Full body Strength</h1>
-                            <p className='text-xs'>A comprehensive workout targeting all major muscle groups for overall strength and conditioning</p>
-                        </div>
-                    </div>
-                    <div className='flex gap-2'>
-                    <Chip className='bg-xtraDark text-xtraBG'>Mon</Chip>
-                    <Chip className='bg-xtraDark text-xtraBG'>Wed</Chip>
-                    <Chip className='bg-xtraDark text-xtraBG'>Fri</Chip>
-                    </div>
-                    <div className='flex items-center  justify-between'>
-                        <p className='text-xs'>Duration: <span className='font-bold'>60 min</span></p>
-                        <Button size="sm" className='bg-xtraGreen text-xtraText'>Start workout</Button>
-                    </div>
-                </Container>
-                ))}
-            </div>
-          </div>
-
-    </section>
+    <p>{workout && JSON.stringify(workout)}</p>
   )
 }
 const DumbbellIcon = ()=>{

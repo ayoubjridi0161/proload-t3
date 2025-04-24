@@ -1,13 +1,20 @@
 import React from 'react'
 import Exercice from './Exercice'
+import { cn } from '~/lib/utils'
 type dayDetails = {
     dayIndex:number,
     name : string,
-    exercices :null | {
-        name : string,
-        sets : number,
-        reps : number,
-    }[] 
+    exercices :Exercise[] | null
+}
+type Exercise = {
+  id: number;
+  name: string;
+  sets: number;
+  reps: number;
+  dayId: number;
+  exerciseLibrary: {
+    images: string[];
+  };
 }
     
 
@@ -18,9 +25,9 @@ const Day = ({day}:{day:dayDetails | undefined}) => {
         })
     }
   return (
-    <div className="bg-gradient-to-br from-[#F0F0F0] to-[#E6E6E6] dark:from-[#2A2A2A] dark:to-[#232323] rounded-lg p-3 shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-2px_rgba(0,0,0,0.05)]">
+    <div className={day?.name== "rest" ? "bg-xtraContainer/30 rounded-lg p-3 shadow-sm " : "bg-xtraContainer/40 rounded-lg p-3 shadow-sm " }>
       {day && (
-        <h3 className="text-lg font-bold mb-1 text-[#006400] dark:text-[#00FF00] text-center sm:text-left">
+        <h3 className={"text-lg font-bold mb-1 text-xtraText  text-center sm:text-left"}>
           Day {day.dayIndex}: {day.name}
         </h3>
       )}

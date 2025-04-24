@@ -73,7 +73,11 @@ export async function fetchWorkoutById(id:number){
     const result = await db.query.workouts.findFirst({
         where : eq(workouts.id,id),
         with : {days : {
-            with : {exercices : true}
+            with : {exercices : {
+                with:{
+                    exerciseLibrary : {columns:{images:true}}
+                }
+            }}
         },comments:{
             columns:{content:true,createdAt:true,id:true},
             with:{

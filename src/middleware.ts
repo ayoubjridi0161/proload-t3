@@ -4,7 +4,7 @@ import { type NextRequest, NextResponse } from "next/server";
 
 
 
-const protectedRoutes = ["/profile","/neopost","/neoworkout"]
+const protectedRoutes = ["/profile","/neopost","/neoworkout","dashboard","home"]
 
 export default async function middleware(request: NextRequest){
     const session = await auth()
@@ -27,6 +27,10 @@ export default async function middleware(request: NextRequest){
     if (isProtected && !session){
         return NextResponse.redirect(new URL("/api/auth/signin",request.nextUrl))
     }
+    if(session && pathname === "/login"){
+        return NextResponse.redirect(new URL("/home",request.nextUrl))
+    }
+
     return NextResponse.next()
 }
 

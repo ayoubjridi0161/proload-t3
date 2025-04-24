@@ -1,0 +1,85 @@
+workspace {
+
+    model {
+        user = person "User" {
+            description "A person using the Proload app"
+        }
+
+        proload = softwareSystem "Proload Web Application" {
+            description "Next.js-based fitness and workout tracking platform"
+
+            frontend = container "Frontend" {
+                technology "React/Next.js"
+                description "Handles UI, routing, and client-side logic"
+            }
+
+            backend = container "Backend" {
+                technology "Node.js"
+                description "Handles server-side logic, analytics, and API endpoints"
+            }
+
+            database = container "Database" {
+                technology "PostgreSQL (Drizzle ORM)"
+                description "Stores users, workouts, logs, and related data"
+            }
+        }
+
+        awsS3 = softwareSystem "AWS S3" {
+            description "Stores images, videos, and other assets"
+        }
+
+        user -> proload "Uses"
+        user -> frontend "Interacts with"
+        proload.frontend -> proload.backend "Makes API calls to"
+        proload.backend -> proload.database "Reads from and writes to"
+        proload.backend -> awsS3 "Uploads/downloads files"
+    }
+
+    views {
+        systemContext proload {
+            include *
+            autolayout lr
+            title "Proload System Context"
+        }
+
+        container proload {
+            include *
+            autolayout lr
+            title "Proload Container Diagram"
+        }
+
+        // Move the styles block inside the views block
+        styles {
+            element "Container" {
+                background #116466
+                color #ffffff
+            }
+            element "Person" {
+                background #ffcc29
+                color #000000
+                shape person
+            }
+            element "Software System" {
+                background #2c3531
+                color #ffffff
+            }
+        }
+    } // End of views block
+
+    // Remove the styles block from here
+    // properties {
+        element.Container{
+            background #116466
+            color #ffffff
+        }
+        element.Person {
+            background #ffcc29
+            color #000000
+            shape person
+        }
+        element.SoftwareSystem  {
+            background #2c3531
+            color #ffffff
+        }
+    }
+}

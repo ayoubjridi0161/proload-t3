@@ -18,9 +18,10 @@ type Props = {
     comments:Comment[]
     workoutID:number
     appUser:string
+    className?: string
 }
 
-export default function Comments({comments,workoutID,appUser}: Props) {
+export default function Comments({comments,workoutID,appUser, className}: Props) {
     // const [replyText, setReplyText] = useState("")
     const [optimisticComments,addOptimisticComments] = useOptimistic(
         comments,
@@ -40,7 +41,7 @@ export default function Comments({comments,workoutID,appUser}: Props) {
     }
   return (
 
-        <div className="mt-2 space-y-4 ">
+        <div className={cn("mt-2 space-y-4", className)}>
           <form action={addCommentAction} className="flex gap-2">
             
               <Textarea

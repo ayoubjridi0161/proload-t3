@@ -15,15 +15,20 @@ type split =
         numberOfDays : number | null,
         days:dayDetails[]
     }
-    
+    type Exercise = {
+        id: number;
+        name: string;
+        sets: number;
+        reps: number;
+        dayId: number;
+        exerciseLibrary: {
+          images: string[];
+        };
+      }
     type dayDetails = {
         dayIndex:number,
         name : string,
-        exercices :null | {
-            name : string,
-            sets : number,
-            reps : number,
-        }[] 
+        exercices :Exercise[]
     }
 const Workout =  ({fetchedWorkout}:{id?:number,fetchedWorkout:split}) => {
 
@@ -50,8 +55,8 @@ const Workout =  ({fetchedWorkout}:{id?:number,fetchedWorkout:split}) => {
         return renderDays
     }
   return (
-    <div className="">
-      <h2 className="text-2xl font-bold mb-4 text-[#006400] dark:text-[#00FF00]">
+    <div className="text-xtraLight ">
+      <h2 className="text-2xl font-bold mb-4 ">
         {fetchedWorkout?.name || "Workout"}
       </h2>
       <div className="space-y-4">
