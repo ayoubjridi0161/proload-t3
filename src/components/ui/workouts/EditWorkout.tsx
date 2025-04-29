@@ -3,6 +3,7 @@ import React, { MouseEventHandler, type ReactElement } from 'react'
 import '~/components/ui/UIverse/Button.css'
 import { Button } from '../button'
 import AddDay from './AddDay'
+import SimpleContainer from "~/components/ui/userDashboard/Container";
 import AddEditDay from './AddEditDay'
 import { editWorkout } from '~/lib/actions/workout'
 import UIverseButton from '~/components/UIverseButton'
@@ -20,22 +21,33 @@ import {
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog"
 import type { workoutDetails,dayDetails } from '~/lib/types'
+import { Textarea } from '../textarea'
+import { useFormState, useFormStatus } from 'react-dom'
+import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
 type Props = {
+  owned:boolean
+  ownerId:string
     id : number
     name : string
     description : string
     days : dayDetails[]
-    email : string
     NoD : number | null
     exerciceNames:{
       name: string;
+      description: string | null;
       musclesTargeted: string[];
       muscleGroup: string;
-      equipment: string[];}[]
+      equipment: string | null;
+      video: string | null;
+      images: string[];
+      rating: number | null;
+  }[]
     
 }
 
 export default function EditWorkout(props : Props ) {
+    const router = useRouter()
     const [newKey, setNewKey] = React.useState(props.NoD ?? 99) 
     const [dayRest, setDayRest] = React.useState<{day: string ,change:number}>()
     function addDays(){
@@ -53,26 +65,17 @@ export default function EditWorkout(props : Props ) {
       }
       return days
       }
-      
     const [days, setDays] = React.useState<ReactElement[]>(addDays())
-    const email = props.email 
     const [removedDay,setRemovedDay] = React.useState<number>()
-
-
-
     function removeDay(id:number){
         setRemovedDay(id)
     }
-
-      
-
     //remove Day
     React.useEffect(()=>{
       if(removedDay){
         setDays([...days]?.filter(day => Number(day.key) != removedDay))
       }
     },[removedDay])
-    
     //add Day component
     React.useEffect(()=>{
       if(newKey)
@@ -80,7 +83,6 @@ export default function EditWorkout(props : Props ) {
         setDays(days => [...days , <AddDay exerciceNames={props.exerciceNames}  remove={removeDay} id={newKey} key={newKey} muscles='legs,arms,chest'  />])
         else if(dayRest?.day === 'rest') setDays(days => [...days , <AddRestDay remove={removeDay} id={newKey} key={newKey} />])   
         // console.log(days) 
-
     },[newKey])
     //add Day to order
     React.useEffect(()=>{
@@ -88,19 +90,27 @@ export default function EditWorkout(props : Props ) {
       setNewKey(newKey+1)
     }
     },[dayRest])
-
+    const [state, formAction] = useFormState(editWorkout, null)
+    if(state) {
+      toast(state)
+      router.push('/workouts')
+      return <div>Redirecting ...</div>
+    }
     return (
-    <div className='bg-primary-foreground rounded-lg h-full'>
-     <form action={async (formData: FormData) => {
-       await editWorkout(formData);
-     }} className="h-full rounded-lg border border-border p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800 space-y-2">
-        <input type="hidden" name='email' value={email} />
+    <div className='w-full bg-xtraContainer rounded-none h-fit'>
+     <form action={formAction} className="h-fit p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800 space-y-2">
         <input type="hidden" name='NoD' value={days.length}  />
         <input type="hidden" name='workoutID' value={props.id} />
+        <input type="hidden" name='ownerId' value={props.ownerId} />
         {/* <input type="hidden" name='published' value={isPublished?.toString()} /> */}
-          <div className='pt-1 flex items-center'>
           <UIverseButton defaultval={props.name} name='workoutName' placeHolder="Workout name..." aria-label={'workout name...'} />
-          </div>
+          <SimpleContainer className='p-0 bg-primary-foreground drop-shadow-sm '>
+          <h2 className='pl-1 text-lg font-semibold'>Description:</h2>
+          <Textarea 
+            defaultValue={props.description} 
+            readOnly={!props.owned} 
+            className={!props.owned ? "bg-slate-100 cursor-not-allowed" : undefined}
+          /></SimpleContainer>
           <div className='space-y-4'>
           {days}
           </div>  
@@ -109,46 +119,33 @@ export default function EditWorkout(props : Props ) {
           <Button type='button' onClick={()=>{setDayRest( prev  =>  prev ? {day:"train",change:prev.change+1} : {day:'train',change:1}  ) } } className="mt-4" size="sm" variant="default">
           Add Workout Day
           </Button>
-        
           <Button type='button' onClick={()=>{setDayRest( prev  =>  prev ? {day:"rest",change:prev.change+1} : {day:'rest',change:1}  ) }} className="mt-4" size="sm" variant="default">
           Add Rest Day
           </Button>
-        
         </div>
-        
-        
-        <Button variant={'destructive'} className='text-md font-semibold'>Save</Button>
-
-</div>
+        <SaveButton owned={props.owned} />
+        </div>
       </form>
-  
-  
     </div>
     
 
   )
 }
-const Dialog = ({setPubslished} : {setPubslished : (arg0: boolean)=> void  }) => {
 
-  return(
-    
-    <AlertDialog>
-    <AlertDialogTrigger className='btnwhite'>
-      save
-    </AlertDialogTrigger>
-    <AlertDialogContent>
-      <AlertDialogHeader>
-        <AlertDialogTitle className='text-accent-foreground'>Would you like to share your workout</AlertDialogTitle>
-        <AlertDialogDescription className='text-muted-foreground'>
-          This action will make your workouts seen to the public and you can remove it at any time
-        </AlertDialogDescription>
-      </AlertDialogHeader>
-      <AlertDialogFooter>
-      <AlertDialogAction className='bg-primary-foreground hover:bg-primary-foreground/50' onClick={()=>{setPubslished(false)}}  >No</AlertDialogAction>
-      
-      <AlertDialogAction  onClick={()=>{setPubslished(true)}} >Yes</AlertDialogAction>
-      </AlertDialogFooter>
-    </AlertDialogContent>
-  </AlertDialog>
+const SaveButton = ({owned}:{owned:boolean}) => {
+  const {pending} = useFormStatus()
+  return (
+<Button 
+  variant={'destructive'} 
+  className='text-md font-semibold mt-3'
+  disabled={pending}
+>
+  {pending ? (
+    "Saving..."
+  ) : (
+    owned ? "Save" : "Request Edit"
+  )}
+</Button>
   )
+  
 }

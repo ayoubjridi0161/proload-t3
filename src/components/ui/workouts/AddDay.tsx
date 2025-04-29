@@ -16,7 +16,7 @@ type Props = {
     muscles: string
     remove: (id:number)=>void
     id: number
-    exerciseNames: ExerciseNames
+    exerciceNames: ExerciseNames
 }
 type exercice = {
   exName: string,
@@ -62,7 +62,7 @@ export default function AddDay(props : Props) {
           <div className={isEdit ?  "flex flex-wrap gap-2  px-3 pb-1 pt-3 w-full" : "hidden"}>
             {exercices }
           </div>{isEdit &&
-          <ButtonWhite className='m-3' type='button' onClick={()=>{setNbrExercices(prev => prev+1);setExercices(prev => [...prev,<AddExercice exerciceName={props.exerciseNames}  dayIndex={dayIndex}  dayName={dayNameProps.current?.value} key={`day${props.id}-exercice${nbrExercices}`} id={`day${props.id}-exercice${nbrExercices}`}/> ])}}>Add exercice</ButtonWhite>
+          <ButtonWhite className='m-3' type='button' onClick={()=>{setNbrExercices(prev => prev+1);setExercices(prev => [...prev,<AddExercice exerciceName={props.exerciceNames}  dayIndex={dayIndex}  dayName={dayNameProps.current?.value} key={`day${props.id}-exercice${nbrExercices}`} id={`day${props.id}-exercice${nbrExercices}`}/> ])}}>Add exercice</ButtonWhite>
           }
           </div>
         

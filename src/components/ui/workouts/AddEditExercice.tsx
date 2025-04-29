@@ -9,6 +9,16 @@ type Props = {
     dayIndex : number | undefined
     dayName : string | undefined
     exercice : exercice
+    exerciceNames:{
+      name: string;
+      description: string | null;
+      musclesTargeted: string[];
+      muscleGroup: string;
+      equipment: string | null;
+      video: string | null;
+      images: string[];
+      rating: number | null;
+  }[]
 }
 type exercice = {
     id?: number;
@@ -30,9 +40,9 @@ export default function AddEditExercice(props: Props) {
     {showExercice ? 
     <div className=' items-center flex justify-between '>
       <input type="hidden" disabled={deleteEx} name={`${props.dayIndex}`} value={JSON.stringify({...Exercice,id:props.exercice.id})} /> 
-      <ExerciceCard className={deleteEx ? "hidden" : " bg-primary border-border opacity-80"} delete={()=>{setDeleteEx(true)}}  name={Exercice.name} sets={Exercice.sets} reps={Exercice.reps} edit={()=>{setShowExercice(prev => !prev)}} />
+      <ExerciceCard image={props.exerciceNames.find(ex => ex.name == Exercice.name)?.images[0] ?? ""} className={deleteEx ? "hidden" : " bg-white text-xtraLight border-border opacity-80"} delete={()=>{setDeleteEx(true)}}  name={Exercice.name} sets={Exercice.sets} reps={Exercice.reps} edit={()=>{setShowExercice(prev => !prev)}} />
     </div> :   
-<div className="flex items-center justify-between h-fit rounded-lg w-full border border-border bg-primary p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+<div className="flex items-center justify-between h-fit rounded-lg w-full border border-border bg-xtraText p-4 shadow-sm ">
  <div className="flex items-center space-x-4 ">
       <div>
         <label

@@ -1,5 +1,5 @@
+"use server"
 import { Separator } from '@radix-ui/react-separator'
-import React from 'react'
 import SideConnets from '~/components/ui/neopost/sideConnets'
 import WorkoutCards from '~/components/ui/neoworkout/workouts-cards'
 import { SidebarContent,Sidebar } from '~/components/ui/sidebar'

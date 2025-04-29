@@ -3,6 +3,7 @@ import { auth } from "auth"
 import { DrizzleError } from "drizzle-orm"
 import { deleteDay, 
     deleteRemovedExercices, 
+    deleteWorkout, 
     fetchAllWorkouts, 
     fetchUserWorkouts, 
     fetchWorkoutById, 
@@ -19,21 +20,33 @@ import { deleteDay,
     updateExercice, 
     updateWorkout } from "../data"
 import { redirect } from "next/navigation"
+import { toast } from "sonner"
+import { sendNotification } from "./notifications"
+import { generateExercises, generateFullWorkout, generateWorkoutDay } from "../ai-copilot"
+type WorkoutDay = {
+  id: number;
+  type: 'workout' | 'rest';
+  name: string;
+  exercises?: Array<{
+    id: number;
+    name: string;
+    sets: number;
+    reps: number;
+  }>;
+};
 
-  export async function editWorkout (formData : FormData){
+  export async function editWorkout (state:any, formData : FormData){
   
-    const user = await getUserByEmail(formData.get('email') as string)
-      if(!user){
-        // return {message:"user not found"}
-        throw new Error("user not found")
-      }
+    const session = await auth()
+    const userID = session?.user?.id
+    const name = session?.user?.name
+    const ownerId = formData.get('ownerId') 
+    if(ownerId === "userId"){
       try{
-      const updatedWorkoutID = await updateWorkout({numberOfDays:parseInt(formData.get('NoD') as string),name:formData.get('workoutName') as string,description:''},Number(formData.get('workoutID')))
+      const updatedWorkoutID = await updateWorkout({numberOfDays:parseInt(formData.get('NoD') as string),name:formData.get('workoutName') as string,description:formData.get('description') as string },Number(formData.get('workoutID')))
       if(!updatedWorkoutID){
         throw new DrizzleError({message:"failed to update workout"})
       }
-    
-    
     const days = formData.getAll('day') 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     let ParsedDays : {name:string,index:number,dayID:number}[] = days.map(day =>{
@@ -76,44 +89,46 @@ import { redirect } from "next/navigation"
     }})
     }
     )
-    return {message:"success"}
+    return (
+      "successfully updated workout"
+    )
+    
+    
   }catch(err){
     if(err instanceof DrizzleError)
       throw new DrizzleError({message:"error in updationitification"})  
       else console.log("error is : " , err)
     }
+  }else{
+    await sendNotification(ownerId as string ,"edit request",`${name} wants to edit your workout ${formData.get('workoutName') as string}`)
+  }
   }
 
   export default async function addWorkout(formData : FormData) {
-    console.log(formData);
     const session = await auth()
+    const days = JSON.parse(formData.get('days') as string) as WorkoutDay[]
     if(!session?.user?.id) throw new Error("no user found")
     const userID = session?.user?.id
     const description = formData.get("description") as string
-     const workoutID =  await  InsertWorkout({name:formData.get('workoutName') as string,userId:userID,description: description ?? 'new description',numberOfDays:parseInt(formData.get('NoD') as string),published:formData.get('published') === 'true'})
+     const workoutID =  await  InsertWorkout({name:formData.get('workoutName') as string,userId:userID,description: description ?? 'new description',numberOfDays:days.length ?? 0,published:formData.get('isPublished') === 'true'})
     if(typeof workoutID !== 'number'){
-      throw new Error("failed to insert workout") 
+      return {code:402, message:"failed to insert workout"}
     }
-    const days = formData.getAll('day')
-    console.log(days)
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-return
-    const parsedDays : {name:string,index:number,dayID:number}[]= days.map((day)=>JSON.parse(day as string))
-    //cast the indexes to integers
-    
-    const sortedDays = parsedDays.map((day,index)=>({name:day.name,index:index+1})).filter(day => day.name !== "rest")
+    const sortedDays = days.map((day,index)=>({...day,index:index+1})).filter(day => day.type !== "rest")
     
   
     for(const eachDay of sortedDays){
       const dayID = await InsertDay({name:eachDay.name,index:eachDay.index},workoutID)
       if(typeof dayID !== 'number'){
-        throw new Error("failed to insert day")
+        return {code:402, message:"failed to insert day"}
       }
       
-      const exercices = formData.getAll(eachDay.index.toString())
-      for(const exercice of exercices){
+      // const exercices = formData.getAll(eachDay.index.toString())
+      if(!eachDay.exercises) break;
+      for(const exercice of eachDay?.exercises){
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const parsed : {name:string,sets:number,reps:number,id:number} = JSON.parse(exercice as string)
-        await InsertExercice({name:parsed.name,sets:parsed.sets,reps:parsed.reps},dayID)
+        
+        await InsertExercice({name:exercice.name,sets:exercice.sets,reps:exercice.reps},dayID)
       }
     }
     redirect('/workouts')
@@ -129,16 +144,24 @@ import { redirect } from "next/navigation"
   
   }
 
-  export const getWorkoutByUser = async (email:string)=>{
+  export const getWorkout = async (id:number)=>{
     try{
       const session = await auth()
       const UUID = session?.user?.id
-      if(!UUID) throw new Error ("not authed")
-    const workoutIDs = await getWorkoutsByUser(UUID)
-    return {res:workoutIDs,err:null}
+    const workout = await fetchWorkoutById(id)
+    const isOwned = workout?.userId === UUID
+    return {res:workout,owned:isOwned,err:null}
   }catch(err){
     return {res:null,err:err}
   }
+  }
+  export const getWorkoutById = async (id:number)=>{
+    try{
+      const res = await fetchWorkoutById(id)
+      return res
+    }catch(err){
+      return null
+    }
   }
 
   export const getUserWorkouts =async  (privacy:boolean,user:string) =>{
@@ -283,4 +306,75 @@ import { redirect } from "next/navigation"
     return res
   }
 
-  
+  export const deleteWorkoutById = async (id:number)=>{
+    try{
+      const session = await auth()
+      const userID = session?.user?.id
+      const workout = await fetchWorkoutById(id)
+      if(workout?.userId !== userID) throw new Error("not authorized")
+      await deleteWorkout(id)
+      redirect('/workouts')
+    }catch(err){
+      return "failure"
+    }
+  }
+
+  export const generationAction = async (
+    exerciseLibrary:string[],
+    type: "workout" | "day" | "exercise",
+    payload: {
+      workout?: { name?: string; description?: string; days?: WorkoutDay[] };
+      day?: { name?: string;};
+    }
+  ) => {
+    let response = "";
+    switch (type) {
+      case "workout": {
+        const prompt = `You are an expert fitness trainer AI that creates optimized workout plans. 
+        Your responses must:
+        1. Use only exercises from the provided library
+        2. Include balanced muscle group targeting
+        3. Specify sets (3-5) and reps (8-15) for each exercise
+        4. Format as valid JSON matching the required schema
+        5. Include rest days where appropriate
+        6. Provide clear workout names and descriptions
+        Generate a workout plan for ${payload.workout?.name?? "a new workout"}
+        follow up on this workout : ${JSON.stringify(payload.workout)}
+        `;
+        response =await generateFullWorkout(exerciseLibrary,prompt)
+        break;
+      }
+      case "day": {
+        const dayPrompt = `You are an expert fitness trainer AI that creates optimized workout days. 
+        Your responses must:
+        1. Use only exercises from the provided library
+        2. Target appropriate muscle groups for the day's focus
+        3. Specify sets (3-5) and reps (8-15) for each exercise
+        4. Format as valid JSON matching the required schema
+        
+        Generate exercises for ${payload.day?.name ?? "a workout day"}
+        don't include these 
+        existing exercises: ${JSON.stringify(payload.workout?.days?.flatMap(day => day.exercises?.map(ex => ex.name) ?? []))}
+        break`;
+        response = await generateWorkoutDay(exerciseLibrary,dayPrompt)
+      }
+      case "exercise": {
+        const exercisePrompt = `You are an expert fitness trainer AI that suggests specific exercises. 
+        Your responses must:
+        1. Use only exercises from the provided library
+        2. Specify sets (3-5) and reps (8-15)
+        3. Format as valid JSON matching the required schema
+        
+        Generate specific exercises based on the context \n
+        ${payload.day?.name ?? "a workout day"}\n
+        don't include these
+        existing exercises: ${JSON.stringify(payload.workout?.days?.flatMap(day => day.exercises?.map(ex => ex.name)?? []))}
+        `;
+        response = await generateExercises(exerciseLibrary,exercisePrompt)
+        break;
+      }
+      default:
+        throw new Error("Invalid generation type");
+    }
+    return response
+  };

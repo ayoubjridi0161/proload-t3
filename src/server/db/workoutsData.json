@@ -1,0 +1,388 @@
+[
+  {
+    "name": "Powerlifting Program",
+    "userId": "c6f2836c-5e58-4d5b-9afe-c00c0c3a9b5e",
+    "description": "Focus on big three lifts with accessory work",
+    "numberOfDays": 5,
+    "published": true,
+    "days": [
+      {
+        "name": "chest",
+        "index": 1,
+        "exercises": [
+          {"name": "Bench Press - Powerlifting", "sets": 5, "reps": 5},
+          {"name": "Close-grip bench press", "sets": 4, "reps": 6},
+          {"name": "Dumbbell Flyes", "sets": 3, "reps": 8}
+        ]
+      },
+      {
+        "name": "back",
+        "index": 2,
+        "exercises": [
+          {"name": "Deadlift with Bands", "sets": 5, "reps": 3},
+          {"name": "T-Bar Row", "sets": 4, "reps": 6},
+          {"name": "Weighted pull-up", "sets": 3, "reps": 5}
+        ]
+      },
+      {
+        "name": "rest",
+        "index": 3
+      },
+      {
+        "name": "legs",
+        "index": 4,
+        "exercises": [
+          {"name": "Barbell Squat", "sets": 5, "reps": 5},
+          {"name": "Box Squat with Bands", "sets": 4, "reps": 6},
+          {"name": "Barbell glute bridge", "sets": 3, "reps": 8}
+        ]
+      },
+      {
+        "name": "accessory",
+        "index": 5,
+        "exercises": [
+          {"name": "EZ-Bar Skullcrusher", "sets": 4, "reps": 8},
+          {"name": "Hammer Curls", "sets": 4, "reps": 8},
+          {"name": "Standing behind-the-back wrist curl", "sets": 3, "reps": 12}
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Kettlebell Strength",
+    "userId": "937e812a-ad8c-40e1-a1b3-e33ae2b752aa",
+    "description": "Full body workouts using kettlebells",
+    "numberOfDays": 3,
+    "published": true,
+    "days": [
+      {
+        "name": "full body",
+        "index": 1,
+        "exercises": [
+          {"name": "Kettlebell sumo deadlift high pull", "sets": 4, "reps": 8},
+          {"name": "Single-arm kettlebell push-press", "sets": 3, "reps": 10},
+          {"name": "Kettlebell pass-through lunge", "sets": 3, "reps": 8},
+          {"name": "Russian twist", "sets": 3, "reps": 12}
+        ]
+      },
+      {
+        "name": "rest",
+        "index": 2
+      },
+      {
+        "name": "full body",
+        "index": 3,
+        "exercises": [
+          {"name": "Kettlebell Turkish Get-Up (Squat style)", "sets": 3, "reps": 5},
+          {"name": "Single-arm kettlebell clean", "sets": 3, "reps": 8},
+          {"name": "Kettlebell One-Legged Deadlift", "sets": 3, "reps": 8},
+          {"name": "Landmine twist", "sets": 3, "reps": 10}
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Bodyweight Challenge",
+    "userId": "e61890d8-987b-4ac2-8f6f-081719c4b48d",
+    "description": "No equipment needed circuit training",
+    "numberOfDays": 4,
+    "published": true,
+    "days": [
+      {
+        "name": "upper body",
+        "index": 1,
+        "exercises": [
+          {"name": "Push-Ups - Close Triceps Position", "sets": 4, "reps": 12},
+          {"name": "Bodyweight Flyes", "sets": 3, "reps": 15},
+          {"name": "Pull-up", "sets": 3, "reps": 8},
+          {"name": "Hanging leg raise", "sets": 3, "reps": 10}
+        ]
+      },
+      {
+        "name": "lower body",
+        "index": 2,
+        "exercises": [
+          {"name": "Bodyweight squat", "sets": 4, "reps": 15},
+          {"name": "Single-leg glute bridge", "sets": 3, "reps": 12},
+          {"name": "Single-leg depth squat", "sets": 3, "reps": 10},
+          {"name": "Hanging toes-to-bar", "sets": 3, "reps": 8}
+        ]
+      },
+      {
+        "name": "rest",
+        "index": 3
+      },
+      {
+        "name": "core",
+        "index": 4,
+        "exercises": [
+          {"name": "Ab bicycle", "sets": 4, "reps": 20},
+          {"name": "Russian twist", "sets": 3, "reps": 15},
+          {"name": "V-up", "sets": 3, "reps": 12},
+          {"name": "Plank", "sets": 3, "reps": 30}
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Strongman Training",
+    "userId": "c6f2836c-5e58-4d5b-9afe-c00c0c3a9b5e",
+    "description": "Functional strength with odd objects",
+    "numberOfDays": 3,
+    "published": true,
+    "days": [
+      {
+        "name": "full body",
+        "index": 1,
+        "exercises": [
+          {"name": "Atlas Stones", "sets": 4, "reps": 5},
+          {"name": "Rickshaw Carry", "sets": 3, "reps": 30},
+          {"name": "Bear crawl sled drag", "sets": 3, "reps": 20},
+          {"name": "Weighted Jump Squat", "sets": 3, "reps": 8}
+        ]
+      },
+      {
+        "name": "rest",
+        "index": 2
+      },
+      {
+        "name": "full body",
+        "index": 3,
+        "exercises": [
+          {"name": "Dumbbell farmer's walk", "sets": 4, "reps": 40},
+          {"name": "Sledgehammer swing", "sets": 3, "reps": 15},
+          {"name": "Box jump", "sets": 3, "reps": 8},
+          {"name": "Landmine twist", "sets": 3, "reps": 12}
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Olympic Lifts",
+    "userId": "e61890d8-987b-4ac2-8f6f-081719c4b48d",
+    "description": "Focus on clean, jerk, and snatch variations",
+    "numberOfDays": 4,
+    "published": true,
+    "days": [
+      {
+        "name": "clean focus",
+        "index": 1,
+        "exercises": [
+          {"name": "Clean from Blocks", "sets": 5, "reps": 3},
+          {"name": "Clean and press", "sets": 4, "reps": 5},
+          {"name": "Front Squats With Two Kettlebells", "sets": 3, "reps": 6},
+          {"name": "Standing behind-the-back wrist curl", "sets": 3, "reps": 10}
+        ]
+      },
+      {
+        "name": "snatch focus",
+        "index": 2,
+        "exercises": [
+          {"name": "Hang Snatch", "sets": 5, "reps": 3},
+          {"name": "Power clean", "sets": 4, "reps": 5},
+          {"name": "Overhead dumbbell front raise", "sets": 3, "reps": 8},
+          {"name": "Palms-down wrist curl over bench", "sets": 3, "reps": 10}
+        ]
+      },
+      {
+        "name": "rest",
+        "index": 3
+      },
+      {
+        "name": "jerk focus",
+        "index": 4,
+        "exercises": [
+          {"name": "Clean and jerk", "sets": 5, "reps": 3},
+          {"name": "Push-press", "sets": 4, "reps": 5},
+          {"name": "Barbell glute bridge", "sets": 3, "reps": 8},
+          {"name": "Seated palms-up wrist curl", "sets": 3, "reps": 10}
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Arm Blaster",
+    "userId": "937e812a-ad8c-40e1-a1b3-e33ae2b752aa",
+    "description": "High volume arm training",
+    "numberOfDays": 3,
+    "published": true,
+    "days": [
+      {
+        "name": "biceps",
+        "index": 1,
+        "exercises": [
+          {"name": "EZ-Bar Curl", "sets": 4, "reps": 10},
+          {"name": "Hammer Curls", "sets": 4, "reps": 12},
+          {"name": "Concentration curl", "sets": 3, "reps": 12},
+          {"name": "Standing behind-the-back wrist curl", "sets": 3, "reps": 15}
+        ]
+      },
+      {
+        "name": "triceps",
+        "index": 2,
+        "exercises": [
+          {"name": "Close-grip bench press", "sets": 4, "reps": 8},
+          {"name": "EZ-Bar Skullcrusher", "sets": 4, "reps": 10},
+          {"name": "Triceps Pushdown", "sets": 3, "reps": 12},
+          {"name": "Double-arm triceps kick-back", "sets": 3, "reps": 12}
+        ]
+      },
+      {
+        "name": "rest",
+        "index": 3
+      }
+    ]
+  },
+  {
+    "name": "Core Crusher",
+    "userId": "e61890d8-987b-4ac2-8f6f-081719c4b48d",
+    "description": "Daily core training with full body",
+    "numberOfDays": 4,
+    "published": true,
+    "days": [
+      {
+        "name": "full body",
+        "index": 1,
+        "exercises": [
+          {"name": "Barbell Squat", "sets": 4, "reps": 8},
+          {"name": "Pull-up", "sets": 4, "reps": 8},
+          {"name": "Ab bicycle", "sets": 4, "reps": 20},
+          {"name": "Hanging leg raise", "sets": 3, "reps": 12}
+        ]
+      },
+      {
+        "name": "full body",
+        "index": 2,
+        "exercises": [
+          {"name": "Deadlift with Bands", "sets": 4, "reps": 6},
+          {"name": "Standing dumbbell shoulder press", "sets": 4, "reps": 8},
+          {"name": "Russian twist", "sets": 4, "reps": 15},
+          {"name": "Landmine twist", "sets": 3, "reps": 12}
+        ]
+      },
+      {
+        "name": "rest",
+        "index": 3
+      },
+      {
+        "name": "core focus",
+        "index": 4,
+        "exercises": [
+          {"name": "Ab bicycle", "sets": 5, "reps": 20},
+          {"name": "Hanging toes-to-bar", "sets": 4, "reps": 10},
+          {"name": "Suspended ab fall-out", "sets": 3, "reps": 12},
+          {"name": "Barbell roll-out", "sets": 3, "reps": 10}
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Endurance Builder",
+    "userId": "937e812a-ad8c-40e1-a1b3-e33ae2b752aa",
+    "description": "High rep circuit training",
+    "numberOfDays": 3,
+    "published": true,
+    "days": [
+      {
+        "name": "circuit",
+        "index": 1,
+        "exercises": [
+          {"name": "Bodyweight squat", "sets": 3, "reps": 20},
+          {"name": "Push-Ups - Close Triceps Position", "sets": 3, "reps": 15},
+          {"name": "Pull-up", "sets": 3, "reps": 10},
+          {"name": "Ab bicycle", "sets": 3, "reps": 20},
+          {"name": "Burpee", "sets": 3, "reps": 10}
+        ]
+      },
+      {
+        "name": "rest",
+        "index": 2
+      },
+      {
+        "name": "circuit",
+        "index": 3,
+        "exercises": [
+          {"name": "Dumbbell reverse lunge", "sets": 3, "reps": 15},
+          {"name": "Close-grip bench press", "sets": 3, "reps": 15},
+          {"name": "One-Arm Dumbbell Row", "sets": 3, "reps": 12},
+          {"name": "Russian twist", "sets": 3, "reps": 20},
+          {"name": "Mountain climber", "sets": 3, "reps": 30}
+        ]
+      }
+    ]
+  },{
+    "name": "Shoulder Builder",
+    "userId": "c6f2836c-5e58-4d5b-9afe-c00c0c3a9b5e",
+    "description": "Comprehensive shoulder development",
+    "numberOfDays": 4,
+    "published": true,
+    "days": [
+      {
+        "name": "press focus",
+        "index": 1,
+        "exercises": [
+          {"name": "Standing dumbbell shoulder press", "sets": 5, "reps": 8},
+          {"name": "Push-press", "sets": 4, "reps": 6},
+          {"name": "Single-arm kettlebell push-press", "sets": 3, "reps": 8},
+          {"name": "Dumbbell front raise", "sets": 3, "reps": 12}
+        ]
+      },
+      {
+        "name": "rest",
+        "index": 2
+      },
+      {
+        "name": "rear delts",
+        "index": 3,
+        "exercises": [
+          {"name": "Seated rear delt fly", "sets": 4, "reps": 12},
+          {"name": "Single-arm bent-over cable rear delt fly", "sets": 4, "reps": 12},
+          {"name": "Dumbbell Lying Rear Lateral Raise", "sets": 3, "reps": 15},
+          {"name": "Face Pulls", "sets": 3, "reps": 15}
+        ]
+      },
+      {
+        "name": "lateral delts",
+        "index": 4,
+        "exercises": [
+          {"name": "Side Lateral Raise", "sets": 5, "reps": 12},
+          {"name": "Single-arm incline lateral raise", "sets": 4, "reps": 12},
+          {"name": "Dumbbell front raise to lateral raise", "sets": 3, "reps": 10},
+          {"name": "Standing behind-the-back wrist curl", "sets": 3, "reps": 15}
+        ]
+      }
+    ]
+  },{
+    "name": "Functional Fitness",
+    "userId": "e61890d8-987b-4ac2-8f6f-081719c4b48d",
+    "description": "Movement patterns for real-world strength",
+    "numberOfDays": 3,
+    "published": true,
+    "days": [
+      {
+        "name": "full body",
+        "index": 1,
+        "exercises": [
+          {"name": "Clean from Blocks", "sets": 4, "reps": 6},
+          {"name": "Dumbbell farmer's walk", "sets": 3, "reps": 30},
+          {"name": "Single-leg depth squat", "sets": 3, "reps": 10},
+          {"name": "Landmine twist", "sets": 3, "reps": 12}
+        ]
+      },
+      {
+        "name": "rest",
+        "index": 2
+      },
+      {
+        "name": "full body",
+        "index": 3,
+        "exercises": [
+          {"name": "Kettlebell pass-through lunge", "sets": 4, "reps": 8},
+          {"name": "Rickshaw Carry", "sets": 3, "reps": 20},
+          {"name": "Single-arm kettlebell row", "sets": 3, "reps": 10},
+          {"name": "Suspended ab fall-out", "sets": 3, "reps": 10}
+        ]
+      }
+    ]
+  }
+]

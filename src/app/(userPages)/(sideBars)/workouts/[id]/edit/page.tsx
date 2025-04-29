@@ -3,26 +3,20 @@ import React from 'react'
 import { fetchWorkoutById, getExerciceNames } from '~/lib/data'
 import {auth} from 'auth'
 import EditWorkout from '~/components/ui/workouts/EditWorkout'
-import { getWorkoutByUser } from '~/lib/actions/workout'
+import { getWorkout } from '~/lib/actions/workout'
+import { redirect } from 'next/navigation'
 const Page = async ({params} : {params:{id:string}}) => {
-  const session = await auth()
-  const email = session?.user?.email
-  if(!email) throw new Error('not authed')
-  const {res,err} = await getWorkoutByUser(email)
-  if(!res)
+  const {res,owned,err} = await getWorkout(Number(params.id))
+  if(err)
     {console.log("err",err)
-     return (<div>this is not your workout</div>)
+      redirect('/workouts')
     }
-  const flattenedWorkoutIDs = res.map(({id}) => id)
-  const workoutID = Number(params.id)
-  if(! flattenedWorkoutIDs.includes(workoutID)) throw new Error(' not authed')
-  const data = await fetchWorkoutById(workoutID)
-  if (!data) throw new Error('Workout not found')
-  const {name, description, days ,id , numberOfDays} = data
+  if (!res) throw new Error('Workout not found')
+  const {name, description, days ,id , numberOfDays, userId} = res
   const exerciceNames = await getExerciceNames()
   // console.log(`name:${name} , description:${description}, days : ${days}, id : ${id}, email:${email}`)
   return (
-     <EditWorkout exerciceNames={exerciceNames} NoD = {numberOfDays} name = {name} description = {description} days = {days} id = {id} email = {email} />
+     <EditWorkout ownerId={userId ?? ""} exerciceNames={exerciceNames} NoD = {numberOfDays} name = {name} description = {description} days = {days} id = {id} owned={owned}  />
   )
 }
 

@@ -3,6 +3,7 @@ import React from 'react'
 import Image from "next/image"
 import { Button } from "~/components/ui/button"
 import { CardTitle, CardDescription, CardHeader, CardContent, Card } from "~/components/ui/card"
+import { Chip } from '@nextui-org/react'
 
 type Props = {
     name:string
@@ -25,8 +26,8 @@ export default function ExerciceCard(props: Props) {
             </CardHeader>
             
             <CardContent className="grid grid-cols-3 grid-rows-2 gap-4">
-                <span className="col-start-1 row-start-1 text-sm self-center place-self-center font-medium">Sets: {props.sets}</span>
-                <Button className='col-start-1 row-start-2' type='button' onClick={props.edit} size="sm" variant="ghost">
+                <Chip className="col-start-1 row-start-1 place-self-center ">Sets: {props.sets}</Chip>
+                <Button className='border-xtraDark border-1 col-start-1 row-start-2 text-xtraText rounded-[25px]' type='button' onClick={props.edit} size="sm" variant="ghost">
                   Edit
                 </Button>
               {props.image && (
@@ -40,8 +41,8 @@ export default function ExerciceCard(props: Props) {
                   />
                 </div>
               )}
-                <span className="col-start-3 text-sm font-medium place-self-center self-center">Reps: {props.reps}</span>
-                <Button className='col-start-3 row-start-2' onClick={props.delete} type='button' color="destructive" size="sm" variant="ghost">
+                <Chip className="col-start-3  place-self-center self-center">Reps: {props.reps}</Chip>
+                <Button className='col-start-3 border-xtraDark border-1 row-start-2 text-xtraText rounded-[25px]' onClick={props.delete} type='button' color="destructive" size="sm" variant="ghost">
                   Delete
                 </Button>
             </CardContent>

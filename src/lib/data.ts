@@ -171,9 +171,16 @@ export const InsertDay = async (day:types.day,idOfWorkout:number)=>{
 }
 export const InsertWorkout = async (workout:types.workout)  =>{
     try{
-        const workoutId  = await db.insert(workouts).values({name:workout.name,userId:workout.userId,description:workout.description,numberOfDays:workout.numberOfDays,published:workout.published}).returning({id : workouts.id})
+        const workoutId  = await db.insert(workouts).values({
+            name:workout.name,
+            userId:workout.userId,
+            description:workout.description,
+            numberOfDays:workout.numberOfDays,
+            published:workout.published}).returning({id : workouts.id})
         return workoutId[0]?.id
     }catch(err){
+        // console.log(err)
+
         return{message:"failed"}
     }
 }
@@ -189,9 +196,13 @@ export const InsertWorkout = async (workout:types.workout)  =>{
 //     }
 // }
 export const updateWorkout = async (data:{numberOfDays:number,name:string,description:string},workoutId:number)=>{
+    const parsedData = data.description ? data : {
+        numberOfDays: data.numberOfDays,
+        name: data.name
+    }
     try{
     const updatedID = await db.update(workouts)
-    .set(data).where(eq(workouts.id,workoutId))
+    .set(parsedData).where(eq(workouts.id,workoutId))
     .returning({id:workouts.id})
     return updatedID[0]?.id
 }catch(err){
@@ -214,6 +225,23 @@ export const deleteRemovedExercices = async (Ids : number[],dayId:number) =>{
         if(!Ids.includes(ex.id)){
             try {await db.delete(exercices).where(eq(exercices.id,ex.id))}catch(err){throw new Error("failed to delete exercice")}
         }})
+}
+export const deleteWorkout = async (workoutId:number) =>{
+    try{
+        const workoutDays = await db.query.days.findMany({
+            where: eq(days.workoutId, workoutId),
+            columns: {id: true}
+        });
+        for (const day of workoutDays) {
+            await db.delete(exercices).where(eq(exercices.dayId, day.id));
+        }
+        await db.delete(days).where(eq(days.workoutId, workoutId));
+        await db.delete(Reactions).where(eq(Reactions.workoutId, workoutId));
+        await db.delete(workouts).where(eq(workouts.id, workoutId));
+        return 'success'
+    } catch (err){
+        throw new Error("failed to delete workout")
+    }
 }
 export const updateDay = async (data:{name:string,dayIndex:number},dayId:number)=>{
     if(dayId === -1) throw new Error("no dayID provided!")
@@ -836,5 +864,10 @@ export const updateUserTotalWeight = async (userID:string,weight:number)=>{
     } catch (error) {
         throw error
     }
+}
+
+export async function getUserWorkoutsShortVersion(uuid:string){
+    const res = db.query.workouts.findMany({where:eq(workouts.userId,uuid),columns:{id:true,name:true,numberOfDays:true,description:true},with:{days:{columns:{dayIndex:true,name:true}}},orderBy:(workouts,{desc})=>[desc(workouts.createdAt)]})
+    return res
 }
 

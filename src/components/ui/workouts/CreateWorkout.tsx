@@ -25,19 +25,13 @@ import { type ExerciseNames } from '~/lib/types'
 export default function CreateWorkout({exerciseNames}:{
   exerciseNames: ExerciseNames
 }) 
-{
-  
+{ 
     const [newKey, setNewKey] = React.useState(0) 
     const [dayRest, setDayRest] = React.useState<{day: string ,change:number}>( )
     const [isPublished, setIsPublished] = React.useState<boolean>()
     const [days, setDays] = React.useState<ReactElement[]>([])
     const [removedDay,setRemovedDay] = React.useState<number>()
-    const router = useRouter()
-    console.log(isPublished);
-    
-
     const formRef = React.useRef<HTMLFormElement>(null)
-
     function removeDay(id:number){
         setRemovedDay(id)
     }
@@ -54,10 +48,9 @@ export default function CreateWorkout({exerciseNames}:{
     React.useEffect(()=>{
       if(newKey)
         if(dayRest?.day === 'train')
-        setDays(days => [...days , <AddDay exerciseNames = {exerciseNames} remove={removeDay} id={newKey} key={newKey} muscles='legs,arms,chest'  />])
+        setDays(days => [...days , <AddDay exerciceNames = {exerciseNames} remove={removeDay} id={newKey} key={newKey} muscles='legs,arms,chest'  />])
         else setDays(days => [...days , <AddRestDay remove={removeDay} id={newKey} key={newKey} />])   
         // console.log(days) 
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[newKey])
     //add Day to order

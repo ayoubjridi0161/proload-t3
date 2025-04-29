@@ -4,17 +4,16 @@ import { Label } from '../label'
 import { Button } from '../button'
 import { TrashIcon } from 'lucide-react'
 import Container from '../Container'
+import { useWorkout } from './WorkoutContext'
 
 
 type Props = {
     id: number,
-    remove: (id:number)=>void
-
 }
 
 export default function AddRestDay(props : Props) {
     
-
+    const {removeDay} = useWorkout() 
 
 
   return (
@@ -28,7 +27,7 @@ export default function AddRestDay(props : Props) {
                 {/*dayName */}
                 <Label className='pr-3 text-2xl text-destructive '>Rest</Label>
                 </div>
-                <Button type='button' onClick={()=>{props.remove(props.id)}} className='justify-self-end' size="sm" variant="default"><TrashIcon className="h-4 w-4" /></Button>
+                <Button type='button' onClick={()=>{removeDay(props.id)}} className='justify-self-end' size="sm" variant="default"><TrashIcon className="h-4 w-4" /></Button>
             </div>            
         </div>
     </div>        
