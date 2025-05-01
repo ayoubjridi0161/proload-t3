@@ -52,10 +52,9 @@ export const fetchAllWorkouts = async(filters:{query?:string,currentPage?:number
 }
  
 export const fetchUserWorkouts = async(privacy:boolean,user:string)=>{
-    if(privacy){
         const result = await db.query.workouts.findMany({
-        where:and(eq(workouts.userId,user),eq(workouts.published,true)),
-        columns:{published:false,userId:false},
+        where:and(eq(workouts.userId,user),eq(workouts.published,privacy)),
+        columns:{published:false},
         with:{
             users :{
                 columns : {name:true}
@@ -68,23 +67,6 @@ export const fetchUserWorkouts = async(privacy:boolean,user:string)=>{
         orderBy: (workouts, { desc }) => [desc(workouts.id)],
         })
         return result
-    }else{
-        const result = await db.query.workouts.findMany({
-            where:eq(workouts.userId,user),
-            columns:{published:false,userId:false},
-            with:{
-                users :{
-                    columns : {name:true}
-                },
-                days : {
-                    with : {exercices : {
-                    }}
-                }
-            },
-            orderBy: (workouts, { desc }) => [desc(workouts.id)],
-        })
-        return result
-    }
 }
 export const getWorkoutShortVersion = async (id:number)=>{
     try{
@@ -938,13 +920,14 @@ export const getUserPrs = async (userID:string)=>{
     }
 }
 
-export async function sharePost(itemShared:{post?:number,workout?:number},userID:string,sharedText:String){
+export async function sharePost(itemShared:{post?:number,workout?:number},userID:string,sharedText:string){
     try {if(itemShared.post){
         const res = await db.insert(Posts).values({
             userId: userID,
             sharedPostId: itemShared.post,
             content: sharedText,
-            title: `Shared Post ${itemShared.post}` // Adding required title field
+            title: `Shared Post ${itemShared.post}`, // Adding required title field,
+            
         }).returning({id: Posts.id})
         await db.update(Posts).set({shares:sql`shares + 1`}).where(eq(Posts.id,itemShared.post))
         return res[0]?.id

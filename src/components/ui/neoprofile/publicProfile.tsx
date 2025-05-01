@@ -2,7 +2,7 @@ import Image from 'next/image'
 import { MoveRight } from 'lucide-react'
 import Post from '../neopost/post'
 import type { publicUser } from '~/lib/types'
-import { getUserLikes, getUserPosts } from '~/lib/data'
+import { getUserLikes, getPosts } from '~/lib/data'
 import ProfileHeader from './profileHeader'
 import { timeAgo } from '~/lib/utils'
 import { isFollowed } from '~/lib/actions/userActions'
@@ -149,7 +149,7 @@ export const ProfileAside = ({savedBio, profileDetails}: {
 }
 
 export const MainSection = async ({user}: {user: publicUser}) => {
-  const FetchedPosts = await getUserPosts(user.id)
+  const FetchedPosts = await getPosts(user.id)
   const userLikes = await getUserLikes(user.id)
   const session = await auth()
   const appUser = session?.user?.name ?? "user"
@@ -164,7 +164,8 @@ export const MainSection = async ({user}: {user: publicUser}) => {
       ) : (
         FetchedPosts.map((post, i) => (
           <Post appUser={appUser}
-          sharedPostId={post.sharedPostId}
+          sharedPost={post.sharedPost}
+          sharedWorkout={post.sharedWorkout}
           shares={post.shares}
             time={timeAgo(post.createdAt)} 
             likes={post.likes} 

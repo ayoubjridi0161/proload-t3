@@ -179,6 +179,7 @@ type WorkoutDay = {
   
         return {
           id: workout.id,
+          userId: workout.userId,
           name: workout.name,
           username: workout.users?.name,
           description: workout.description,

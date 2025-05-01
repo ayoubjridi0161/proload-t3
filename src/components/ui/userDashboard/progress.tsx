@@ -30,7 +30,8 @@ export default function AthleteDashboard(props:Props) {
     if (!logs || logs.length === 0) return logs;
     
     const now = new Date();
-    const lastLogDate = new Date(logs[logs.length - 1].date);
+    const lastLogDateString =logs[logs.length - 1]?.date
+    const lastLogDate = lastLogDateString ? new Date(lastLogDateString ) : now
     let weeksToSubtract = 8;
     
     switch(timeframe) {
