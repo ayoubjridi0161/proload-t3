@@ -31,6 +31,7 @@ export function NotificationCard({ id, title, content, time, read }: Notificatio
         'flex flex-col gap-2 rounded-lg border p-4 transition-colors hover:opacity-90 hover:shadow-sm',
         isRead ? 'bg-background' : 'bg-xtraGray/20'
       )}
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       onMouseLeave={handleHover}
     >
       <div className="flex items-center justify-between gap-2">

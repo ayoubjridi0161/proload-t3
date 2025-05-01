@@ -189,14 +189,20 @@ export function Recommendations({details}: Props) {
         })
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const data = await response.json();
-      setRecom(data[0]); 
+
+      const recommendationData = (data as RecommendationData[])[0];
+      if (recommendationData) {
+        setRecom(recommendationData);
+      }
     }
     if (details) {
 void getData().catch(error => {
   console.error('Error fetching recommendations:', error);
 });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <div className={`${andika.className} p-6 w-full text-lg`}>

@@ -87,7 +87,7 @@ export default function AddDay(props : Props) {
             {/*Edit and Delete buttons*/}
             <div className="flex items-center space-x-2">
               <Button 
-                onClick={handleGenerateDay} 
+                onClick={() => void handleGenerateDay()}
                 type='button' 
                 variant="ghost" 
                 size={"icon"} 

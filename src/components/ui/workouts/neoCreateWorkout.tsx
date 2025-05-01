@@ -110,7 +110,7 @@ export default function CreateWorkout()
           <Input className='w-1/5' onChange={(e)=> {store.setWorkoutName(e.target.value)}} placeholder="Workout name..." aria-label="Enter workout name" value={store.workoutName} />
           <Button 
             type='button' 
-            onClick={generateWorkoutButton} 
+            onClick={() => void generateWorkoutButton()} 
             variant={"ghost"} 
             className='hover:bg-white space-x-2' 
             size={"sm"}

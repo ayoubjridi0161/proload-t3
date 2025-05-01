@@ -151,7 +151,7 @@ export const getProcessedWorkoutById = async (id: number) => {
 
       // Aggregate exercises by muscle group
       const exercisesByMuscleGroup = await Promise.all(
-        muscleGroup.map(async mg => {
+        muscleGroup.map( mg => {
           const muscleExercices = validExercises.filter(ex => ex?.muscleGroup === mg);
           return {
             mg,
@@ -504,9 +504,10 @@ export const deletePost = async (postId:number) =>{
         throw err
     }
 }
-export const getPosts = async ()=>{
+export const getPosts = async (userId?:string)=>{
     try{
         const posts = await db.query.Posts.findMany({
+            where: userId ? eq(Posts.userId, userId) : undefined,
             columns:{id:true,title:true,content:true,userId:true,resources:true,likes:true,createdAt:true,sharedPostId:true,shares:true,sharedWorkoutId:true},
             with:{
                 users:{columns:{name:true,image:true}},

@@ -4,7 +4,7 @@ import { MoveRight } from 'lucide-react'
 import AddPost from '../neopost/AddPost'
 import Post from '../neopost/post'
 import type { publicUser } from '~/lib/types'
-import { getUserBioAndDetails, getUserLikes, getUserPosts } from '~/lib/data'
+import { getUserBioAndDetails, getUserLikes, getPosts } from '~/lib/data'
 import AsideTopSection from './AsideTopSection'
 import { Separator } from '../separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../tabs'
@@ -137,14 +137,15 @@ export const ProfileAside = async ({userID}:{userID:string}) => {
 
 export const MainSection = async ({user}:{user:publicUser}) => {
   const likes = await getUserLikes(user.id)
-  const FetchedPosts = await getUserPosts(user.id)
+  const FetchedPosts = await getPosts(user.id)
   return(
     <section className='w-full lg:w-3/5 p-3'>
       <AddPost image={user.image ?? "https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png"} />
       {FetchedPosts.map((post,i) => (
         <Post 
+        sharedPost = {post.sharedPost}
+        sharedWorkout={post.sharedWorkout}
         shares={post.shares}
-        sharedPostId={post.sharedPostId}
         time={timeAgo(post.createdAt)}
         appUser={user.id}
           likes={post.likes} 

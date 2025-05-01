@@ -98,7 +98,7 @@ export function GeneralSettings({userData}:{userData:Data}) {
 
   // Use handleSubmit from react-hook-form for the form's onSubmit event
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={(e) => void handleSubmit(onSubmit)(e)}>
       <Card className="w-full h-full">
         <CardHeader>
           <CardTitle>General Settings</CardTitle>
