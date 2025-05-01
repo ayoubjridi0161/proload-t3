@@ -13,6 +13,7 @@ import { deleteDay,
     getMuscleGroups, 
     getUserByEmail, 
     getWorkoutsByUser, 
+    getWorkoutShortVersion, 
     InsertDay, 
     InsertExercice, 
     InsertWorkout, 
@@ -136,7 +137,7 @@ type WorkoutDay = {
 
   export const postWorkouts = async (prev : any , formData : FormData) =>{
     try{
-      const data = await fetchAllWorkouts()
+      const data = await fetchAllWorkouts({})
       return data
     }catch(err){
       return {}
@@ -230,11 +231,25 @@ type WorkoutDay = {
     }
   };
   
-  export const getWorkoutList = async (user?:string) => {
+  export const getWorkoutList = async (filters:{query?:string,currentPage?:number,sortFiled?:"name"|"days"|"upvotes",order?:"asc"|"desc"}) => {
     try {
-      const res = await fetchAllWorkouts() 
-      const muscleGroup = await getMuscleGroups();
-  
+      const res = await fetchAllWorkouts(filters)
+      // Define the main muscle groups
+      const mainMuscleGroups = ['chest', 'shoulder', 'arms', 'legs', 'core', 'back', 'other']; // Added 'other' for unmapped groups
+
+      // Helper function to map specific muscle groups to main ones
+      const mapToMainMuscleGroup = (specificGroup: string | undefined): string => {
+        if (!specificGroup) return 'other';
+        const lowerCaseGroup = specificGroup.toLowerCase();
+        if (lowerCaseGroup.includes('chest')) return 'chest';
+        if (lowerCaseGroup.includes('shoulder') || lowerCaseGroup.includes('deltoid')) return 'shoulder';
+        if (lowerCaseGroup.includes('arm') || lowerCaseGroup.includes('bicep') || lowerCaseGroup.includes('tricep') || lowerCaseGroup.includes('forearm')) return 'arms';
+        if (lowerCaseGroup.includes('leg') || lowerCaseGroup.includes('quad') || lowerCaseGroup.includes('hamstring') || lowerCaseGroup.includes('glute') || lowerCaseGroup.includes('calf')) return 'legs';
+        if (lowerCaseGroup.includes('core') || lowerCaseGroup.includes('ab') || lowerCaseGroup.includes('oblique')) return 'core';
+        if (lowerCaseGroup.includes('back') || lowerCaseGroup.includes('lat') || lowerCaseGroup.includes('trap') || lowerCaseGroup.includes('rhomboid')) return 'back';
+        return 'other'; // Default category if no match
+      };
+
       const workouts = res.map(workout => {
         const maxIndex = workout.numberOfDays ?? 7;
         const dayNamesSorted = Array.from({ length: maxIndex  }, (_, index) => {
@@ -245,6 +260,7 @@ type WorkoutDay = {
         return {
           id: workout.id,
           name: workout.name,
+          userId: workout.userId,
           username: workout.users?.name,
           description: workout.description,
           numberOfDays: workout.numberOfDays,
@@ -260,7 +276,9 @@ type WorkoutDay = {
         const res = w.exercices.map(async exercices => {
           if (exercices.name.length > 0) {
             const result = await getExerciceByName(exercices.name);
-            return { name: exercices.name, times: exercices.times, muscleGroup: result?.muscleGroup ?? "unknown" };
+            // Map the specific muscle group to a main group
+            const mainMuscleGroup = mapToMainMuscleGroup(result?.muscleGroup);
+            return { name: exercices.name, times: exercices.times, mainMuscleGroup: mainMuscleGroup };
           }
           return null;
         });
@@ -274,8 +292,10 @@ type WorkoutDay = {
       const data = validParsedWorkouts.map(w => {
         return {
           ...w,
-          exercices: muscleGroup.map(async mg => {
-            const muscleExercices = (await Promise.all(w.exercices)).filter(ex => ex?.muscleGroup === mg);
+          // Group by the main muscle groups instead of all specific groups
+          exercices: mainMuscleGroups.map(async mg => {
+            // Filter exercises based on the main muscle group
+            const muscleExercices = (await Promise.all(w.exercices)).filter(ex => ex?.mainMuscleGroup === mg);
             return {
               mg,
               exerciseCount: muscleExercices.reduce((acc, ex) => acc + (ex?.times ?? 0), 0)
@@ -296,6 +316,7 @@ type WorkoutDay = {
     }
   };
 
+  
   export const getUserCurrentWorkout=async()=>{
     const session = await auth()
     const userID = session?.user?.id
@@ -305,7 +326,6 @@ type WorkoutDay = {
     const res = await fetchWorkoutById(current)
     return res
   }
-
   export const deleteWorkoutById = async (id:number)=>{
     try{
       const session = await auth()
@@ -318,7 +338,6 @@ type WorkoutDay = {
       return "failure"
     }
   }
-
   export const generationAction = async (
     exerciseLibrary:string[],
     type: "workout" | "day" | "exercise",

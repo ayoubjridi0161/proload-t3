@@ -14,6 +14,7 @@ import DisplayImages from './displayImages'
 import { toast } from 'sonner'
 import { getSharedPost, sharePostAction } from '~/lib/actions/socialActions'
 import { likePost } from '~/lib/actions/userInteractions'
+import { WorkoutCard } from '../neoworkout/workout-card'
 type Comment = {
   content: string;
   id: number;
@@ -25,7 +26,6 @@ type Comment = {
 
 
 type Props = {
-  sharedPostId:number|null,
   userImage:string
   userName:string,
   userId:string,
@@ -40,14 +40,8 @@ type Props = {
   liked?:boolean,
   id:number
   appUser:string
-}
-export default function Post({userImage,userName,userId,postContent,media,likes,liked,id,comments,time,appUser,sharedPostId,shares}: Props) {
-  const [likesCount, setLikesCount] = useState(likes)
-  const [isLiked, setIsLiked] = useState(!!liked)
-  const [showComments, setShowComments] = useState(false)
-  const [showSharePopup, setShowSharePopup] = useState(false)
-  const [shareText, setShareText] = useState('')
-  const [sharedPost, setSharedPost] = useState<{id: number,
+  sharedPost?:{
+    id: number,
     userId: string,
     content: string,
     resources: string[],
@@ -55,27 +49,31 @@ export default function Post({userImage,userName,userId,postContent,media,likes,
         name: string | null,
         image: string | null,
     }
-  }>()
+  }|undefined
+  sharedWorkout?: {
+    exercices: {
+        mg: string;
+        exerciseCount: number;
+    }[];
+    id: number;
+    name: string;
+    userId: string | null;
+    username: string | null | undefined;
+    description: string;
+    numberOfDays: number | null;
+    dayNames: string[];
+    upvotes: number;
+} | null | undefined
+
+}
+export default function Post({sharedPost,userImage,userName,userId,postContent,media,likes,liked,id,comments,time,appUser,shares,sharedWorkout}: Props) {
+  const [likesCount, setLikesCount] = useState(likes)
+  const [isLiked, setIsLiked] = useState(!!liked)
+  const [showComments, setShowComments] = useState(false)
+  const [showSharePopup, setShowSharePopup] = useState(false)
+  const [shareText, setShareText] = useState('')
   
-  // Fetch shared post data if sharedPostId exists
-  React.useEffect(() => {
-    const fetchSharedPost = async () => {
-      if (sharedPostId) {
-        try {
-          // Replace with your actual API endpoint to fetch post by ID
-          const response = await getSharedPost(sharedPostId);
-          if (response) {
-            
-            setSharedPost(response);
-          }
-        } catch (error) {
-          console.error("Failed to fetch shared post", error);
-        }
-      }
-    };
-    
-    void fetchSharedPost();
-  }, [sharedPostId]);
+
   
   const handleLike = async () => {
     try {
@@ -141,7 +139,7 @@ export default function Post({userImage,userName,userId,postContent,media,likes,
         <p>{postContent}</p>
         
         {/* Shared Post Content */}
-        {sharedPostId && sharedPost && (
+        {sharedPost && (
           <div className="border border-gray-200 dark:border-gray-700 rounded-md p-4 bg-gray-50 dark:bg-gray-800">
             <div className="flex items-center gap-3 mb-2">
               {sharedPost.users.image && (
@@ -161,7 +159,10 @@ export default function Post({userImage,userName,userId,postContent,media,likes,
             )}
           </div>
         )}
-        
+        {/* Shared Workout Content */}
+        {sharedWorkout && (
+          <WorkoutCard workout={sharedWorkout} />
+        )}  
         {/* Original post media */}
         {media && media.length > 0 && <DisplayImages media={media} />}
         <div className=' flex justify-between items-center '>

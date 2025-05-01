@@ -1,27 +1,40 @@
 "use server"
 import { Separator } from '@radix-ui/react-separator'
 import SideConnets from '~/components/ui/neopost/sideConnets'
-import WorkoutCards from '~/components/ui/neoworkout/workouts-cards'
+import Header from '~/components/ui/neoworkout/header'
 import { SidebarContent,Sidebar } from '~/components/ui/sidebar'
 import WorkoutCalendar from '~/components/ui/userDashboard/workoutCalendar'
 import { fetchWorkoutDates } from '~/lib/actions/userLogsActions'
 import { getWorkoutList } from '~/lib/actions/workout'
-
-type Props = {}
-
-export default async function page({}: Props) {
+import Footer from '~/components/ui/neoworkout/footer'
+import { WorkoutCard } from '~/components/ui/neoworkout/workout-card'
+import PerloadWorkouts from './perloadWorkouts'
+import { Suspense } from 'react'
+import { WorkoutCardSkeleton } from '~/components/skeletons/workout-cardSkeleton'
+export default async function page(props: {
+  searchParams?: Promise<{
+    search?: string;
+    page?: string;
+    sort?: string;
+    order?: string;
+  }>;
+}) {
+  const searchParams = await props.searchParams;
+  const search = searchParams?.search;
+  const page = Number(searchParams?.page) ?? 1;
+  const sortFiled = searchParams?.sort ;
+  const order = searchParams?.order;
   const dates = await fetchWorkoutDates()
-    const workoutSummaryList = await getWorkoutList()
-    if(!workoutSummaryList) return null
-    const workouts = await Promise.all(workoutSummaryList) 
   return (
-    <>
-    <div className="container py-8">
-      <h1 className="text-3xl font-bold mb-6">Workout Library</h1>
-      <p className="text-muted-foreground mb-8">
-        Browse workouts shared by the community. Find the perfect routine for your fitness goals.
-      </p>
-      {workouts ? <WorkoutCards workouts={workouts} /> : <div>no workouts found</div>}
+<>
+    <div className="container py-8 space-y-4">
+      <Header/>
+      <Suspense fallback={<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+        {Array.from({length: 9}, (_, index) => (<WorkoutCardSkeleton key={index} />))}
+      </div>}>
+      <PerloadWorkouts order={order} page={page} search={search} sortFiled={sortFiled} />
+      </Suspense>
+      <Footer currentPage={ page> 0 ?  page  : 1} hasNextPage/>
     </div>
     <Sidebar side='right'  className="border-left-1 px-3 bg-[#f2fcf5] top-[--header-height] !h-[calc(100svh-var(--header-height))]" >
     <SidebarContent className='bg-[#f2fcf5] space-y-3'>
@@ -29,7 +42,6 @@ export default async function page({}: Props) {
   <Separator className='w-2/3 mx-auto'/>
   <SideConnets />
   </SidebarContent>
-  </Sidebar>
-  </>
+  </Sidebar></>
   )
 }

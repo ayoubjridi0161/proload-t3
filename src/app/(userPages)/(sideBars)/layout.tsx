@@ -15,11 +15,12 @@ export default async function RootLayout({
     const image = session?.user?.image
     const UUID = session?.user?.id
     const email = session?.user?.email
+    
   return (
     <main className='flex justify-between '>
       <AppSidebar className=" pt-5" user={{name:userName ?? "",email:email,image:image,id:UUID ?? ""}} />
         {children} 
-       
+        
       {/* <SideConnets className="" /> */}
     </main>
   );

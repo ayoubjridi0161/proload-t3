@@ -22,6 +22,7 @@ export const addPostAction = async (formData:FormData) => {
       }
   
       const content = formData.get("text") as string
+
       const res = await createPost({
         content: content,
         resources: urls,
@@ -58,9 +59,18 @@ export const addPostAction = async (formData:FormData) => {
     const session = await auth()
     const userID = session?.user?.id
     if(!userID) return null
-    const res = await sharePost(postID,userID,shareText) 
+    const res = await sharePost({post:postID},userID,shareText) 
     await sendNotification(proprietairy,"new Share",`${session.user?.name} just shared your post`)
     revalidatePath("/")
+    return res 
+   }
+
+   export const shareWorkoutAction = async (workoutId:number,shareText:string,proprietairy:string)=>{
+    const session = await auth()
+    const userID = session?.user?.id
+    if(!userID) return null
+    const res = await sharePost({workout:workoutId},userID,shareText) 
+    await sendNotification(proprietairy,"new Share",`${session.user?.name} just shared your workout`)
     return res 
    }
 

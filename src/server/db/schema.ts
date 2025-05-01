@@ -40,6 +40,7 @@ export const workouts = pgTable("workouts",{
   upvotes:integer('upvotes').default(0).notNull(),
   downvotes:integer('downvotes').default(0).notNull(),
   clones:integer('clones').default(0).notNull(),
+  shares:integer("shares").default(0),
   published:pgBoolean('published').default(false).notNull(),
   numberOfDays:integer('number_of_days')
 })
@@ -201,6 +202,7 @@ export const Posts = pgTable(
     id:serial('id').primaryKey(),
     title: varchar('title',{length:250}).notNull(),
     sharedPostId: integer('shared_post_id').references((): AnyPgColumn => Posts.id),
+    sharedWorkoutId: integer('shared_workout_id').references(() => workouts.id),
     likes:integer('likes').default(0).notNull(),
     shares:integer('shares').default(0).notNull(),
     content:varchar('content',{length:3000}).notNull(),
@@ -215,6 +217,8 @@ export const Posts = pgTable(
 export const PostsRelations= relations(Posts,({many,one})=>({
   users:one(users,{fields:[Posts.userId],references:[users.id]}),
   comments:many(comments),
+  workouts:one(workouts,{fields:[Posts.sharedWorkoutId],references:[workouts.id]}),
+  sharedPost:one(Posts,{fields:[Posts.sharedPostId],references:[Posts.id]})
 })
 )
 

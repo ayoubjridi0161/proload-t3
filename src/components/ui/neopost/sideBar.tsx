@@ -45,7 +45,7 @@ const data = {
   navMain: [
     {
       title: "Home",
-      url: "/neopost",
+      url: "/home",
       icon: HomeIcon,
       isActive: true,
       items: [],
@@ -78,7 +78,7 @@ const data = {
     },
     {
       title: "notifications",
-      url: "/notifications",
+      url: "/profile/notifications",
       icon: Bell,
       items: [],
     },

@@ -1,24 +1,53 @@
 import { Posts, Reactions,    days, exercices, userLogs, users, workouts,comments ,replys,notifications, exerciseLibrary} from '~/server/db/schema'
 import {db} from '../server/db/index'
 import type * as types from './types'
-import { DrizzleEntityClass, DrizzleError, and, arrayContains, asc, count, eq, inArray, name, sql } from 'drizzle-orm'
+import { DrizzleEntityClass, DrizzleError, and, arrayContains, asc, count, desc, eq, inArray, name, sql } from 'drizzle-orm'
 import { unstable_noStore as noStore , unstable_cache as cached } from 'next/cache'
 import { removeRedundancy } from './utils'
+import { PgSelect } from 'drizzle-orm/pg-core'
 /*Read Data*/
-export const fetchAllWorkouts = async()=>{
+
+export const fetchAllWorkouts = async(filters:{query?:string,currentPage?:number,sortFiled?:"name"|"days"|"upvotes"|"time",order?:"asc"|"desc"})=>{
+    // Map filter keys to actual database columns
+    const ColumnMap = {
+        'name': workouts.name, // Added name mapping
+        'time': workouts.createdAt,
+        'days': workouts.numberOfDays, // Renamed from 'numberOfDays' for consistency with filter type
+        'upvotes': workouts.upvotes,
+    } as const;
+
+    // Map order strings to Drizzle functions
+    const DirectionMap = {
+       'asc': asc,
+       'desc': desc,
+    } as const;
+
+    const itemsPerPage = 9; // Define how many items per page
+    const offset = filters.currentPage ? (filters.currentPage - 1) * itemsPerPage : 0;
+
+    // Determine sorting column and direction, with defaults
+    const sortField = filters.sortFiled ?? 'time'; // Default sort field
+    const sortDirection = filters.order ?? 'desc'; // Default sort direction
+    const orderByColumn = ColumnMap[sortField] ?? workouts.createdAt; // Fallback to createdAt if sortField is invalid
+    const orderByDirection = DirectionMap[sortDirection];
+
     const result = await db.query.workouts.findMany({
-        columns: {published:false,userId:false},
-        with:{
+        columns: {published:false}, // Exclude columns as before
+        where: filters.query ? sql`LOWER(${workouts.name}) LIKE LOWER(${`%${filters.query}%`})` : undefined, // Apply search filter
+        with:{ // Keep the 'with' clause for related data
             users :{
                 columns : {name:true}
             },
             days : {
-                with : {exercices : {
+                with : {exercices : {                   
                 }}
             }
         },
-        orderBy: (workouts, { desc }) => [desc(workouts.id)],
-    })
+        limit: itemsPerPage, 
+        offset: offset, 
+        orderBy: orderByDirection(orderByColumn),
+    });
+
     return result
 }
  
@@ -57,7 +86,91 @@ export const fetchUserWorkouts = async(privacy:boolean,user:string)=>{
         return result
     }
 }
-    
+export const getWorkoutShortVersion = async (id:number)=>{
+    try{
+        const result = await db.query.workouts.findFirst({
+            columns: {published:false}, // Exclude columns as before
+            where: eq(workouts.id,id), // Apply search filter
+            with:{ // Keep the 'with' clause for related data
+                users :{
+                    columns : {name:true}
+                },
+                days : {
+                    with : {exercices : {                   
+                    }}
+                }
+            },
+        });
+        return result
+    }catch(err){
+        throw err
+    }
+}   
+export const getProcessedWorkoutById = async (id: number) => {
+    try {
+      const workout = await getWorkoutShortVersion(id); // Fetch the single workout
+      if (!workout) {
+        return null; // Or throw an error if preferred
+      }
+
+      const muscleGroup = await getMuscleGroups();
+
+      // Process the single workout
+      const maxIndex = workout.numberOfDays ?? 7;
+      const dayNamesSorted = Array.from({ length: maxIndex }, (_, index) => {
+        const day = workout.days.find(day => day.dayIndex === index + 1);
+        return day ? day.name : 'rest';
+      });
+
+      const processedWorkout = {
+        id: workout.id,
+        name: workout.name,
+        userId: workout.userId,
+        username: workout.users?.name,
+        description: workout.description,
+        numberOfDays: workout.numberOfDays,
+        dayNames: dayNamesSorted,
+        upvotes: workout.upvotes,
+        exercices: workout.days.map(day => day.exercices).flat().map(ex => {
+          return { name: ex.name, times: ex.sets * ex.reps };
+        })
+      };
+
+      // Fetch muscle groups for exercises
+      const exercisesWithMuscleGroups = await Promise.all(
+        processedWorkout.exercices.map(async exercice => {
+          if (exercice.name.length > 0) {
+            const result = await getExerciceByName(exercice.name);
+            return { name: exercice.name, times: exercice.times, muscleGroup: result?.muscleGroup ?? "unknown" };
+          }
+          return null;
+        })
+      );
+
+      const validExercises = exercisesWithMuscleGroups.filter(ex => ex !== null);
+
+      // Aggregate exercises by muscle group
+      const exercisesByMuscleGroup = await Promise.all(
+        muscleGroup.map(async mg => {
+          const muscleExercices = validExercises.filter(ex => ex?.muscleGroup === mg);
+          return {
+            mg,
+            exerciseCount: muscleExercices.reduce((acc, ex) => acc + (ex?.times ?? 0), 0)
+          };
+        })
+      );
+
+      // Return the final processed workout object
+      return {
+        ...processedWorkout,
+        exercices: exercisesByMuscleGroup.filter(ex => ex.exerciseCount > 0)
+      };
+
+    } catch (err) {
+      console.error("Error processing workout by ID:", err); // Log the error
+      throw err; // Re-throw the error or handle it as needed
+    }
+  };
 
 
 export const getMuscleGroups = async()=>{
@@ -394,7 +507,7 @@ export const deletePost = async (postId:number) =>{
 export const getPosts = async ()=>{
     try{
         const posts = await db.query.Posts.findMany({
-            columns:{id:true,title:true,content:true,userId:true,resources:true,likes:true,createdAt:true,sharedPostId:true,shares:true},
+            columns:{id:true,title:true,content:true,userId:true,resources:true,likes:true,createdAt:true,sharedPostId:true,shares:true,sharedWorkoutId:true},
             with:{
                 users:{columns:{name:true,image:true}},
                 comments:{columns:{content:true,id:true},
@@ -403,9 +516,34 @@ export const getPosts = async ()=>{
             },
             orderBy:(Posts,{desc})=>[desc(Posts.id)]
         })
-        return posts
+        
+        // Use Promise.all to wait for all async map operations to complete
+        const postsWithShared = await Promise.all(posts.map(async (post) => {
+            if (post.sharedPostId) {
+                // Fetch the shared post details, including the user who originally posted it
+                const sharedPost = await db.query.Posts.findFirst({
+                    where: eq(Posts.id, post.sharedPostId),
+                    columns: { id: true, content: true, userId: true, resources: true, title: true, createdAt: true }, // Added title and createdAt for context
+                    with: {
+                        users: { columns: { name: true, image: true } } // Fetch user details for the shared post
+                    }
+                });
+                // Return the original post merged with the fetched shared post data
+                return { ...post, sharedPost,sharedWorkout:undefined };
+            } else if (post.sharedWorkoutId){
+                // If there's no sharedPostId, return the post as is, ensuring consistent structure
+                const sharedWorkout = await getProcessedWorkoutById(post.sharedWorkoutId)
+                // Return the original post merged with the fetched shared post data
+                return { ...post, sharedPost:undefined,sharedWorkout };
+            } else {
+                return { ...post, sharedPost:undefined,sharedWorkout:undefined };
+            }
+        }));
+        
+        // Return the array of posts with resolved shared post data
+        return postsWithShared;
     }catch(err){
-        throw err
+        throw err;
     }
 }
 
@@ -799,16 +937,25 @@ export const getUserPrs = async (userID:string)=>{
     }
 }
 
-export async function sharePost(postID:number,userID:string,sharedText:String){
-    try {
+export async function sharePost(itemShared:{post?:number,workout?:number},userID:string,sharedText:String){
+    try {if(itemShared.post){
         const res = await db.insert(Posts).values({
             userId: userID,
-            sharedPostId: postID,
+            sharedPostId: itemShared.post,
             content: sharedText,
-            title: `Shared Post ${postID}` // Adding required title field
+            title: `Shared Post ${itemShared.post}` // Adding required title field
         }).returning({id: Posts.id})
-        await db.update(Posts).set({shares:sql`shares + 1`}).where(eq(Posts.id,postID))
+        await db.update(Posts).set({shares:sql`shares + 1`}).where(eq(Posts.id,itemShared.post))
         return res[0]?.id
+    }else if(itemShared.workout){
+        const res = await db.insert(Posts).values({
+            userId: userID,
+            sharedWorkoutId: itemShared.workout,
+            content: sharedText,
+            title: `Shared Workout ${itemShared.workout}` // Adding required title field
+        }).returning({id: workouts.id})
+        await db.update(workouts).set({shares:sql`shares + 1`}).where(eq(workouts.id,itemShared.workout))
+    }
     }
     catch(err){
         throw err
