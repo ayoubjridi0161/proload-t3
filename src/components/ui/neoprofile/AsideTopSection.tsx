@@ -60,7 +60,11 @@ export default function AthleticProfile({data}:Props) {
       setIsSaving(true)
       try {
         setSavedDetails({ ...details })
-        const res = await addProfileDetails(details)
+        const res = await addProfileDetails({
+          ...details,
+          fitnessLevel: "",  // Add missing required property
+          fitnessGoal: ""    // Add missing required property
+        })
         setShowDetailsDialog(false)
       } catch (error) {
         console.error('Failed to save details:', error)
