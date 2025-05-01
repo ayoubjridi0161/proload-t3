@@ -9,7 +9,6 @@ import { AccordionDemo } from "./AccordionDemo"
 import { toast } from "sonner"
 import {  seedExercisesFromCSV } from "~/server/db/seed"
 import GenerateWorkout from "./generateWorkout"
-import AiResponse from "./aiResponse"
 
 
 const page =  () => {
@@ -39,7 +38,7 @@ const page =  () => {
             <Button type="submit" >seed Exercises</Button>
             </form>
             <GenerateWorkout/>
-            <AiResponse/>
+
             </div>
     )
 }
