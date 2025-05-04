@@ -89,11 +89,12 @@ import { uploadToS3 } from "./s3Actions"
     if(file){
     const newFormData = new FormData();
     newFormData.append("file", file);
+    console.log(newFormData);
     profilePicURL = await uploadToS3(newFormData);
     }
     try{
       const res= await updateUserProfile({username:formData.get("userName") as string,profilePic:profilePicURL},userID)
-      // revalidatePath('/')
+      revalidatePath('/')
       return res? "success" : "failure";
     }catch(err){
       console.error(err)
