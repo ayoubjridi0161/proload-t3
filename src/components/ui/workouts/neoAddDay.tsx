@@ -52,7 +52,7 @@ export default function AddDay(props : Props) {
         }
     }
   return (
-    <div className='bg-slate-200 z-10 rounded-lg px-4 space-y-4'>
+    <div className='bg-slate-200 dark:border-slate-800 dark:ring-offset-slate-950 dark:bg-slate-950 z-10 rounded-lg px-4 space-y-4'>
         <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
             <div className="flex items-center space-x-4">
             {/*dumbbell*/}
@@ -60,24 +60,24 @@ export default function AddDay(props : Props) {
             {/*dayName */}
             <div className='flex items-center mb-2'>
               <input type="hidden" name="day" value={JSON.stringify({name:dayNameProps.current?.value,index:dayIndex,dayID:-1})} />
-<Input  
-    required={true} 
-    ref={dayNameProps} 
-    className={cn(
-        "p-2 text-lg border rounded-lg h-full transition-all ease-in ",
-        dayName ? "bg-transparent border-transparent font-semibold cursor-default focus-visible:ring-0 focus-visible:ring-offset-0 text-black" 
-        : "bg-gray-50 text-lg font-semibold"
-    )} 
-    readOnly={dayName} 
-    onChange={() => {
-        store.updateDay(
-            props.id,
-            {...props.details, name: dayNameProps.current?.value}  
-        )
-    }} 
-    placeholder='add Name'
-    value={props.details.name}
-/>
+              <Input  
+                  required={true} 
+                  ref={dayNameProps} 
+                  className={cn(
+                      "p-2 text-lg border rounded-lg h-full transition-all ease-in ",
+                      dayName ? "dark:bg-xtraDarkAccent/20 dark:text-white bg-transparent border-transparent font-semibold cursor-default focus-visible:ring-0 focus-visible:ring-offset-0 text-black" 
+                      : "bg-gray-50 text-lg font-semibold dark:bg-xtraDarkAccent dark:text-white"
+                  )} 
+                  readOnly={dayName} 
+                  onChange={() => {
+                      store.updateDay(
+                          props.id,
+                          {...props.details, name: dayNameProps.current?.value}  
+                      )
+                  }} 
+                  placeholder='add Name'
+                  value={props.details.name}
+              />
               {/* <Input name="dayName" readonly={dayName} refprop={dayNameProps} placeholder='day name' />  */}
                <Button variant="ghost" className='h-full' type='button' onClick={()=>{setDayName(prev => !prev)}}>{dayName ? <Edit /> : <Check />}</Button>  
             </div>

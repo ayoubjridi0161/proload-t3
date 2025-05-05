@@ -125,7 +125,7 @@ export default function Post({sharedPost,userImage,userName,userId,postContent,m
   }
   
   return (
-    <div className={ `p-5 mt-4 space-y-4 bg-xtraContainer rounded-md shadow-md` }>
+    <div className={ `p-5 mt-4 space-y-4 bg-xtraContainer dark:bg-xtraDarkPrimary dark:border-xtraDarkAccent rounded-md shadow-md` }>
         <div className='flex items-center justify-between'>
             <Link href={`/profile/${userId}`} className='flex items-center gap-3'>
             <Avatar image={userImage} />
@@ -140,7 +140,7 @@ export default function Post({sharedPost,userImage,userName,userId,postContent,m
         
         {/* Shared Post Content */}
         {sharedPost && (
-          <div className="border border-gray-200 dark:border-gray-700 rounded-md p-4 bg-gray-50 dark:bg-gray-800">
+          <div className="border border-gray-200 dark:border-gray-700 rounded-md p-4 bg-gray-50 dark:bg-xtraDarkAccent">
             <div className="flex items-center gap-3 mb-2">
               {sharedPost.users.image && (
                 <Avatar image={sharedPost.users.image} />
@@ -168,8 +168,8 @@ export default function Post({sharedPost,userImage,userName,userId,postContent,m
         <div className=' flex justify-between items-center '>
             {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
             <div onClick={handleLike} className={'flex gap-2 items-center cursor-pointer transition-transform duration-300 ease-in-out transform hover:scale-110'}>
-            <FontAwesomeIcon width={20} color={isLiked ? '#93c5fd ':'#a4a4a4'} icon={faThumbsUp} />
-            <span className={isLiked ? 'text-blue-300 text-sm' : 'text-[#a4a4a4] text-sm'} >Like</span>
+            <FontAwesomeIcon width={20} className={isLiked? 'dark:text-xtraGreen scale-105' : 'dark:text-xtraLight'} color={isLiked ? ' #93c5fd ':'#a4a4a4'} icon={faThumbsUp} />
+            <span className={isLiked ? 'dark:text-xtraGreen scale-110 text-blue-300 text-sm' : 'text-[#a4a4a4] text-sm'} >Like</span>
             <Label style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 0.8)' }} className="rounded-none text-[#4a4a4a] border-black border-1 px-3 py-1">{likesCount}</Label>
             </div>
           <div className='flex gap-2 items-center'>
@@ -189,7 +189,7 @@ export default function Post({sharedPost,userImage,userName,userId,postContent,m
         {/* Share Popup */}
         {showSharePopup && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md relative">
+            <div className="bg-white dark:bg-xtraDarkSecondary p-6 rounded-lg w-full max-w-md relative">
               <button 
                 onClick={closeSharePopup}
                 className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
@@ -200,7 +200,7 @@ export default function Post({sharedPost,userImage,userName,userId,postContent,m
               <h3 className="text-lg font-semibold mb-4">Share this post</h3>
               
               {/* Original post preview */}
-              <div className="bg-gray-100 dark:bg-gray-700 p-3 rounded-md mb-4">
+              <div className="bg-gray-100 dark:bg-xtraDarkPrimary p-3 rounded-md mb-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Avatar image={userImage} />
                   <span className="font-medium">{userName}</span>
@@ -227,11 +227,11 @@ export default function Post({sharedPost,userImage,userName,userId,postContent,m
                 placeholder="Add your thoughts..."
                 value={shareText}
                 onChange={(e) => setShareText(e.target.value)}
-                className="w-full mb-4"
+                className="w-full mb-4 dark:bg-xtraDarkText dark:text-xtraText dark:placeholder:text-zinc-400 dark:ring-zinc-200 dark:focus:ring-rose-400 dark:focus:shadow-rose-400"
               />
               
               <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={closeSharePopup}>Cancel</Button>
+                <Button variant="outline" className='' onClick={closeSharePopup}>Cancel</Button>
                 <Button onClick={() => void submitShare()}>Share Post</Button>
               </div>
             </div>

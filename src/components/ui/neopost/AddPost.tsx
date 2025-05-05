@@ -72,7 +72,7 @@ export default function AddPost({ image }: Props) {
 
   return (
     <>
-      <div className="w-full bg-xtraContainer rounded-md shadow-md p-3" >
+      <div className="w-full bg-xtraContainer dark:bg-xtraDarkPrimary rounded-md shadow-md p-3" >
         <div className="flex gap-2 w-full p-2">
           <Avatar >
             <Image src={image ?? ""} alt="user" width={40} height={40} />
@@ -82,7 +82,7 @@ export default function AddPost({ image }: Props) {
             className="bg-zinc-200 text-zinc-600 font-mono ring-1 
             ring-zinc-800 focus:ring-2 focus:ring-rose-400 outline-none 
             duration-300 placeholder:text-zinc-600 placeholder:opacity-50 px-4 py-1 
-            shadow-md focus:shadow-lg focus:shadow-rose-400 w-full"
+            shadow-md focus:shadow-lg focus:shadow-rose-400 w-full dark:bg-zinc-800 dark:text-zinc-200 dark:placeholder:text-zinc-400 dark:ring-zinc-200 dark:focus:ring-rose-400 dark:focus:shadow-rose-400"
             autoComplete="off"
             placeholder="What's on your mind athlete"
             name="text"
@@ -93,16 +93,16 @@ export default function AddPost({ image }: Props) {
         <div className="flex justify-between items-center p-2">
           <div className="flex gap-2 items-center">
             <FontAwesomeIcon icon={faImage} width={24} className="text-[#b4b4b4]" />
-            <Paperclip size={24} className="text-[#b4b4b4]" />
-            <MapPin size={24} className="text-[#b4b4b4]" />
-            <Smile size={24} className="text-[#b4b4b4]" />
+            <Paperclip size={24} className="text-[#b4b4b4] dark:text-xtraDarkText" />
+            <MapPin size={24} className="text-[#b4b4b4] dark:text-xtraDarkText" />
+            <Smile size={24} className="text-[#b4b4b4] dark:text-xtraDarkText" />
           </div>
           <Button
           onClick={() => setOpen(true)}
             size={"sm"}
             variant={"ghost"}
             style={{ boxShadow: "2px 2px 0px rgba(0, 0, 0, 0.8)" }}
-            className="rounded-none border-black border-1 bg-white px-6 py-0 text-sm text-[#353434] font-light"
+            className="rounded-none border-black border-1 dark:bg-xtraDarkText bg-white px-6 py-0 text-sm text-[#353434] font-light"
           >
             SHARE
           </Button>
@@ -120,7 +120,7 @@ export default function AddPost({ image }: Props) {
           </div>
             <Textarea
               placeholder="What's on your mind athlete"
-              className="min-h-[120px] resize-none"
+              className="min-h-[120px] resize-none dark:bg-xtraDarkText dark:text-xtraText dark:placeholder:text-zinc-400 dark:ring-zinc-200 dark:focus:ring-rose-400 dark:focus:shadow-rose-400"
               value={postText}
               onChange={(e) => setPostText(e.target.value)}
               name="text"
@@ -177,7 +177,7 @@ export default function AddPost({ image }: Props) {
               onClick={() => void handleShare()}
               disabled={isSubmitting}
               style={{ boxShadow: "2px 2px 0px rgba(0, 0, 0, 0.8)" }}
-              className="rounded-none bg-white border-black border-1 px-6 py-0 text-sm text-[#353434] font-light"
+              className="rounded-none bg-white border-black border-1 px-6 py-0 text-sm dark:bg-xtraDarkText text-[#353434] font-light"
             >
               {isSubmitting ? "SHARING..." : "SHARE"}
             </Button>

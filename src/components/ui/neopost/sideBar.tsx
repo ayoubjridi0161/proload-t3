@@ -150,7 +150,7 @@ interface AppSidebarProps {
 
 export function AppSidebar({className, user, ...props}: AppSidebarProps & React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <Sidebar  className=" top-[--header-height] !h-[calc(100svh-var(--header-height))]" {...props}>
+    <Sidebar  className="dark:border-xtraDarkAccent top-[--header-height] !h-[calc(100svh-var(--header-height))]" {...props}>
       <SidebarContent className=" ">
         {/*first group*/}
       <SidebarGroup>
@@ -215,7 +215,7 @@ export function AppSidebar({className, user, ...props}: AppSidebarProps & React.
       {/*third group*/}
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
-      <SidebarFooter className="bg-[#f2fcf5]">
+      <SidebarFooter className="">
         <NavUser user={{avatar:user.image ?? "",email:user.email ?? "",name:user.name}} />
       </SidebarFooter>
     </Sidebar>

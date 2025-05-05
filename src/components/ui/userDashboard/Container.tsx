@@ -8,7 +8,7 @@ type Props = {
 
 const Container = ({children,className}: Props) => {
   return (
-    <div className={cn("bg-[#f2fcf5] p-5 rounded-lg text-[#63949E]",className)}>{children}</div>
+    <div className={cn("bg-[#f2fcf5] dark:text-xtraDarkText dark:bg-xtraDarkAccent dark:border-xtraDark p-5 rounded-lg text-[#63949E]",className)}>{children}</div>
   )
 }
 

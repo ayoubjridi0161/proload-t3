@@ -16,8 +16,8 @@ const PersonalRecords =(props: Props) => {
                 <h1 className='text-lg '>All Personal Records</h1>
                 <RefreshButton/>
             </div>
-            <div className="max-h-[400px] overflow-y-auto">
-                <Table className='bg-[#f2fcf5]'>
+            <div className="max-h-[400px] overflow-y-auto px-2 bg-[#f2fcf5] dark:bg-xtraDarkAccent">
+                <Table className=' '>
                     <TableHeader>
                         <TableRow>
                             <TableHead>Exercise</TableHead>

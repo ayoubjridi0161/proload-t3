@@ -25,7 +25,7 @@ const page = async () => {
             </div>}
 
     </section>
-    <Sidebar className="border-left-1 px-3 bg-[#f2fcf5] top-[--header-height] !h-[calc(100svh-var(--header-height))]" side="right">
+    <Sidebar className="border-left-1 px-3 dark:border-xtraDarkAccent top-[--header-height] !h-[calc(100svh-var(--header-height))]" side="right">
         <SidebarHeader>
             hello
         </SidebarHeader>

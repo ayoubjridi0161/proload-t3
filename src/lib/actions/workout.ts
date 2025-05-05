@@ -24,6 +24,7 @@ import { redirect } from "next/navigation"
 import { toast } from "sonner"
 import { sendNotification } from "./notifications"
 import { generateExercises, generateFullWorkout, generateWorkoutDay } from "../ai-copilot"
+import { revalidatePath } from "next/cache"
 type WorkoutDay = {
   id: number;
   type: 'workout' | 'rest';
@@ -332,9 +333,14 @@ type WorkoutDay = {
       const session = await auth()
       const userID = session?.user?.id
       const workout = await fetchWorkoutById(id)
-      if(workout?.userId !== userID) throw new Error("not authorized")
+      const isAdmin = session?.user?.email == "proofyouba@gmail.com"
+      if(workout?.userId !== userID && !isAdmin) return ("error: not authorised")
       await deleteWorkout(id)
-      redirect('/workouts')
+      if(!isAdmin) redirect('/workouts')
+      else {
+          revalidatePath("/")
+          return ("success")         
+      }
     }catch(err){
       return "failure"
     }

@@ -62,15 +62,15 @@ const workoutDates = userLogs?.map(log => ({date:log.date}));
           <Container className="text-center p-8 text-[#4a4a4a]">
             <h1 className="text-xl font-bold mb-4">Getting Started Guide</h1>
             <div className="space-y-4 text-left">
-              <div className="p-4 bg-[#f8f9fa] rounded-lg shadow-sm">
+              <div className="p-4 bg-[#f8f9fa] dark:bg-xtraDarkAccent dark:border-xtraDark border-1 rounded-lg shadow-sm">
                 <h2 className="font-semibold text-lg mb-2">1. Create Your Profile</h2>
                 <p className="text-sm opacity-70">Set up your profile with your fitness goals and preferences</p>
               </div>
-              <div className="p-4 bg-[#f8f9fa] rounded-lg  shadow-sm">
+              <div className="p-4 bg-[#f8f9fa] dark:bg-xtraDarkAccent dark:border-xtraDark border-1 rounded-lg  shadow-sm">
                 <h2 className="font-semibold text-lg mb-2">2. Choose a Program</h2>
                 <p className="text-sm opacity-70">Select a workout program that matches your goals</p>
               </div>
-              <div className="p-4 bg-[#f8f9fa] rounded-lg  shadow-sm">
+              <div className="p-4 bg-[#f8f9fa] dark:bg-xtraDarkAccent dark:border-xtraDark border-1 rounded-lg  shadow-sm">
                 <h2 className="font-semibold text-lg mb-2">3. Track Your Progress</h2>
                 <p className="text-sm opacity-70">Log your workouts and monitor your improvements</p>
               </div>
@@ -80,7 +80,7 @@ const workoutDates = userLogs?.map(log => ({date:log.date}));
         
       </div>
     </div>
-    <Sidebar side='right'  className="border-left-1 px-3 bg-[#f2fcf5] top-[--header-height] !h-[calc(100svh-var(--header-height))]" >
+    <Sidebar side='right'  className="border-left-1 dark:border-xtraDarkAccent px-3 top-[--header-height] !h-[calc(100svh-var(--header-height))]" >
     <SidebarContent>
     <WorkoutCalendar workoutDates = {workoutDates}/>
 

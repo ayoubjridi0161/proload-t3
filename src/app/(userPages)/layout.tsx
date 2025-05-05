@@ -16,11 +16,8 @@ export default async function RootLayout({
     <SidebarProvider className="flex flex-col ">
     <Header name={userName  ?? ""} image={image ?? ""} UUID={UUID}/>
       <div className="flex flex-1">
-        {/* <AppSidebar user={{email:email,id:UUID?? "",image:image,name:userName ?? ""}} /> */}
         <SidebarInset>
-          {/* */}
           {children}
-          {/* <PersonalRecords /> */}
         </SidebarInset>
       </div>
     </SidebarProvider>

@@ -7,6 +7,7 @@ import { inter } from "~/components/ui/font";
 import Footer from "~/components/ui/footer";
 import SessionWrapper from "~/lib/SessionWrapper";
 import { Toaster } from "~/components/ui/sonner";
+import { ThemeProvider } from "~/components/theme-provider";
 
 export const metadata = {
   title: "ProloadT3",
@@ -21,13 +22,21 @@ export default function RootLayout({
 }) {
   return (
     <SessionWrapper>
-    <html lang="en" className={`${GeistSans.variable}`}>
+    <html lang="en" className={`${GeistSans.variable}`} suppressHydrationWarning>
       <body className={`${inter.className} bg-white`} >
+      <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
         <main>
         {children}
         </main>
         <Toaster />
+        </ThemeProvider>
         </body>
+        
     </html>
     </SessionWrapper>
   );

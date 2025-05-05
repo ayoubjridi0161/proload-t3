@@ -9,15 +9,15 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-black text-slate-50 hover:bg-black/85 dark:bg-slate-50 dark:text-slate-900 dark:hover:bg-slate-50/90",
+        default: "bg-black text-slate-50 hover:bg-black/85 dark:bg-xtraDarkPrimary dark:text-white dark:hover:bg-xtraDarkPrimary/90",
         destructive:
-          "bg-destructive text-slate-50 hover:bg-destructive/70 dark:bg-red-900 dark:text-slate-50 dark:hover:bg-red-900/90",
+          "bg-destructive text-slate-50 hover:bg-destructive/70 dark:bg-red-700 dark:text-white dark:hover:bg-red-700/90",
         outline:
-          "border border-slate-200 bg-white hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50",
+          "border border-slate-200 bg-white hover:bg-xtraDarkAccent/70 hover:text-slate-900 dark:border-xtraDarkSecondary dark:bg-xtraDarkSecondary dark:hover:bg-xtraDarkPrimary dark:hover:text-white",
         secondary:
-          "bg-secondary text-foreground font-semibold hover:bg-secondary/70 dark:bg-slate-800 dark:text-slate-50 dark:hover:bg-slate-800/80",
-        ghost: "hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-50",
-        link: "text-slate-900 underline-offset-4 hover:underline dark:text-slate-50",
+          "bg-secondary text-foreground font-semibold hover:bg-secondary/70 dark:bg-xtraDarkSecondary dark:text-white dark:hover:bg-xtraDarkSecondary/90",
+        ghost: "hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-xtraDarkSecondary dark:hover:text-white",
+        link: "text-slate-900 underline-offset-4 hover:underline dark:text-white",
       },
       size: {
         default: "h-10 px-4 py-2",

@@ -98,7 +98,7 @@ export default function AthleticProfile({data}:Props) {
     }
   }, [details.weight, details.height]);
   return (
-    <div className="shadow-bottom w-full p-2 space-y-3">
+    <div className="shadow-bottom w-full p-2 space-y-3 bg-xtraContainer dark:bg-xtraDarkPrimary">
       <h1 className="text-xl font-bold">Athletic Profile</h1>
 
       {savedBio && !showBioForm && (

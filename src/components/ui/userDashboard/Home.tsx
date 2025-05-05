@@ -34,7 +34,7 @@ const progressResults = calculateExerciseProgress(userLogs  );
       <div className="grid grid-cols-3 w-10/12 mx-auto  p-5 gap-5">
       <Container className="border-1 border-[#de4e8d1] space-y-2 shadow-md">
         <div className="rounded-full p-3 w-fit bg-[#d4fae0]">
-        <ProgressIcon />
+        <ProgressIcon/>
         </div>
         <h2 className="text-md font-semibold">Weekly progress</h2>
         <h1 className="text-lg font-bold">+15% Strength Gain</h1>
@@ -87,7 +87,7 @@ const progressResults = calculateExerciseProgress(userLogs  );
 
 
 const ProgressIcon =()=>{
-    return(<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24">
+    return(<svg className="dark:text-xtraDark" xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24">
       <path fill="currentColor" d="M4.854 8.146a2.84 2.84 0 0 1 .685 1.114l.448 1.377a.544.544 0 0 0 1.026 0l.448-1.377a2.84 2.84 0 0 1 1.798-1.796l1.378-.448a.544.544 0 0 0 0-1.025l-.028-.007l-1.378-.448A2.84 2.84 0 0 1 7.433 3.74l-.447-1.377a.544.544 0 0 0-1.027 0L5.511 3.74l-.011.034a2.84 2.84 0 0 1-1.759 1.762l-1.378.448a.544.544 0 0 0 0 1.025l1.378.448c.42.14.8.376 1.113.689M20 7a1 1 0 0 1 1 1v5a1 1 0 1 1-2 0v-2.586l-5.793 5.793a1 1 0 0 1-1.414 0L10 14.414l-5.293 5.293a1 1 0 0 1-1.414-1.414l6-6a1 1 0 0 1 1.414 0l1.793 1.793L17.586 9H15a1 1 0 1 1 0-2zm.017 10.965l.766.248l.015.004a.303.303 0 0 1 .147.46a.3.3 0 0 1-.147.11l-.765.248a1.58 1.58 0 0 0-1 .999l-.248.764a.302.302 0 0 1-.57 0l-.249-.764a1.58 1.58 0 0 0-.999-1.002l-.765-.249a.303.303 0 0 1-.147-.46a.3.3 0 0 1 .147-.11l.765-.248a1.58 1.58 0 0 0 .984-.998l.249-.765a.302.302 0 0 1 .57 0l.249.764a1.58 1.58 0 0 0 .999.999" strokeWidth={0.7} stroke="currentColor"></path>
     </svg>)
   }
@@ -130,8 +130,8 @@ const ProgressIcon =()=>{
 }[]
 })=>{
     return(
-      <Sidebar side='right'  className="border-left-1 px-3 bg-[#f2fcf5] top-[--header-height] !h-[calc(100svh-var(--header-height))]" >
-      <SidebarContent className='bg-[#f2fcf5]'>
+      <Sidebar side='right'  className="border-left-1 px-3 top-[--header-height] !h-[calc(100svh-var(--header-height))]" >
+      <SidebarContent className=''>
           <WorkoutCalendar workoutDates = {workoutDates}/>
       </SidebarContent>
     </Sidebar>

@@ -41,13 +41,7 @@ async function PublicProfile({user}: {user: publicUser}) {
             >
               Workouts
             </TabsTrigger>
-            <TabsTrigger 
-              value="Achievements" 
-              style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 0.8)' }} 
-              className="py-2 rounded-none font-semibold text-[#4a4a4a] border-black border-1 px-4 sm:px-7"
-            >
-              Achievements
-            </TabsTrigger>
+
           </TabsList>
         
         <Separator className='mt-3'/>
@@ -67,13 +61,7 @@ async function PublicProfile({user}: {user: publicUser}) {
           </Suspense>
         </TabsContent>
         
-        <TabsContent value="Achievements" className='w-full min-h-[300px]'>
-        <Suspense fallback={<div className="w-full min-h-[200px] flex items-center justify-center">loading..</div>}>
-            <div className="w-full">
-            <div className='w-[100vw] overflow-x-hidden max-w-full'>No Workouts</div>
-            </div>
-          </Suspense>
-        </TabsContent>
+
       </Tabs>
       </main>
     </div>
@@ -88,7 +76,7 @@ export const ProfileAside = ({savedBio, profileDetails}: {
 }) => {
   return (
     <aside className='w-full md:w-2/5 p-2 md:p-3 space-y-3'>
-      <div className='shadow-bottom w-full p-2 space-y-3 rounded-lg'>
+      <div className='shadow-bottom w-full p-2 space-y-3 rounded-lg bg-xtraContainer dark:bg-xtraDarkPrimary'>
         <h1 className='text-lg md:text-xl font-bold'>Athletic Profile</h1>
         {savedBio && 
           <div className="border border-gray-200 p-2 md:p-3 mb-3 rounded">
@@ -108,7 +96,7 @@ export const ProfileAside = ({savedBio, profileDetails}: {
           </div>
         }
       </div>
-      <div className='shadow-bottom w-full p-2 space-y-3 rounded-lg'>
+      <div className='bg-xtraContainer dark:bg-xtraDarkPrimary shadow-bottom w-full p-2 space-y-3 rounded-lg'>
         <div className='flex justify-between items-center'>
           <h1 className='text-lg md:text-xl font-bold'>Achievements photos</h1> 
           <MoveRight color='#a4a4a4' />

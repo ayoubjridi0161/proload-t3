@@ -122,7 +122,7 @@ interface WorkoutCardProps {
         <RadarChart width={300} height={150} data={chartData} outerRadius={60}>
           <PolarGrid />
           <PolarAngleAxis  dataKey="name" tick={{ fontSize: 9 }} />
-          <Radar  dataKey="value" fill="hsl(var(--xtra-text))" fillOpacity={0.6} stroke="hsl(var(--xtra-text))" />
+          <Radar  dataKey="value" fill="hsl(var(--xtra-gray))" fillOpacity={0.6} stroke="hsl(var(--xtra-gray))" />
         </RadarChart>
       </div>
     )

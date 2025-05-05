@@ -52,36 +52,20 @@ function Profile({user}: {user: publicUser}) {
             >
               Workouts
             </TabsTrigger>
-            <TabsTrigger 
-              value="Achievements" 
-              style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 0.8)' }} 
-              className="py-2 rounded-none font-semibold text-[#4a4a4a] border-black border-1 px-4 sm:px-7"
-            >
-              Achievements
-            </TabsTrigger>
+  
           </TabsList>
         </div>
-        
         <Separator className='mt-3'/>
-        
         <TabsContent value="Profile" className='min-w-full'>
           <main className='flex flex-col lg:flex-row gap-4'>
             <ProfileAside userID={user.id} />
             <MainSection user={user} />
           </main>
         </TabsContent>
-        
         <TabsContent value="Workouts" className='min-w-full'>
           <Suspense fallback={<div className='w-[66vw]'>loading..</div>}>
           <WorkoutSection privacy={false} userID={user.id} />
           </Suspense>
-        </TabsContent>
-        
-        <TabsContent value="Achievements" className='min-w-full'>
-        <div className='p-4'>
-            <h2 className='text-xl font-bold'>Workouts Section</h2>
-            <p>Details about user workouts will go here.</p>
-          </div>
         </TabsContent>
       </Tabs>
     </div>
@@ -93,9 +77,9 @@ export default Profile
 export const ProfileAside = async ({userID}:{userID:string}) => {
   const details = await getUserBioAndDetails(userID)
   return (
-    <aside className='w-full lg:w-2/5 p-3 space-y-3'>
+    <aside className='w-full lg:w-2/5 p-3 space-y-3 '>
       <AsideTopSection data={details}/>
-      <div className='shadow-bottom w-full p-2 space-y-3'>
+      <div className='shadow-bottom w-full p-2 space-y-3 bg-xtraContainer dark:bg-xtraDarkPrimary'>
         <div className='flex justify-between items-center'>
           <h1 className='text-xl font-bold'>Achievements photos</h1> 
           <MoveRight color='#a4a4a4' />

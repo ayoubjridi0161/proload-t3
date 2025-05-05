@@ -40,6 +40,7 @@ type WorkoutPlan = {
 export default function CreateWorkout() 
 { 
   const formRef = React.useRef<HTMLFormElement>(null)
+
   const [isPublished, setIsPublished] = React.useState<boolean>()
 //    React.useEffect(()=>{
 //   console.log("submit");
@@ -48,6 +49,7 @@ export default function CreateWorkout()
 //     // router.push('/workouts')
 // },[isPublished])
     const store = useWorkout()
+    console.log(store.days)
     const exerciseNames = store.exerciseNames.map(x => x.name)
     const [isGenerating, setIsGenerating] = React.useState(false);
     const generateWorkoutButton = async () => {
@@ -95,7 +97,7 @@ export default function CreateWorkout()
     
    return (
 
-    <div className='bg-xtraContainer h-full w-full relative z-10 rounded-md  shadow-sm mx-auto'>
+    <div className='bg-xtraContainer dark:bg-xtraDarkPrimary  h-full w-full relative z-10 rounded-md  shadow-sm mx-auto'>
       {/* <div className="absolute inset-0 bg-aiLifter bg-center bg-cover filter opacity-5 blur-sm z-0" /> */}
       <form action={async (formData: FormData) => {
         const sent = new FormData()

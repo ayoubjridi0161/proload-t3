@@ -38,8 +38,8 @@ export default async function page({}: Props) {
         <PreloadPosts UUID={UUID} userName={userName}/>
         </Suspense>
       </section>
-    <Sidebar side='right'  className="border-left-1 px-3 bg-[#f2fcf5] top-[--header-height] !h-[calc(100svh-var(--header-height))]" >
-    <SidebarContent className='bg-[#f2fcf5] space-y-3'>
+    <Sidebar side='right'  className="border-left-1 dark:border-xtraDarkAccent px-3 top-[--header-height] !h-[calc(100svh-var(--header-height))]" >
+    <SidebarContent className='space-y-3'>
       <WorkoutCalendar workoutDates={dates} />
       <Separator className='w-2/3 mx-auto'/>
       <SideConnets />

@@ -69,6 +69,10 @@ const config = {
 			xtraText:'hsl(var(--xtra-text))',
 			xtraBG:'hsl(var(--xtra-bg))',
 			xtraContainer:'hsl(var(--xtra-container))',
+			xtraDarkPrimary:'hsl(var(--xtra-dark-primary))',
+			xtraDarkSecondary:'hsl(var(--xtra-dark-secondary))',
+			xtraDarkAccent:'hsl(var(--xtra-dark-accent))',
+			xtraDarkText:'hsl(var(--xtra-dark-text))',
   		},
   		keyframes: {
   			'accordion-down': {

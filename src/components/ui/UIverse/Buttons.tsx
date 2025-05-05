@@ -7,7 +7,7 @@ export const ButtonBlack = React.forwardRef<HTMLButtonElement, ButtonProps>(
         return (
         <button 
             ref={ref}
-            className="btnblack  button-confirm"
+            className="btnblack  button-confirm dark:bg-xtraDarkText dark:text-xtraDarkPrimary"
             {...props}
         >
             {children}

@@ -1002,3 +1002,8 @@ export async function getUserWorkoutsShortVersion(uuid:string){
     return res
 }
 
+export async function getWorkoutsForAdmin (){
+    const res = db.query.workouts.findMany({columns:{userId:false},with:{users:{columns:{name:true}}},orderBy:(workouts,{desc})=>[desc(workouts.createdAt)]})
+    return res
+}
+
