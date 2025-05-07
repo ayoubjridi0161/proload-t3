@@ -50,7 +50,6 @@ export function Recommendation({details}: Props) {
     }
   };
 
-  if (!details.age || !details.gender || !details.height || !details.weight) {
     return (
       <div className="p-6 w-full">
         <h1 className="text-2xl font-bold mb-6">Complete Your Profile</h1>
@@ -143,19 +142,6 @@ export function Recommendation({details}: Props) {
     );
   }
 
-  return (
-    <div className="p-6 w-full">
-      <h1 className="text-2xl font-bold mb-6">AI Recommendations</h1>
-      {recommendations ? (
-        <div>
-          <pre>{JSON.stringify(recommendations, null, 2)}</pre>
-        </div>
-      ) : (
-        <Button onClick={e => void handleSubmit(e)}>Get Recommendations</Button>
-      )}
-    </div>
-  )
-}
 
 type RecommendationData = {
   exercises: string;
@@ -165,9 +151,12 @@ type RecommendationData = {
 };
 
 export function Recommendations({details}: Props) {
-  const [recom, setRecom] = React.useState<RecommendationData | null>(null);
+  const [recom, setRecom] = React.useState<RecommendationData | string>("loading recommendations, please wait...");
+  console.log(recom);
+  console.log(details);
   useEffect(() => {
     const getData = async () => {
+      
       const response = await fetch('http://localhost:8000/recommend', {
         method: 'POST',
         headers: {
@@ -198,44 +187,54 @@ export function Recommendations({details}: Props) {
       }
     }
     if (details) {
-void getData().catch(error => {
-  console.error('Error fetching recommendations:', error);
-});
+      void getData().catch(error => {
+        console.error('Error fetching recommendations:', error);
+        setRecom("no recommendations found");
+      });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   return (
     <div className={`${andika.className} p-6 w-full text-lg`}>
       <h1 className="text-3xl font-bold mb-6">AI Recommendations</h1>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-        <div className="bg-xtraContainer p-4 rounded-lg shadow">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 ">
+        <div className="bg-xtraContainer dark:bg-xtraDarkAccent p-4 rounded-lg shadow">
           <h3 className="text-sm font-medium text-gray-500">Age</h3>
           <p className="text-lg font-semibold">{details.age} years</p>
         </div>
-        <div className="bg-xtraContainer p-4 rounded-lg shadow">
+        <div className="bg-xtraContainer dark:bg-xtraDarkAccent p-4 rounded-lg shadow">
           <h3 className="text-sm font-medium text-gray-500">Gender</h3>
           <p className="text-lg font-semibold capitalize">{details.gender}</p>
         </div>
-        <div className="bg-xtraContainer p-4 rounded-lg shadow">
+        <div className="bg-xtraContainer dark:bg-xtraDarkAccent p-4 rounded-lg shadow">
           <h3 className="text-sm font-medium text-gray-500">Height</h3>
           <p className="text-lg font-semibold">{details.height} cm</p>
         </div>
-        <div className="bg-xtraContainer p-4 rounded-lg shadow">
+        <div className="bg-xtraContainer dark:bg-xtraDarkAccent p-4 rounded-lg shadow">
           <h3 className="text-sm font-medium text-gray-500">Weight</h3>
           <p className="text-lg font-semibold">{details.weight} kg</p>
         </div>
-        <div className="bg-xtraContainer p-4 rounded-lg shadow">
+        <div className="bg-xtraContainer dark:bg-xtraDarkAccent p-4 rounded-lg shadow">
           <h3 className="text-sm font-medium text-gray-500">BMI</h3>
           <p className="text-lg font-semibold">{details.bmi}</p>
         </div>
-        <div className="bg-xtraContainer p-4 rounded-lg shadow">
+        <div className="bg-xtraContainer dark:bg-xtraDarkAccent p-4 rounded-lg shadow">
           <h3 className="text-sm font-medium text-gray-500">Fitness Level</h3>
           <p className="text-lg font-semibold capitalize">{details.fitnessLevel}</p>
         </div>
+        <div className="bg-xtraContainer dark:bg-xtraDarkAccent p-4 rounded-lg shadow">
+          <h3 className="text-sm font-medium text-gray-500">Fitness Goal</h3>
+          <p className="text-lg font-semibold capitalize">{details.fitnessGoal}</p>
+        </div>
+        <div className="bg-xtraContainer dark:bg-xtraDarkAccent p-4 rounded-lg shadow">
+          <h3 className="text-sm font-medium text-gray-500">Experience</h3>
+          <p className="text-lg font-semibold capitalize">{details.experience}</p>
+        </div>
       </div>
-      {recom ? (
+      {recom && (typeof recom !== "string") ? (
         <div className="space-y-4">
-          <div className="bg-xtraContainer p-4 rounded">
+          <div className="bg-xtraContainer dark:bg-xtraDarkAccent p-4 rounded">
             <h2 className="font-bold text-xl mb-2 text-emerald-700">Recommended Exercises:</h2>
             <p className="text-gray-800">{recom.exercises}</p>
             
@@ -273,7 +272,7 @@ void getData().catch(error => {
           </div>
         </div>
       ) : (
-        <p className="text-gray-600">Loading recommendations...</p>
+        <p className="text-gray-600">{recom}</p>
       )}
     </div>
   ) 

@@ -25,10 +25,10 @@ const Day = ({day}:{day:dayDetails | undefined}) => {
         })
     }
   return (
-    <div className={day?.name== "rest" ? "bg-xtraContainer/30 rounded-lg p-3 shadow-sm " : "bg-xtraContainer/40 rounded-lg p-3 shadow-sm " }>
+    <div className={day?.name== "rest" ? "bg-xtraContainer/30 rounded-lg p-3 shadow-sm dark:bg-xtraDarkPrimary/90 " : "bg-xtraContainer/40 dark:bg-xtraDarkPrimary rounded-lg p-3 shadow-sm " }>
       {day && (
-        <h3 className={"text-lg font-bold mb-1 text-xtraText  text-center sm:text-left"}>
-          Day {day.dayIndex}: {day.name}
+        <h3 className={"text-lg font-bold mb-1 dark:text-xtraDarkText text-xtraText  text-center sm:text-left"}>
+          {day.name}
         </h3>
       )}
       <div className="flex flex-wrap gap-4">

@@ -42,11 +42,10 @@ interface WorkoutCardProps {
   
     return (
       <>
-      
       <Card className="h-full flex flex-col">
-      <Link className="h-full" href={`/workouts/${id}`}>
+      <Link className="h-full flex flex-col" href={`/workouts/${id}`}>
       <CardHeader>
-          <div className="flex justify-between items-start ">
+          <div className="flex flex-col sm:flex-row justify-between items-start gap-2">
             <div>
               <h3 className="font-bold text-lg">{name}</h3>
               <p className="text-sm text-muted-foreground">by {username}</p>
@@ -56,9 +55,10 @@ interface WorkoutCardProps {
             </div>
           </div>
           </CardHeader>
-        {/* <CardContent className="flex-grow flex flex-col justify-between pb-2"> */}
-        <CardContent>
-          <MuscleGroupChart className="my-2 " muscleGroups={muscleGroups}  />
+        <CardContent className="flex-grow">
+          <MuscleGroupChart className="my-2 w-full max-w-[300px] mx-auto" muscleGroups={muscleGroups}  />
+          </CardContent>
+        <div className="px-6 pb-4">
           <div className="space-y-2">
             <div className="text-sm font-medium">{numberOfDays}-day cycle:</div>
             <div className="flex flex-wrap gap-2">
@@ -69,10 +69,10 @@ interface WorkoutCardProps {
               ))}
             </div>
           </div>
-          </CardContent>
+        </div>
         </Link>
-        {handleShareEvent && handleOpenDialog &&  <CardFooter className="border-t pt-4 ">
-          <div className="flex justify-between items-center w-full">
+        {handleShareEvent && handleOpenDialog &&  <CardFooter className="border-t pt-4">
+          <div className="flex flex-col sm:flex-row justify-between items-center w-full gap-2">
             <Button variant="ghost" size="sm" className="gap-1">
               <Heart className="h-4 w-4" />
               <span>{upvotes}</span>
@@ -83,8 +83,8 @@ interface WorkoutCardProps {
                 <span className="sr-only">Try workout</span>
               </Button>
               <Button variant="ghost" size="sm" onClick={()=>{
-                handleShareEvent({userId:workout.userId ?? "", workoutId:id}); // Ensure userId is passed correctly, handle null case
-                handleOpenDialog(true); // Call handleOpenDialog to open the dialog
+                handleShareEvent({userId:workout.userId ?? "", workoutId:id});
+                handleOpenDialog(true);
                 }}>
                 <Share2 className="h-4 w-4" />
                 <span className="sr-only">Share</span>
@@ -93,7 +93,6 @@ interface WorkoutCardProps {
           </div>
         </CardFooter>}
       </Card>
-      
       </>
     )
   }
@@ -117,13 +116,21 @@ interface WorkoutCardProps {
       return <div className={cn(className,"h-full w-full flex items-center justify-center")}>No data</div>
     }
     return (
-      <div className={cn(className,"h-fit w-full")}>
-        {/* Pass the complete chartData to the RadarChart */}
-        <RadarChart width={300} height={150} data={chartData} outerRadius={60}>
-          <PolarGrid />
-          <PolarAngleAxis  dataKey="name" tick={{ fontSize: 9 }} />
-          <Radar  dataKey="value" fill="hsl(var(--xtra-gray))" fillOpacity={0.6} stroke="hsl(var(--xtra-gray))" />
-        </RadarChart>
+      <div className={cn(className,"h-fit w-full flex items-center justify-center")}>
+        <div className="w-full max-w-[300px] mx-auto">
+          <RadarChart
+            width={200}
+            height={150}
+            data={chartData}
+            outerRadius={60}
+            margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+            className="mx-auto"
+          >
+            <PolarGrid />
+            <PolarAngleAxis dataKey="name" tick={{ fontSize: 9 }} />
+            <Radar dataKey="value" fill="hsl(var(--xtra-gray))" fillOpacity={0.6} stroke="hsl(var(--xtra-gray))" />
+          </RadarChart>
+        </div>
       </div>
     )
-  }
+}

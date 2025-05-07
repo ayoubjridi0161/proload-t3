@@ -77,17 +77,28 @@ export default function Post({sharedPost,userImage,userName,userId,postContent,m
   
   const handleLike = async () => {
     try {
-      const response = await likePost(id)
-      console.log(response)
-      if (response && !isLiked) {
-        setLikesCount(likesCount + 1)
-        setIsLiked(true)
-      } else {
-        setLikesCount(likesCount - 1)
-        setIsLiked(false)
+      setIsLiked(prev =>!prev)
+      if(isLiked){
+        setLikesCount(prev => prev - 1)
+        const response = await likePost(id)
+        if(response == "failure"){
+          setIsLiked(prev => !prev)
+          setLikesCount(prev => prev + 1)
+          return toast("Failed to unlike post")
+        }
+      }else{
+        setLikesCount(prev => prev + 1)
+        const response = await likePost(id)
+        if(response == "failure"){
+          setIsLiked(prev => !prev)
+          setLikesCount(prev => prev - 1)
+          return toast("Failed to unlike post")
+        }
+
       }
     } catch (error) {
       console.error("Failed to like/unlike post", error)
+      setIsLiked(prev => !prev)
     }
   }
 
@@ -134,7 +145,7 @@ export default function Post({sharedPost,userImage,userName,userId,postContent,m
                 <p className='text-[#4a4a4a] text-[11px]'>{time}</p>
             </div>
             </Link>
-            <Ellipsis className=''/>
+            <Ellipsis />
         </div>
         <p>{postContent}</p>
         
@@ -184,7 +195,7 @@ export default function Post({sharedPost,userImage,userName,userId,postContent,m
           </div>
           </div>
         </div>
-        {showComments && <Comments appUser={appUser} postID={id} comments={comments ?? [] as Comment[]} user={userName}/>}
+        {showComments && <Comments appUser={appUser} postID={id} comments={comments ?? [] as Comment[]} postUserID={userId}/>}
         
         {/* Share Popup */}
         {showSharePopup && (

@@ -46,77 +46,72 @@ export default function WorkoutGrid({workouts}: Props) {
         setIsSubmitting(false);
       }
     }
-  return (
-    <>
-    {workouts && workouts.length > 0 ? (
-      workouts.map((workout) => (
-        <WorkoutCard 
-          key={workout.id} 
-          workout={workout} 
-          handleShareEvent={(workoutInfo) => {
-            if (workoutInfo.userId) {
-              setWorkoutInfo({
-                workoutId: workoutInfo.workoutId,
-                userId: workoutInfo.userId
-              });
-            }
-          }}
-          handleOpenDialog={setOpen} 
-        />
-      ))
-    ) : (
-      <div className="col-span-full text-center py-8">
-        {/* Adjust message based on whether a search was active via URL param */}
-        <p className="text-muted-foreground">
-          {/* {currentSearchQuery ? "No workouts match your search." : "No workouts found."} */}
-        </p>
-      </div>
-    )}
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-[500px]">
-        {/* <form action={action}> */}
-        <DialogHeader>
-          <DialogTitle>Create Post</DialogTitle>
-          <DialogDescription>Share what's on your mind with your followers</DialogDescription>
-        </DialogHeader>
-
-        
-          <Textarea
-            placeholder="What's on your mind athlete"
-            className="min-h-[120px] resize-none"
-            value={postText}
-            onChange={(e) => setPostText(e.target.value)}
-            name="text"
-          />
-          <WorkoutCard 
-          workout={workouts.find((w) => w.id === workoutInfo?.workoutId) ?? {
-            exercices: [],
-            id: 0,
-            name: '',
-            userId: null,
-            username: null,
-            description: '',
-            numberOfDays: null,
-            dayNames: [],
-            upvotes: 0
-          }}
-          
-        />
-          
-        <DialogFooter>
-          <Button
-          type="submit"
-            onClick={()=> void handleShare()}
-            disabled={isSubmitting}
-            style={{ boxShadow: "2px 2px 0px rgba(0, 0, 0, 0.8)" }}
-            className="rounded-none bg-green-200 border-black border-1 px-6 py-0 text-sm text-[#353434] font-light"
-          >
-            {isSubmitting ? "SHARING..." : "SHARE"}
-          </Button>
-        </DialogFooter>
-        {/* </form> */}
-      </DialogContent>
-    </Dialog>
-    </>
-  )
+    return (
+        <>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3  gap-4 p-4">
+            {workouts && workouts.length > 0 ? (
+                workouts.map((workout) => (
+                    <WorkoutCard 
+                        key={workout.id} 
+                        workout={workout} 
+                        handleShareEvent={(workoutInfo) => {
+                            if (workoutInfo.userId) {
+                                setWorkoutInfo({
+                                    workoutId: workoutInfo.workoutId,
+                                    userId: workoutInfo.userId
+                                });
+                            }
+                        }}
+                        handleOpenDialog={setOpen} 
+                    />
+                ))
+            ) : (
+                <div className="col-span-full text-center py-8">
+                    <p className="text-muted-foreground">
+                        {/* {currentSearchQuery ? "No workouts match your search." : "No workouts found."} */}
+                    </p>
+                </div>
+            )}
+        </div>
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent className="w-[95%] sm:w-[500px] max-w-[95%]">
+                <DialogHeader>
+                    <DialogTitle>Create Post</DialogTitle>
+                    <DialogDescription>Share what's on your mind with your followers</DialogDescription>
+                </DialogHeader>
+                <Textarea
+                    placeholder="What's on your mind athlete"
+                    className="min-h-[120px] resize-none"
+                    value={postText}
+                    onChange={(e) => setPostText(e.target.value)}
+                    name="text"
+                />
+                <WorkoutCard 
+                    workout={workouts.find((w) => w.id === workoutInfo?.workoutId) ?? {
+                        exercices: [],
+                        id: 0,
+                        name: '',
+                        userId: null,
+                        username: null,
+                        description: '',
+                        numberOfDays: null,
+                        dayNames: [],
+                        upvotes: 0
+                    }}
+                />
+                <DialogFooter>
+                    <Button
+                        type="submit"
+                        onClick={()=> void handleShare()}
+                        disabled={isSubmitting}
+                        style={{ boxShadow: "2px 2px 0px rgba(0, 0, 0, 0.8)" }}
+                        className="rounded-none bg-green-200 border-black border-1 px-6 py-0 text-sm text-[#353434] font-light"
+                    >
+                        {isSubmitting ? "SHARING..." : "SHARE"}
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+        </>
+    )
 }

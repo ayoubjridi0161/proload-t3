@@ -1,0 +1,14 @@
+.slot {
+    position: relative;
+    margin-bottom: 1rem;
+  }
+  
+  .item {
+    cursor: grab;
+  }
+  
+  .item:active {
+    cursor: grabbing;
+  }
+  
+  /* Add more styles as needed for the drag-and-drop effect */

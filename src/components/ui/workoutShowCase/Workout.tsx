@@ -55,10 +55,11 @@ const Workout =  ({fetchedWorkout}:{id?:number,fetchedWorkout:split}) => {
         return renderDays
     }
   return (
-    <div className="text-xtraLight ">
+    <div className="text-xtraLight  ">
       <h2 className="text-2xl font-bold mb-4 ">
         {fetchedWorkout?.name || "Workout"}
       </h2>
+      <p className="text-gray-500 mb-4">{fetchedWorkout?.description || "Description"}</p>
       <div className="space-y-4">
         <div className="grid grid-cols-1 gap-4">
         {renderDays()}

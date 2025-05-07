@@ -19,15 +19,24 @@ export default async function RecommendationsPage() {
     fitnessLevel: string,
     fitnessGoal: string,
   }}
+  console.log(userProfile.details);
+  let check = false
+  for (const key in userProfile.details) {
+    if (userProfile.details[key as keyof typeof userProfile.details] === undefined || userProfile.details[key as keyof typeof userProfile.details] === null || userProfile.details[key as keyof typeof userProfile.details] === '') {
+      check = true
+      break
+    }
+  }
+  
 return(
   <>
 {
-  Object.values(userProfile.details).every(value => Boolean(value)) ? (
+check ? (
     // If all fields are filled, fetch and display recommendations
-    <Recommendation details={userProfile.details}/>
+    <Recommendations details={userProfile.details}/>
   ) : (
     // If any field is missing, show the basic Recommendations component
-    <Recommendations details={userProfile.details}/>
+    <Recommendation details={userProfile.details}/>
   )
 }
 </>

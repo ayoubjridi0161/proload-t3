@@ -20,9 +20,6 @@ export default async function PerloadWorkouts({page,sortFiled,order,search}: Pro
     if(!workoutSummaryList) return null
     const workouts = await Promise.all(workoutSummaryList) 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    {/* Map directly over the workouts prop passed from the server */}
     <WorkoutGrid workouts = {workouts} />
-  </div>
   )
 }

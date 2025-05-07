@@ -19,6 +19,25 @@ import { Textarea } from '../textarea'
 import {useWorkout, type WorkoutDay} from "./WorkoutContext"
 import { Input } from '../input'
 import AIicon from '~/components/AIicon'
+import { useMemo, useRef, useEffect ,useState} from 'react'
+import {
+  DndContext,
+  type DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+
+
 type ResponseExercise = {
   name: string;
   reps: number;
@@ -71,7 +90,7 @@ export default function CreateWorkout()
               type: 'workout',
               name: day.name,
               exercises: day.exercises.map(ex => ({
-                id: Math.floor(Math.random() * 1000)+ Date.now(),
+                id: Math.floor(Math.random() * 100000)+ Date.now(),
                 name: ex.name,
                 sets: ex.sets,
                 reps: ex.reps
@@ -92,71 +111,95 @@ export default function CreateWorkout()
       } finally {
         setIsGenerating(false);
       }
-    };
-
-    
-   return (
-
-    <div className='bg-xtraContainer dark:bg-xtraDarkPrimary  h-full w-full relative z-10 rounded-md  shadow-sm mx-auto'>
-      {/* <div className="absolute inset-0 bg-aiLifter bg-center bg-cover filter opacity-5 blur-sm z-0" /> */}
-      <form action={async (formData: FormData) => {
-        const sent = new FormData()
-        sent.append('workoutName', store.workoutName);
-        sent.append('description', store.description);
-        sent.append('days', JSON.stringify(store.days));
-        sent.append("isPublished", isPublished?.toString() ?? "false")
-        await addWorkout(sent);
-      }}  className=" z-30 h-full bg-transparent  rounded-lg border border-border p-4 sm:p-6 shadow-sm space-y-4" >
-        <input type="hidden" name='published' value={isPublished?.toString()} />
-        <div className='pt-1 flex justify-between items-center'>
-          <Input className='w-1/5' onChange={(e)=> {store.setWorkoutName(e.target.value)}} placeholder="Workout name..." aria-label="Enter workout name" value={store.workoutName} />
-          <Button 
-            type='button' 
-            onClick={() => void generateWorkoutButton()} 
-            variant={"ghost"} 
-            className='hover:bg-white space-x-2' 
-            size={"sm"}
-            disabled={isGenerating}
-          >
-            <AIicon/>
-            {isGenerating ? (
-              <span>Generating...</span>
-            ) : (
-              <span>generate workout</span>
-            )}
-          </Button>
-        </div>
-        <Textarea onChange={(e)=> {store.setDescription(e.target.value)}} value={store.description} name='description' className='w-1/2' placeholder='drop out a note for the workout'/>
-        
-        <div className='space-y-4 '>
-          {store.days.map((day, index) => {
-            if(day.type === 'workout' ){
-            return(
-            <AddDay id={day.id} key={day.id} details={day}/>
-          ) }
-          else {
-            return(
-                <AddRestDay id={day.id} key={day.id} />
-            )
-        }
-          })}
-        </div>  
-        <div className='flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0'>
-          <div className='flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4'>
-            <Button type='button' onClick={()=> {store.addWorkoutDay()}} className="z-50 w-full sm:w-auto" size="sm" variant="default">
-              Add Workout Day
-            </Button>
-            <Button type='button' onClick={()=>{store.addRestDay()}} className=" z-50 w-full sm:w-auto" size="sm" variant="default">
-              Add Rest Day
+    };  
+    const sensors = useSensors(
+      useSensor(PointerSensor),
+      useSensor(KeyboardSensor, {
+        coordinateGetter: sortableKeyboardCoordinates,
+      })
+    );
+  
+    function handleDragEnd(event: DragEndEvent) {
+      const { active, over } = event;
+  
+      if (over && active.id !== over.id) {
+        store.setDays((days : WorkoutDay[])=> {
+          const oldIndex = days.findIndex((item) => item.id === active.id);
+          const newIndex = days.findIndex((item) => item.id === over.id);
+          
+          return arrayMove(days, oldIndex, newIndex); 
+        });
+      }
+    }
+    return (
+      <div className='h-full w-full relative z-10 mx-auto'>
+        <form action={async (formData: FormData) => {
+          const sent = new FormData()
+          sent.append('workoutName', store.workoutName);
+          sent.append('description', store.description);
+          sent.append('days', JSON.stringify(store.days));
+          sent.append("isPublished", isPublished?.toString() ?? "false")
+          await addWorkout(sent);
+        }}  className=" z-30 h-full bg-transparent sm:p-6 space-y-4" >
+          <input type="hidden" name='published' value={isPublished?.toString()} />
+          <div className='pt-1 flex justify-between items-center'>
+            <Input className='w-1/5' onChange={(e)=> {store.setWorkoutName(e.target.value)}} placeholder="Workout name..." aria-label="Enter workout name" value={store.workoutName} />
+            <Button 
+              type='button' 
+              onClick={() => void generateWorkoutButton()} 
+              variant={"ghost"} 
+              className='hover:bg-white space-x-2' 
+              size={"sm"}
+              disabled={isGenerating}
+            >
+              <AIicon/>
+              {isGenerating ? (
+                <span>Generating...</span>
+              ) : (
+                <span>generate workout</span>
+              )}
             </Button>
           </div>
-          {/* <Dialog setPubslished={setIsPublished} /> */}
-          <Button>save</Button>
-        </div>
-      </form>
-    </div>
-  )
-}
+          <Textarea onChange={(e)=> {store.setDescription(e.target.value)}} value={store.description} name='description' className='w-1/2' placeholder='drop out a note for the workout'/>
+          
+          <div className='space-y-4 '>
+          <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+          modifiers={[restrictToVerticalAxis]}>
+            <SortableContext items={store.days} strategy={verticalListSortingStrategy}>
+            {store.days.map((day, index) => {
+              if(day.type === 'workout' ){
+              return(
+              <AddDay id={day.id} key={day.id} details={day}/>
+            ) }
+            else {
+              return(
+                  <AddRestDay id={day.id} key={day.id} />
+              )
+          }
+            })}
+            </SortableContext>
+            </DndContext>
+          </div>  
+          <div className='flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0'>
+            <div className='flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4'>
+              <Button type='button' onClick={()=> {store.addWorkoutDay()}} className="z-50 w-full sm:w-auto" size="sm" variant="default">
+                Add Workout Day
+              </Button>
+              <Button type='button' onClick={()=>{store.addRestDay()}} className=" z-50 w-full sm:w-auto" size="sm" variant="default">
+                Add Rest Day
+              </Button>
+            </div>
+            {/* <Dialog setPubslished={setIsPublished} /> */}
+            <Button>save</Button>
+          </div>
+        </form>
+      </div>
+    )
+    
+  }
 const Dialog = ({setPubslished} : {setPubslished : (arg0: boolean)=> void  }) => {
 
   return(
@@ -181,3 +224,4 @@ const Dialog = ({setPubslished} : {setPubslished : (arg0: boolean)=> void  }) =>
   </AlertDialog>
   )
 }
+  

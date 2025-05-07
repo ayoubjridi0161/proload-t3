@@ -35,20 +35,18 @@ export const addPostAction = async (formData:FormData) => {
     }
   };
 
-  export const addComment = async (postID: number, content: string) => {
+  export const addComment = async (postID: number, content: string , postUserID:string) => {
     const session = await auth();
     const userID = session?.user?.id;
     const userName = session?.user?.name;
-    // console.log(userID,userName,content,postID);
-    
     if (!userID || !userName) return "failure";
-    console.log(userID,userName,content,postID);
-    
     try {
       const res = await createComment(userName,content, userID,postID);
+      if(res ){
+        await sendNotification(postUserID,"new Comment",`${session.user?.name} just commented on your post`)
+      }
       return res ? "success" : "failure";
     } catch (err) {
-      revalidatePath('/')
       console.error(err)
       return "failure"
     }finally{
@@ -84,12 +82,10 @@ export const addPostAction = async (formData:FormData) => {
     const userID = session?.user?.id;
     const userName = session?.user?.name;
     if (!userID || !userName) return "failure";
-    console.log(userID,userName,content,parentID);
     try{
       const res = await createReply(userName,content,userID,parentID)
       return res ? "success" : "failure";
     } catch (err) {
-      revalidatePath('/')
       console.error(err)
     }
   }
@@ -101,7 +97,7 @@ export const addPostAction = async (formData:FormData) => {
     if(!userID) return null
     try{
       const res = await createWorkoutComment(userName ?? "",content,userID,workoutID)
-      revalidatePath("/")
+      return res
     }catch(err){
       console.error(err);
       return null

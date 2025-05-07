@@ -31,7 +31,7 @@ interface WorkoutCardProps {
   
     return (
       <Link href={`/workouts/${workout.id}`}>
-      <Container className='bg-xtraText space-y-3' >
+      <Container className='bg-xtraBG space-y-3' >
                     <div className='flex'>
                         <Image src="https://s3.eu-north-1.amazonaws.com/proload.me/ach3.jpg" width={180} height={180} className="w-1/3 h-fit" alt='hello'/>
                         <div className='px-5 space-y-1'>
@@ -53,8 +53,8 @@ interface WorkoutCardProps {
                     })}
                     </div>
                     <div className='flex items-center gap-2 justify-around'>
-                        <Button size="sm" className='text-xs bg-xtraGreen text-xtraText hover:bg-xtraGreen/50 '><Copy className="pr-2"/>   clone Program</Button>
-                        <Button size="sm" className='text-xs bg-xtraGreen text-xtraText hover:bg-xtraGreen/50 '><ArrowRight className="pr-2"/>   Visit Program</Button>
+                        <Button variant={"secondary"} size="sm" className='text-xs bg-xtraGreen text-xtraText hover:bg-xtraGreen/50 '><Copy className="pr-2"/>   clone Program</Button>
+                        <Button variant={"secondary"} size="sm" className='text-xs bg-xtraGreen text-xtraText hover:bg-xtraGreen/50 '><ArrowRight className="pr-2"/>   Visit Program</Button>
                         {/* <Button size="sm" className='text-xs bg-xtraGreen text-xtraText'>Visit work</Button> */}
                     </div>
                     </Container>

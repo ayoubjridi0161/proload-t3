@@ -37,7 +37,7 @@ export default function AddExercise(props: Props) {
     {showExercice ? 
     <div className=' items-center flex justify-between '>
       <ExerciceCard 
-        className={"bg-white text-xtraText border-border opacity-80"} 
+        className={"bg-white text-xtraText border-border dark:bg-xtraDarkAccent opacity-80"} 
         delete={() => {store.removeExercise(props.dayIndex,props.exercice.id)}} 
         image={store.exerciseNames.find(ex => value == ex.name)?.images[0] ?? null}  
         name={props.exercice.name} 
@@ -104,7 +104,7 @@ export default function AddExercise(props: Props) {
         />
       </div>
     </div>
-    <ButtonBlack type='button' className='mt-10 ' onClick={()=>{setShowExercice(prev => !prev)}} size="sm" variant="outline">
+    <ButtonBlack type='button' className='mt-10' onClick={()=>{setShowExercice(prev => !prev)}} size="sm" variant="outline">
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" stroke-linecap="round" strokeLinejoin="round" className="lucide lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>   
      </ButtonBlack>
   </div>}

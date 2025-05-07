@@ -36,8 +36,8 @@ export default async function page(props: {
       </Suspense>
       <Footer currentPage={ page> 0 ?  page  : 1} hasNextPage/>
     </div>
-    <Sidebar side='right'  className="dark:bg-xtraDarkPrimary border-left-1 dark:border-xtraDarkAccent px-3 bg-[#f2fcf5] top-[--header-height] !h-[calc(100svh-var(--header-height))]" >
-    <SidebarContent className='bg-[#f2fcf5] dark:bg-xtraDarkPrimary space-y-3'>
+    <Sidebar side='right'  className="border-left-1 dark:border-xtraDarkAccent px-3 top-[--header-height] !h-[calc(100svh-var(--header-height))]" >
+    <SidebarContent className='space-y-3'>
   <WorkoutCalendar workoutDates={dates} />
   <Separator className='w-2/3 mx-auto'/>
   <SideConnets />

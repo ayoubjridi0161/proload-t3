@@ -2,7 +2,7 @@
 import React, { type ReactElement, useRef } from 'react'
 import { Label } from '../label'
 import { Button } from '../button'
-import { Pencil, GrabIcon, TrashIcon, Dumbbell, Check, Plus, Edit } from 'lucide-react'
+import { Pencil, GrabIcon, TrashIcon, Dumbbell, Check, Plus, Edit, GripVertical } from 'lucide-react'
 import { AccordionItem, AccordionTrigger, AccordionContent } from '../accordion'
 import AddExercise from './neoAddExercise'
 import { cn } from '~/lib/utils'
@@ -13,6 +13,9 @@ import { type ExerciseNames } from '~/lib/types'
 import { useWorkout  ,type WorkoutDay } from './WorkoutContext'
 import AIicon from '~/components/AIicon'
 import { generationAction } from '~/lib/actions/workout'
+import {useSortable} from '@dnd-kit/sortable';
+import {CSS} from '@dnd-kit/utilities';
+
 
 
 type Props = {
@@ -22,6 +25,12 @@ type Props = {
 
 
 export default function AddDay(props : Props) {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: props.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
     const store = useWorkout()
     const [dayName,setDayName] = React.useState(false)
     const [isDay,setIsDay] = React.useState(false)
@@ -34,25 +43,27 @@ export default function AddDay(props : Props) {
     const handleGenerateDay = async () => {
         setIsGenerating(true); // Set loading to true
         try {
-            // TODO: Replace generationAction with the specific generateWorkoutDay function if you refactored it
+
             const response = await generationAction(store.exerciseNames.map(ex => ex.name),"day",{
               workout:{name:store.workoutName,days:store.days,description:store.description},
               day:{name:store.days.find(day => day.id === props.id)?.name}
             })
-            // Assuming response is the JSON string, parse it
-            // If generateWorkoutDay returns parsed JSON directly, adjust this
+
             const parsedResponse = JSON.parse(response) as Array<{name:string,sets:number,reps:number}>;
             store.AddExercises(props.id,parsedResponse);
-            setIsEdit(true); // Keep editing mode open after generation
+            setIsEdit(true); 
         } catch (error) {
             console.error("Failed to generate day:", error);
-            // Optionally show an error message to the user
         } finally {
-            setIsGenerating(false); // Set loading to false regardless of success or error
+            setIsGenerating(false); 
         }
     }
   return (
-    <div className='bg-slate-200 dark:border-slate-800 dark:ring-offset-slate-950 dark:bg-slate-950 z-10 rounded-lg px-4 space-y-4'>
+    <div 
+      ref={setNodeRef}
+      style={style}
+      className='shadow-sm dark:bg-xtraDarkPrimary bg-xtraContainer z-10 rounded-lg px-4 space-y-4'
+    >
         <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
             <div className="flex items-center space-x-4">
             {/*dumbbell*/}
@@ -102,12 +113,21 @@ export default function AddDay(props : Props) {
                   <AIicon/> // Show normal icon otherwise
                 )}
               </Button>
-              <ButtonBlack type='button' onClick={()=>{setIsEdit(prev => !prev)}} size="sm" variant="outline">
+              <ButtonBlack type='button' onClick={()=>{setIsEdit(prev => !prev);console.log("clicked");
+              }} size="sm" variant="outline">
                 <Pencil className="h-4 w-4" />
               </ButtonBlack>
               <ButtonBlack type='button' onClick={()=>{store.removeDay(props.id)}} size="sm" variant="outline">
                 <TrashIcon className="h-4 w-4" />
               </ButtonBlack>
+              <button 
+                type='button' 
+                {...attributes}
+                {...listeners} 
+                className='cursor-move'
+              >
+                <GripVertical/>
+              </button>
             </div>
           </div>
           <div>
@@ -116,11 +136,9 @@ export default function AddDay(props : Props) {
                 <AddExercise  dayIndex={props.id} key={ex.id} exercice={ex} isShown={ex.isShown ?? true}/>
             ))}
           </div>{isEdit &&
-          <ButtonWhite className='m-3' type='button' onClick={()=>{store.addExercise(props.id,{name:"Barbell Squat",reps:8,sets:3})}}>Add exercice</ButtonWhite>
+          <ButtonBlack variant="outline" className='m-3' type='button' onClick={()=>{store.addExercise(props.id,{name:"Barbell Squat",reps:8,sets:3})}}>Add exercice</ButtonBlack>
           }
           </div>
-        
-          
           </div>
   )
 }

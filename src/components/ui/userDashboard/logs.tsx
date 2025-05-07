@@ -27,7 +27,7 @@ export default async function Logs({}: Props) {
   const data = await fetchUserLogs() as unknown as WorkoutLog[]
   
   return (
-    <Card className="w-full">
+    <Card className="w-full bg-transparent dark:bg-transparent">
       <CardHeader>
         <CardTitle>Workout History</CardTitle>
         <CardDescription>View your past workout sessions and performance</CardDescription>
@@ -38,10 +38,10 @@ export default async function Logs({}: Props) {
             No workout logs found
           </div>
         ) : (
-          <Accordion type="single" collapsible className="w-full">
+          <Accordion type="single" collapsible className="w-full bg-xtraContainer dark:bg-xtraDarkPrimary ">
             {data.map((workout, workoutIdx) => (
-              <AccordionItem key={workout.id} value={`workout-${workoutIdx}`}>
-                <AccordionTrigger className="hover:bg-slate-50 px-4">
+              <AccordionItem className='hover:bg-primary/50 dark:hover:bg-primary/50 ' key={workout.id} value={`workout-${workoutIdx}`}>
+                <AccordionTrigger className="px-4">
                   <div className="flex justify-between w-full pr-4">
                     <div className="flex items-center gap-3">
                       <span>Workout on {format(new Date(workout.date), 'MMMM d, yyyy')}</span>
@@ -58,7 +58,7 @@ export default async function Logs({}: Props) {
                       <Accordion type="single" collapsible className="w-full">
                         {workout.logs.map((exercise, index) => (
                           <AccordionItem key={index} value={`exercise-${workoutIdx}-${index}`}>
-                            <AccordionTrigger className="hover:bg-slate-50 px-4">
+                            <AccordionTrigger className=" px-4">
                               <div className="flex justify-between w-full pr-4">
                                 <span>{exercise.name}</span>
                                 <span className="text-sm text-gray-500">{exercise.sets.length} sets</span>
