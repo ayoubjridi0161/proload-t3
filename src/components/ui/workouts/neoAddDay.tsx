@@ -49,8 +49,10 @@ export default function AddDay(props : Props) {
               day:{name:store.days.find(day => day.id === props.id)?.name}
             })
 
-            const parsedResponse = JSON.parse(response) as Array<{name:string,sets:number,reps:number}>;
-            store.AddExercises(props.id,parsedResponse);
+            const parsedResponse = JSON.parse(response.message) as {name:string,exercises:{name:string,sets:number,reps:number}[]};
+            console.log(parsedResponse);
+            
+            store.AddExercises(props.id,parsedResponse.exercises);
             setIsEdit(true); 
         } catch (error) {
             console.error("Failed to generate day:", error);

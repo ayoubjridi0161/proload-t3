@@ -23,7 +23,7 @@ import { deleteDay,
 import { redirect } from "next/navigation"
 import { toast } from "sonner"
 import { sendNotification } from "./notifications"
-import { generateExercises, generateFullWorkout, generateWorkoutDay } from "../ai-copilot"
+import { generateFullWorkout, generateWorkoutDay } from "../ai-copilot"
 import { revalidatePath } from "next/cache"
 type WorkoutDay = {
   id: number;

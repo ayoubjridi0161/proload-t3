@@ -29,7 +29,6 @@ type Props = {
   userImage:string
   userName:string,
   userId:string,
-  title:string,
   postContent:string,
   images?:string[],
   likes:number,

@@ -142,7 +142,6 @@ export const MainSection = async ({user}:{user:publicUser}) => {
           userImage={user.image ?? "https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png"} 
           userName={user.name ?? "Proload User"} 
           userId={user.id} 
-          title={post.title} 
           postContent={post.content} 
         />
       ))}

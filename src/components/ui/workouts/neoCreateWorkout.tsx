@@ -104,7 +104,7 @@ export default function CreateWorkout()
             });
           } else {
             newDays.push({
-              id: Date.now(),
+              id: Math.floor(Math.random() * 100000)+ Date.now(),
               type: 'rest',
               name: day.name
             });
@@ -130,12 +130,11 @@ export default function CreateWorkout()
       const { active, over } = event;
   
       if (over && active.id !== over.id) {
-        store.setDays((days : WorkoutDay[])=> {
-          const oldIndex = days.findIndex((item) => item.id === active.id);
-          const newIndex = days.findIndex((item) => item.id === over.id);
-          
-          return arrayMove(days, oldIndex, newIndex); 
-        });
+        const days = store.days;
+        const oldIndex = days.findIndex((item) => item.id === active.id);
+        const newIndex = days.findIndex((item) => item.id === over.id);
+        
+        store.setDays(arrayMove(days, oldIndex, newIndex));
       }
     }
     return (

@@ -15,7 +15,7 @@ export default async function PreloadPosts({UUID,userName}: Props) {
     const likes = await getUserLikes(UUID)
   return (
     <>
-    {posts?.map((post)=> <Post sharedWorkout={post?.sharedWorkout} shares={post?.shares} sharedPost={post?.sharedPost} appUser={userName} time={post?.createdAt ?  timeAgo(post?.createdAt) : "" } media = {post?.resources} likes={post?.likes} key={post?.id} id={post?.id} userImage={post.users.image ?? ""} liked={likes?.includes(post?.id)} userName={post?.users.name ?? ""} userId={post.userId ?? "undefined"} title={post.title} postContent={post?.content} comments={post?.comments} />)}        
+    {posts?.map((post)=> <Post sharedWorkout={post?.sharedWorkout} shares={post?.shares} sharedPost={post?.sharedPost} appUser={userName} time={post?.createdAt ?  timeAgo(post?.createdAt) : "" } media = {post?.resources} likes={post?.likes} key={post?.id} id={post?.id} userImage={post.users.image ?? ""} liked={likes?.includes(post?.id)} userName={post?.users.name ?? ""} userId={post.userId ?? "undefined"} postContent={post?.content} comments={post?.comments} />)}        
     </>
   )
 }
