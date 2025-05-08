@@ -353,7 +353,6 @@ type WorkoutDay = {
       day?: { name?: string;};
     }
   ) => {
-    let response = "";
     switch (type) {
       case "workout": {
         const prompt = `You are an expert fitness trainer AI that creates optimized workout plans. 
@@ -367,9 +366,13 @@ type WorkoutDay = {
         Generate a workout plan for ${payload.workout?.name?? "a new workout"}
         follow up on this workout : ${JSON.stringify(payload.workout)}
         `;
-        response =await generateFullWorkout(exerciseLibrary,prompt)
-        break;
-      }
+        try{
+        const response =await generateFullWorkout(exerciseLibrary,prompt)
+        return {status:200,message:response}
+      }catch(err){
+        console.error(err)
+        return {status:503,message:"failed to generate workout , try again later"}
+      }}
       case "day": {
         const dayPrompt = `You are an expert fitness trainer AI that creates optimized workout days. 
         Your responses must:
@@ -380,27 +383,17 @@ type WorkoutDay = {
         
         Generate exercises for ${payload.day?.name ?? "a workout day"}
         don't include these 
-        existing exercises: ${JSON.stringify(payload.workout?.days?.flatMap(day => day.exercises?.map(ex => ex.name) ?? []))}
-        break`;
-        response = await generateWorkoutDay(exerciseLibrary,dayPrompt)
+        existing exercises: ${JSON.stringify(payload.workout?.days?.flatMap(day => day.exercises?.map(ex => ex.name) ?? []))}`
+          try{
+        const response = await generateWorkoutDay(exerciseLibrary,dayPrompt)
+        return {status:200,message:response}
+      }catch(err){
+        console.error(err)
+        return {status:503,message:"failed to generate day, try again later"}
       }
-      case "exercise": {
-        const exercisePrompt = `You are an expert fitness trainer AI that suggests specific exercises. 
-        Your responses must:
-        1. Use only exercises from the provided library
-        2. Specify sets (3-5) and reps (8-15)
-        3. Format as valid JSON matching the required schema
-        
-        Generate specific exercises based on the context \n
-        ${payload.day?.name ?? "a workout day"}\n
-        don't include these
-        existing exercises: ${JSON.stringify(payload.workout?.days?.flatMap(day => day.exercises?.map(ex => ex.name)?? []))}
-        `;
-        response = await generateExercises(exerciseLibrary,exercisePrompt)
-        break;
       }
-      default:
-        throw new Error("Invalid generation type");
+      default:{
+        return {status:404,message:"not found"}
     }
-    return response
-  };
+  }
+}

@@ -47,7 +47,7 @@ export default function Track({ workout, totalSets, totalReps,lastSession }: Pro
         <p className="mb-3 text-sm opacity-70">Today, {date.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</p>
         
       </div>
-      <Container className="grid w-full grid-cols-1 content-around justify-center gap-5 bg-xtraDark text-[#fcfcfc] md:grid-cols-6 ">
+      <Container className="grid w-full grid-cols-1 content-around justify-center gap-5 bg-xtraDark dark:bg-xtraDarkPrimary text-[#fcfcfc] md:grid-cols-6 ">
         <Image
           src={"https://s3.eu-north-1.amazonaws.com/proload.me/ach4.jpg"}
           className="aspect-square w-full md:w-1/2"
@@ -74,7 +74,7 @@ export default function Track({ workout, totalSets, totalReps,lastSession }: Pro
         </div>
       </Container>
 {lastSession && new Date(lastSession.date).toDateString() === new Date().toDateString() ? (
-  <Container className="p-5">
+  <Container className="p-5 dark:bg-xtraDarkPrimary ">
     <h2 className="text-xl font-semibold mb-4">Today's Session Already Logged</h2>
     <div className="space-y-5">
       <div className="flex gap-4">
@@ -112,7 +112,7 @@ export default function Track({ workout, totalSets, totalReps,lastSession }: Pro
     </div>
   </Container>
 ) : (
-  <Container className=" border-0 border-green-600 bg-xtraLight/15  shadow-md">
+  <Container className=" border-0 border-green-600 dark:bg-xtraDarkPrimary bg-xtraLight/15  shadow-md">
     <Tabs className="space-y-10 px-7" defaultValue="1">   
       <p>Choose a workout</p>
       <TabsList className="bg-transparent gap-2">
@@ -120,7 +120,7 @@ export default function Track({ workout, totalSets, totalReps,lastSession }: Pro
           <TabsTrigger
             value={day.dayIndex.toString()}
             key={i}
-            className="space-y-2 border-1  flex flex-col items-start bg-white p-5 text-[#03152d] focus:border-green-900 "
+            className="space-y-2 border-1 dark:bg-xtraDarkAccent dark:text-xtraDarkText/70 dark:focus:text-xtraDarkText flex flex-col items-start bg-white p-5 text-[#03152d] focus:border-green-900 "
           >
             <h2 className="text-md font-semibold">day{day.dayIndex}: {day.name}</h2>
             <p className="text-xs">
@@ -147,7 +147,7 @@ export default function Track({ workout, totalSets, totalReps,lastSession }: Pro
           {workout?.days[i]?.exercices.map((ex, index) => (
             <div
               key={index}
-              className="space-y-2 border-b-2 border-xtraDark pb-3 "
+              className="space-y-2 border-b-2 dark:border-xtraGreen/20 border-xtraDark  pb-3 "
             >
               <p className="text-sm font-semibold">{ex.name}</p>
               <div
@@ -156,17 +156,19 @@ export default function Track({ workout, totalSets, totalReps,lastSession }: Pro
                 {Array.from({ length: ex.sets }).map((_, i) => (
                   <div
                     key={i}
-                    className="flex  items-center gap-4 space-y-2 bg-slate-50 p-5 text-[#03152d] border-1 border-slate-100 shadow-md"
+                    className="flex dark:bg-xtraDarkAccent/20 dark:border-xtraDarkAccent rounded-md  items-center gap-4 space-y-2 bg-slate-50 p-5 text-[#03152d] border-1 border-slate-100 shadow-md"
                   >
-                    <h2 className="mt-2 text-nowrap text-sm">
+                    <h2 className="mt-2 text-nowrap text-sm dark:text-xtraContainer/30">
                       set {i + 1}:
                     </h2>
                     <Input
                       {...register(`ex.${ex.name}.sets.${i+1}`)}
                       variant="bordered"
                       size="sm"
-                      className="mt-0"
+                      type="number"
+                      className="mt-0 dark:placeholder:text-xtraDarkText/70 dark:text-xtraDarkText/70"
                       placeholder="weight (kg)"
+                      
                     />
                   </div>
                 ))}

@@ -36,6 +36,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import { toast } from 'sonner'
 
 
 type ResponseExercise = {
@@ -75,7 +76,12 @@ export default function CreateWorkout()
       setIsGenerating(true);
       try {
         const response = await generationAction(exerciseNames,"workout",{workout:{name:store.workoutName,description:store.description,days:store.days}})
-        const parsedResponse = JSON.parse(response) as WorkoutPlan;
+        if(!response || response.status == 503){
+            toast.error(response?.message)
+            setIsGenerating(false);
+            return
+        }
+        const parsedResponse = JSON.parse(response?.message) as WorkoutPlan;
         if(parsedResponse.name) store.setWorkoutName(parsedResponse.name);
         if(parsedResponse.description) store.setDescription(parsedResponse.description);
         
@@ -108,7 +114,8 @@ export default function CreateWorkout()
         
         // Update all days at once
         store.setDays(newDays);
-      } finally {
+      }
+       finally {
         setIsGenerating(false);
       }
     };  
