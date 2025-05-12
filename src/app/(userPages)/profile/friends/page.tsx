@@ -4,7 +4,7 @@ import { getFriendListAction, getUserProfile } from '~/lib/actions/userActions'
 
 type Props = {}
 
-export default async function page({}: Props) {
+export default async  function page({}: Props) {
   const friendsList = await getFriendListAction()
   return (
     <div className="container mx-auto py-8 px-4">

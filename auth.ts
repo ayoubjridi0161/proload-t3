@@ -18,14 +18,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     pages:{
         signIn:"/login",
     },
-    callbacks: {
-        // session({ session, user }) {
-        //     if (session.user && !session.user.name) {
-        //         redirect('/profile/settings')
-        //     }
-        //     return session
-        // }
-    }
+    
 })
   
   

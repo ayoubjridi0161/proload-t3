@@ -1,5 +1,4 @@
 import Image from 'next/image'
-import { Button } from '../button'
 import { MoveRight } from 'lucide-react'
 import AddPost from '../neopost/AddPost'
 import Post from '../neopost/post'
@@ -11,10 +10,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../tabs'
 import WorkoutSection from './workoutSection'
 import { Suspense } from 'react'
 import { timeAgo } from '~/lib/utils'
+import ProfileHeader from './profileHeader'
+import { isFollowed } from '~/lib/actions/userActions'
 
-function Profile({user}: {user: publicUser}) {
+async function Profile({user,isPublic}: {user: publicUser,isPublic:boolean}) {
+  const isfollowed = isPublic ? await isFollowed(user.id) : null
   return (
     <div className='w-2/3'>
+      {typeof isfollowed == 'boolean' ? 
+      <ProfileHeader isfollowed={isfollowed ?? false} numberOfConnects={user.numberOfConnects} userID={user.id} userImage={user.image ?? ""} userName={user.name}/>
+      :
       <header className='relative h-auto min-h-[200px] md:min-h-[300px] mb-6'>
         {/* Background cover photo */}
         <div className='absolute inset-0 h-3/4 bg-slate-200 bg-s3gym bg-bottom bg-cover'></div>
@@ -30,10 +35,11 @@ function Profile({user}: {user: publicUser}) {
           />
           <div className='mt-2 sm:mt-0 sm:mb-2'>
             <h1 className='font-bold text-lg sm:text-xl md:text-2xl'>{user.name ?? "Proload User"}</h1>
-            <p className='text-sm md:text-base'>3002 followers</p>
+            <p className='text-sm md:text-base'>{user.numberOfConnects} followers</p>
           </div>
         </div>
       </header>
+      }
 
       <Tabs defaultValue="Profile" className="w-full">
         <div className="overflow-x-auto">
@@ -58,7 +64,7 @@ function Profile({user}: {user: publicUser}) {
         <Separator className='mt-3'/>
         <TabsContent value="Profile" className='min-w-full'>
           <main className='flex flex-col lg:flex-row gap-4'>
-            <ProfileAside userID={user.id} />
+            <ProfileAside userID={user.id} isPublic={isPublic} />
             <MainSection user={user} />
           </main>
         </TabsContent>
@@ -74,11 +80,11 @@ function Profile({user}: {user: publicUser}) {
 
 export default Profile
 
-export const ProfileAside = async ({userID}:{userID:string}) => {
+export const ProfileAside = async ({userID,isPublic}:{isPublic:boolean,userID:string}) => {
   const details = await getUserBioAndDetails(userID)
   return (
     <aside className='w-full lg:w-2/5 p-3 space-y-3 '>
-      <AsideTopSection data={details}/>
+      <AsideTopSection data={details} isPublic={isPublic}/>
       <div className='shadow-bottom w-full p-2 space-y-3 bg-xtraContainer dark:bg-xtraDarkPrimary'>
         <div className='flex justify-between items-center'>
           <h1 className='text-xl font-bold'>Achievements photos</h1> 

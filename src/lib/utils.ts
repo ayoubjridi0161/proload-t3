@@ -34,3 +34,35 @@ export function timeAgo(timestamp: Date): string {
 
   return 'just now';
 }
+
+
+      export const mainMuscleGroups = ['chest', 'shoulder', 'arms', 'legs', 'core', 'back', 'other']; // Added 'other' for unmapped groups
+
+      // Helper function to map specific muscle groups to main ones
+      export const mapToMainMuscleGroup = (specificGroup: string | undefined): string => {
+        if (!specificGroup) return 'other';
+        const lowerCaseGroup = specificGroup.toLowerCase();
+        if (lowerCaseGroup.includes('chest')) return 'chest';
+        if (lowerCaseGroup.includes('shoulder') || lowerCaseGroup.includes('deltoid')) return 'shoulder';
+        if (lowerCaseGroup.includes('arm') || lowerCaseGroup.includes('bicep') || lowerCaseGroup.includes('tricep') || lowerCaseGroup.includes('forearm')) return 'arms';
+        if (lowerCaseGroup.includes('leg') || lowerCaseGroup.includes('quad') || lowerCaseGroup.includes('hamstring') || lowerCaseGroup.includes('glute') || lowerCaseGroup.includes('calf')) return 'legs';
+        if (lowerCaseGroup.includes('core') || lowerCaseGroup.includes('ab') || lowerCaseGroup.includes('oblique')) return 'core';
+        if (lowerCaseGroup.includes('back') || lowerCaseGroup.includes('lat') || lowerCaseGroup.includes('trap') || lowerCaseGroup.includes('rhomboid')) return 'back';
+        return 'other'; // Default category if no match
+      };
+
+
+      interface Exercise {
+        name: string;
+        reps: number;
+        sets: number;
+    }
+    
+    interface PromptAnalysis {
+        targetMuscle?: string;
+        excludedExercises: string[];
+        requiredRepRange?: [number, number];
+        requiredSetRange?: [number, number];
+    }
+    
+  

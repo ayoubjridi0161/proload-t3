@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "~/components/ui/select"
 type Props = {
+  isPublic: boolean;
   data: {
     bio: string | null;
     details: {
@@ -36,7 +37,7 @@ type Props = {
     } | null;
 } | undefined
 }
-export default function AthleticProfile({data}:Props) {
+export default function AthleticProfile({data,isPublic}:Props) {
   const [bio, setBio] = useState(data?.bio ?? "")
   const [showBioForm, setShowBioForm] = useState(false)
   const [savedBio, setSavedBio] = useState(data?.bio)

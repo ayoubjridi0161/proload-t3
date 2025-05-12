@@ -12,19 +12,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../tabs'
 import { Separator } from '../separator'
 import { Suspense } from 'react'
 import WorkoutSection from './workoutSection'
+import { WorkoutCardSkeleton } from '~/components/skeletons/workout-cardSkeleton'
 
 async function PublicProfile({user}: {user: publicUser}) {
   const isfollowed = await isFollowed(user.id)
   return (
-    <div className='w-full md:w-5/6 lg:w-2/3 mx-auto'>
-      <ProfileHeader 
-        userID={user.id} 
-        isfollowed={isfollowed} 
-        numberOfConnects={user.numberOfConnects} 
-        userImage={user.image ?? ""} 
-        userName={user.name}
-      />
-      <main className='flex w-full flex-col md:flex-row gap-4 px-2'>
+    <div className='w-2/3'>
+      <ProfileHeader isfollowed={isfollowed} numberOfConnects={user.numberOfConnects} userID={user.id} userImage={user.image ?? ""} userName={user.name}/>
       <Tabs defaultValue="Profile" className="w-full">
         <div className="overflow-x-auto">
           <TabsList className='bg-transparent whitespace-nowrap min-w-max'>
@@ -53,12 +47,13 @@ async function PublicProfile({user}: {user: publicUser}) {
           </main>
         </TabsContent>
         <TabsContent value="Workouts" className='min-w-full'>
-          <Suspense fallback={<div className='w-[66vw]'>loading..</div>}>
+        <Suspense fallback={<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+        {Array.from({length: 3}, (_, index) => (<WorkoutCardSkeleton key={index} />))}
+      </div>}>
           <WorkoutSection privacy={true} userID={user.id} />
           </Suspense>
         </TabsContent>
       </Tabs>
-      </main>
     </div>
   )
 }
@@ -131,40 +126,68 @@ export const ProfileAside = ({savedBio, profileDetails}: {
   )
 }
 
-export const MainSection = async ({user}: {user: publicUser}) => {
-  const FetchedPosts = await getPosts(user.id)
-  const userLikes = await getUserLikes(user.id)
-  const session = await auth()
-  const appUser = session?.user?.name ?? "user"
+// export const MainSection = async ({user}: {user: publicUser}) => {
+//   const FetchedPosts = await getPosts(user.id)
+//   const userLikes = await getUserLikes(user.id)
+//   const session = await auth()
+//   const appUser = session?.user?.name ?? "user"
   
+//   return(
+//     <section className='w-full lg:w-3/5 p-2 md:p-3'>
+//       {/* <AddPost image={user.image ?? "https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png"}  /> */}
+//       {FetchedPosts.length === 0 ? (
+//         <div className="text-center py-8 border border-gray-200 rounded-lg">
+//           <p className="text-gray-500">No posts to display</p>
+//         </div>
+//       ) : (
+//         FetchedPosts.map((post, i) => (
+//           <Post appUser={appUser}
+//           sharedPost={post.sharedPost}
+//           sharedWorkout={post.sharedWorkout}
+//           shares={post.shares}
+//             time={timeAgo(post.createdAt)} 
+//             likes={post.likes} 
+//             id={post.id} 
+//             liked={userLikes?.includes(post.id)} 
+//             key={i} 
+//             userImage={user.image ?? "https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png"} 
+//             comments={post.comments} 
+//             media={post.resources} 
+//             images={post.resources} 
+//             userName={user.name ?? "Proload User"} 
+//             userId={user.id} 
+//             postContent={post.content} 
+//           />
+//         ))
+//       )}
+//     </section>
+//   )
+// }
+export const MainSection = async ({user}:{user:publicUser}) => {
+  const likes = await getUserLikes(user.id)
+  const FetchedPosts = await getPosts(user.id)
   return(
-    <section className='w-full md:w-3/5 p-2 md:p-3'>
-      {/* <AddPost image={user.image ?? "https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png"}  /> */}
-      {FetchedPosts.length === 0 ? (
-        <div className="text-center py-8 border border-gray-200 rounded-lg">
-          <p className="text-gray-500">No posts to display</p>
-        </div>
-      ) : (
-        FetchedPosts.map((post, i) => (
-          <Post appUser={appUser}
-          sharedPost={post.sharedPost}
-          sharedWorkout={post.sharedWorkout}
-          shares={post.shares}
-            time={timeAgo(post.createdAt)} 
-            likes={post.likes} 
-            id={post.id} 
-            liked={userLikes?.includes(post.id)} 
-            key={i} 
-            userImage={user.image ?? "https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png"} 
-            comments={post.comments} 
-            media={post.resources} 
-            images={post.resources} 
-            userName={user.name ?? "Proload User"} 
-            userId={user.id} 
-            postContent={post.content} 
-          />
-        ))
-      )}
+    <section className='w-full lg:w-3/5 p-3'>
+      {FetchedPosts.map((post,i) => (
+        <Post 
+        sharedPost = {post.sharedPost}
+        sharedWorkout={post.sharedWorkout}
+        shares={post.shares}
+        time={timeAgo(post.createdAt)}
+        appUser={user.id}
+          likes={post.likes} 
+          id={post.id} 
+          comments={post.comments} 
+          media={post.resources} 
+          images={post.resources} 
+          liked={!!likes?.includes(post.id)} 
+          key={i} 
+          userImage={user.image ?? "https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png"} 
+          userName={user.name ?? "Proload User"} 
+          userId={user.id} 
+          postContent={post.content} 
+        />
+      ))}
     </section>
   )
 }

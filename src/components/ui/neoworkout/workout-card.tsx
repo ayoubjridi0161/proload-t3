@@ -4,11 +4,12 @@ import { Clock, Dumbbell, Heart, MapPin, Share2 } from "lucide-react"
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "~/components/ui/card"
+
 // No need to import ChartContainer
 import{ type WorkoutDetail } from "~/lib/types"
 import Link from "next/link"
 import React from "react"
-import { cn } from "~/lib/utils"
+import { cn , mapToMainMuscleGroup } from "~/lib/utils"
 
 interface WorkoutCardProps {
     workout: {
@@ -37,6 +38,7 @@ interface WorkoutCardProps {
         name:ex.mg as string,
         value:ex.exerciseCount
     }))
+    console.log(muscleGroups)
 
     // const  shareBehaviour = async ()=>{ await  handleShareEvent(workout.id,workout.userId ?? "")}
   
@@ -63,7 +65,11 @@ interface WorkoutCardProps {
             <div className="text-sm font-medium">{numberOfDays}-day cycle:</div>
             <div className="flex flex-wrap gap-2">
               {dayNames?.map((day) => (
-                <Badge key={day} variant={day == "rest" ? "secondary" : "default"}>
+<Badge 
+  className={`truncate max-w-[100px] ${day.length > 6 ? 'text-[10px]' : 'text-xs'}`} 
+  key={day} 
+  variant={day == "rest" ? "secondary" : "default"}
+>
                   {day}
                 </Badge>
               ))}
@@ -99,20 +105,19 @@ interface WorkoutCardProps {
   
   function MuscleGroupChart({ muscleGroups,className }: { className?:string,muscleGroups: { name: string; value: number }[] }) {
     // Define the main muscle groups that should always be displayed
-    const mainMuscleGroups = ['chest', 'shoulder', 'arms', 'legs', 'core', 'back'];
-
     // Create a map for quick lookup of existing muscle group data
-    const muscleGroupMap = new Map(muscleGroups.map(mg => [mg.name.toLowerCase(), mg.value]));
-
+    const muscleGroupMap = new Map(muscleGroups.map(mg => [mapToMainMuscleGroup(mg.name.toLowerCase()), mg.value]));
+    
+    
     // Build the final data array ensuring all main groups are present
-    const chartData = mainMuscleGroups.map(groupName => ({
-      name: groupName.charAt(0).toUpperCase() + groupName.slice(1), // Capitalize for display
-      value: muscleGroupMap.get(groupName) ?? 0 // Use existing value or 0 if not present
-    }));
+    // const chartData = mainMuscleGroups.map(groupName => ({
+    //   name: groupName.charAt(0).toUpperCase() + groupName.slice(1), // Capitalize for display
+    //   value: muscleGroupMap.get(groupName) ?? 0 // Use existing value or 0 if not present
+    // }));
 
-
+    const chartData = muscleGroupMap
     // Ensure we have data before rendering the chart
-    if (!chartData || chartData.length === 0) {
+    if (!chartData ) {
       return <div className={cn(className,"h-full w-full flex items-center justify-center")}>No data</div>
     }
     return (
@@ -121,7 +126,7 @@ interface WorkoutCardProps {
           <RadarChart
             width={200}
             height={150}
-            data={chartData}
+            data={Array.from(chartData, ([name, value]) => ({ name, value }))}
             outerRadius={60}
             margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
             className="mx-auto"

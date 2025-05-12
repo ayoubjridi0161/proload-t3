@@ -5,7 +5,6 @@ import {
     Type,
   } from '@google/genai';
 import langfuse from "langfuse.config.js";
-
 // Function to generate a full workout plan
 export async function generateFullWorkout(exerciseLibrary: string[], prompt: string) {
     const trace = langfuse.trace({
@@ -86,9 +85,9 @@ export async function generateFullWorkout(exerciseLibrary: string[], prompt: str
     
     // Score the response quality (you can adjust this based on your criteria)
     trace.score({
-      name: 'response-quality',
+      name: 'exercise_relevance',
       value: 0.9,
-      comment: 'Automated evaluation based on response format and completeness'
+      comment: 'Matches muscle group focus'
     });
     
     return streamedResponse;

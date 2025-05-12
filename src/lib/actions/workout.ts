@@ -25,6 +25,7 @@ import { toast } from "sonner"
 import { sendNotification } from "./notifications"
 import { generateFullWorkout, generateWorkoutDay } from "../ai-copilot"
 import { revalidatePath } from "next/cache"
+import { mainMuscleGroups, mapToMainMuscleGroup } from "~/lib/utils"
 type WorkoutDay = {
   id: number;
   type: 'workout' | 'rest';
@@ -237,20 +238,7 @@ type WorkoutDay = {
     try {
       const res = await fetchAllWorkouts(filters)
       // Define the main muscle groups
-      const mainMuscleGroups = ['chest', 'shoulder', 'arms', 'legs', 'core', 'back', 'other']; // Added 'other' for unmapped groups
-
-      // Helper function to map specific muscle groups to main ones
-      const mapToMainMuscleGroup = (specificGroup: string | undefined): string => {
-        if (!specificGroup) return 'other';
-        const lowerCaseGroup = specificGroup.toLowerCase();
-        if (lowerCaseGroup.includes('chest')) return 'chest';
-        if (lowerCaseGroup.includes('shoulder') || lowerCaseGroup.includes('deltoid')) return 'shoulder';
-        if (lowerCaseGroup.includes('arm') || lowerCaseGroup.includes('bicep') || lowerCaseGroup.includes('tricep') || lowerCaseGroup.includes('forearm')) return 'arms';
-        if (lowerCaseGroup.includes('leg') || lowerCaseGroup.includes('quad') || lowerCaseGroup.includes('hamstring') || lowerCaseGroup.includes('glute') || lowerCaseGroup.includes('calf')) return 'legs';
-        if (lowerCaseGroup.includes('core') || lowerCaseGroup.includes('ab') || lowerCaseGroup.includes('oblique')) return 'core';
-        if (lowerCaseGroup.includes('back') || lowerCaseGroup.includes('lat') || lowerCaseGroup.includes('trap') || lowerCaseGroup.includes('rhomboid')) return 'back';
-        return 'other'; // Default category if no match
-      };
+      
 
       const workouts = res.map(workout => {
         const maxIndex = workout.numberOfDays ?? 7;

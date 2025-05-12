@@ -4,7 +4,7 @@ import { NotificationCard } from '~/components/ui/notifications/NotificationCard
 
 type Props = {};
 
-export default async function page({}: Props) {
+export default async function page() {
   const notifs = await fetchNotifs();
 
   return (

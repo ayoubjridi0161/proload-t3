@@ -95,8 +95,7 @@ export const getProcessedWorkoutById = async (id: number) => {
         return null; // Or throw an error if preferred
       }
 
-      const muscleGroup = await getMuscleGroups();
-
+      const muscleGroup = await getMuscleGroups()
       // Process the single workout
       const maxIndex = workout.numberOfDays ?? 7;
       const dayNamesSorted = Array.from({ length: maxIndex }, (_, index) => {
