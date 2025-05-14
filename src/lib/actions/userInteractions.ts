@@ -4,25 +4,27 @@ import { revalidatePath } from "next/cache";
 import { getNumberOfWorkoutsPerUser, updateReactions, addNewReaction, addConnect, removeConnect, isLiked, removeLike, addLike } from "../data";
 import { sendNotification } from "./notifications";
 
-  export const addUserReaction = async (workoutID:number,EUR:boolean,action:{type:"upvote"|"downvote"|"clone",payload:boolean})=>{
+  export const addUserReaction = async (workoutID:number,action:{type:"upvote"|"downvote"|"clone",payload:{
+    upvote: boolean;
+    downvote: boolean;
+} | undefined})=>{
     const session = await auth();
+    console.log(action)
     const id = session?.user?.id;
     if(!id) {throw new Error ("no user authenticated")}
-    if(action.type==="clone"){
-      const res = await getNumberOfWorkoutsPerUser(id)
-      console.log(res)
-      if(res.NumberOfWorkouts !== undefined && res.NumberOfWorkouts<3){
-        const res = await updateReactions(id,workoutID,action)
-        revalidatePath(`workouts/${workoutID}`)
-        return res
-      }else return("workout limit exeeded")
-    }
-      if(!EUR) {const res = await addNewReaction(id,workoutID);
-        if(res.message !== "success" ) throw new Error(res.message)
-      }
-    const res = await updateReactions(id,workoutID,action)
-    revalidatePath(`workouts/${workoutID}`)
-    return res
+    // if(action.type==="clone"){
+    //   const res = await getNumberOfWorkoutsPerUser(id)
+    //   if(res.NumberOfWorkouts !== undefined && res.NumberOfWorkouts<330){
+    //     const res = await updateReactions(id,workoutID,action)
+    //     revalidatePath(`workouts/${workoutID}`)
+    //     return res
+    //   }else return("workout limit exeeded")
+    // }
+    // if(!action.payload) {const res = await addNewReaction(id,workoutID,action.type);
+    //   if(res.message !== "success" ) throw new Error(res.message)
+    // }
+    // const res = await updateReactions(id,workoutID,action)
+    return "success"
   }
   
   export const ConnectAction = async (followed:string)=>{

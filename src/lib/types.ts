@@ -99,3 +99,17 @@ export type ExerciseNames = {
     images: string[];
     rating: number | null;
 }[]
+
+export type OnboardingData = {
+    name: string;
+    picture: string | null;
+    bio: string;
+    gender: string;
+    age: number | "";
+    height: number | "";
+    weight: number | "";
+    fitnessGoal: "Weight loss" | "Weight gain" | "";
+    fitnessType: "Muscular fitness" | "Cardio fitness" | "";
+    coverPhoto: string | null;
+    step: number;
+  }

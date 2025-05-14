@@ -103,6 +103,7 @@ export const users = pgTable("user", {
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   image: text("image"),
   currentWorkout: integer("current_workout"),
+  onboarded: boolean("onboarded").default(false).notNull(),
   likes: integer('likes').array(),
   bio: text("bio").default(""),
   achievements: json("achievements").$type<{name:string,date:string}>().array(),

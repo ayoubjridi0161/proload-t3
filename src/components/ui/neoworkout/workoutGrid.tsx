@@ -24,6 +24,7 @@ type Props = {
         dayNames: string[];
         upvotes: number;
     }[]
+
 }
 
 export default function WorkoutGrid({workouts}: Props) {
@@ -86,7 +87,7 @@ export default function WorkoutGrid({workouts}: Props) {
                     onChange={(e) => setPostText(e.target.value)}
                     name="text"
                 />
-                <WorkoutCard 
+                <WorkoutCard  
                     workout={workouts.find((w) => w.id === workoutInfo?.workoutId) ?? {
                         exercices: [],
                         id: 0,

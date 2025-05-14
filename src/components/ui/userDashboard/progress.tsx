@@ -83,10 +83,10 @@ export default function AthleteDashboard(props:Props) {
               <Weight className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">192 lbs</div>
+              <div className="text-2xl font-bold">90 kg</div>
               <p className="text-xs text-muted-foreground">
                 <TrendingUp className="mr-1 inline h-3 w-3 text-primary" />
-                +12 lbs from starting weight
+                +12 kg from starting weight
               </p>
             </CardContent>
           </Card>
@@ -111,7 +111,7 @@ export default function AthleteDashboard(props:Props) {
               <LineChart className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">225 lbs</div>
+              <div className="text-2xl font-bold">120 kg</div>
               <p className="text-xs text-muted-foreground">
                 <TrendingUp className="mr-1 inline h-3 w-3 text-primary" />
                 +40 lbs from starting weight
@@ -125,7 +125,7 @@ export default function AthleteDashboard(props:Props) {
               <User className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">9 sessions</div>
+              <div className="text-2xl font-bold">4 sessions</div>
               <p className="text-xs text-muted-foreground">
                 <TrendingUp className="mr-1 inline h-3 w-3 text-primary" />
                 +1 from last week

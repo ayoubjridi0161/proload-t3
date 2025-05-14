@@ -8,20 +8,17 @@ const protectedRoutes = ["/profile","/neopost","/neoworkout","dashboard","home"]
 
 export default async function middleware(request: NextRequest){
     const session = await auth()
-    // console.log("middleware Called")
+
 
     const {pathname} = request.nextUrl
-
-    const isProtected= protectedRoutes.some((route)=> pathname.startsWith(route))
-    // if(session){
-    //     if(!session.user?.name){
-    //         if( pathname!== "/profile/settings"){
-    //             return NextResponse.redirect(new URL("/profile/settings",request.nextUrl))
-    //         }
+    console.log("invoked")
+    const isProtected = protectedRoutes.some(route => 
+        pathname === route || pathname.startsWith(`${route}/`)  // More precise matching
+      );
+    // if(pathname !== "/onboarding"){
+    //     if((session && session?.user as { onboarded?: boolean })?.onboarded === true){
+    //         return NextResponse.redirect(new URL("/onboarding",request.nextUrl))
     //     }
-    // }
-    // if (session?.user?.needsProfileSetup && !request.nextUrl.pathname.startsWith('/profile/settings')) {
-    //     console.log(session.user)
     // }
 
     if (isProtected && !session){
@@ -30,7 +27,16 @@ export default async function middleware(request: NextRequest){
     if(session && pathname === "/login"){
         return NextResponse.redirect(new URL("/home",request.nextUrl))
     }
+    if(pathname.startsWith("/admin")&& session?.user?.email !== "proofyouba@gmail.com"){
+        return NextResponse.redirect(new URL("/home",request.nextUrl))
+    }
 
-    return NextResponse.next()
+    const response = NextResponse.next();
+    response.headers.set('Cache-Control', 'private, no-store, max-age=0');
+    return response;
 }
+
+export const config = {
+    matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  };
 

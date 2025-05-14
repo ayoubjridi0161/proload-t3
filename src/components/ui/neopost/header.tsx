@@ -107,15 +107,10 @@ function Header({name,image,UUID}: Props) {
         <Link href={'/home'} className='text-xl flex items-center'>PROLOAD <Image src="https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png" width={40} height={40}  alt="logo" /></Link>
         <SearchBar />
         <div className="flex gap-2">
-            <MessagesNotif/>
-            {/* <Button variant={"ghost"} style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 0.8)' }} className="rounded-none border-black border-1 p-2">
-            <Bell />
-            </Button> */}
             <Notifs/>
-
             <DropdownMenu >
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
+        <Button variant={"ghost"} style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 0.8)' }} size="icon" className="relative h-10 w-10  rounded-none border-black border-1 p-2">
           <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
           <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           <span className="sr-only">Toggle theme</span>

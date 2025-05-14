@@ -13,52 +13,13 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Badge } from "~/components/ui/badge"
 import { MoreHorizontal, Plus, Search } from "lucide-react"
+import { getAllUsersForAdmin } from "~/lib/data"
 
 // Sample user data
-const users = [
-  {
-    id: "1",
-    name: "John Doe",
-    email: "john@example.com",
-    status: "active",
-    role: "admin",
-    joinedDate: "Jan 10, 2023",
-  },
-  {
-    id: "2",
-    name: "Jane Smith",
-    email: "jane@example.com",
-    status: "active",
-    role: "user",
-    joinedDate: "Feb 15, 2023",
-  },
-  {
-    id: "3",
-    name: "Mike Johnson",
-    email: "mike@example.com",
-    status: "inactive",
-    role: "user",
-    joinedDate: "Mar 20, 2023",
-  },
-  {
-    id: "4",
-    name: "Sarah Williams",
-    email: "sarah@example.com",
-    status: "active",
-    role: "trainer",
-    joinedDate: "Apr 5, 2023",
-  },
-  {
-    id: "5",
-    name: "David Brown",
-    email: "david@example.com",
-    status: "active",
-    role: "user",
-    joinedDate: "May 12, 2023",
-  },
-]
 
-export default function UsersPage() {
+
+export default async function UsersPage() {
+  const usersList = await getAllUsersForAdmin()
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
@@ -91,22 +52,23 @@ export default function UsersPage() {
               <TableRow>
                 <TableHead>User</TableHead>
                 <TableHead>Role</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Joined</TableHead>
+                {/* <TableHead>Status</TableHead> */}
+                {/* <TableHead>Joined</TableHead> */}
+                <TableHead>Connects</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {users.map((user) => (
+              {usersList.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <Avatar>
                         <AvatarImage
-                          src={`/placeholder.svg?height=32&width=32&text=${user.name.charAt(0)}`}
-                          alt={user.name}
+                          src={user.image ?? ""}
+                          alt={user.name ?? ""}
                         />
-                        <AvatarFallback>{user.name.slice(0, 2).toUpperCase()}</AvatarFallback>
+                        <AvatarFallback>{user?.name?.slice(0, 2).toUpperCase()}</AvatarFallback>
                       </Avatar>
                       <div>
                         <div className="font-medium">{user.name}</div>
@@ -115,12 +77,15 @@ export default function UsersPage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={user.role === "admin" ? "default" : "outline"}>{user.role}</Badge>
+                    <Badge variant={"outline"}>{"user"}</Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={user.status === "active" ? "outline" : "secondary"}>{user.status}</Badge>
+                    {user.numberOfConnects}
                   </TableCell>
-                  <TableCell>{user.joinedDate}</TableCell>
+                  {/* <TableCell>
+                    <Badge variant={user.status === "active" ? "outline" : "secondary"}>{user.status}</Badge>
+                  </TableCell> */}
+                  {/* <TableCell>{user.joinedDate}</TableCell> */}
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>

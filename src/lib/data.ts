@@ -359,42 +359,39 @@ export const updateExercice = async (data:{name:string,sets:number,reps:number},
     }
 }
 export const updateReactions =async (userId:string,workoutId:number,action:{type:"upvote"|"downvote"|"clone",payload:boolean})=>{
+    
     try{
         switch (action.type){
             case "upvote" : 
-            await db
-                .update(Reactions)
-                .set({upvote:action.payload})
-                .where(and(eq(Reactions.userId,userId),eq(Reactions.workoutId,workoutId)))
-                
-            if (action.payload) {
-                await db
-                  .update(workouts)
-                  .set({ upvotes: sql`upvotes + 1` })
-                  .where(eq(workouts.id, workoutId))
-              } else {
-                await db
-                  .update(workouts)
-                  .set({ upvotes: sql`upvotes - 1` })
-                  .where(eq(workouts.id, workoutId))
-              }
-              break
+            await db.transaction(async (tx) => {
+                await tx
+                    .update(Reactions)
+                    .set({
+                        upvote: action.payload,
+                        downvote: action.payload ? false : sql`${Reactions.downvote}`
+                    })
+                    .where(and(eq(Reactions.userId, userId), eq(Reactions.workoutId, workoutId)));
+                await tx
+                   .update(workouts)
+                   .set({ upvotes: sql`upvotes + ${action.payload ? 1 : -1}` })
+                   .where(eq(workouts.id, workoutId));
+            });
+            break
+
             case "downvote":
-              await db
-                .update(Reactions)
-                .set({ downvote: action.payload })
-                .where(and(eq(Reactions.userId, userId), eq(Reactions.workoutId, workoutId)))
-              if (action.payload) {
-                await db
-                  .update(workouts)
-                  .set({ downvotes: sql`downvotes + 1` })
-                  .where(eq(workouts.id, workoutId))
-              } else {
-                await db
-                  .update(workouts)
-                  .set({ downvotes: sql`downvotes - 1` })
-                  .where(eq(workouts.id, workoutId))
-              }
+                await db.transaction(async (tx) => {
+                    await tx
+                        .update(Reactions)
+                        .set({
+                            downvote: action.payload,
+                            upvote: action.payload ? false : sql`${Reactions.downvote}`
+                        })
+                        .where(and(eq(Reactions.userId, userId), eq(Reactions.workoutId, workoutId)));
+                    await tx
+                       .update(workouts)
+                       .set({ downvotes: sql`downvotes + ${action.payload ? 1 : -1}` })
+                       .where(eq(workouts.id, workoutId));
+                });
               break
               case "clone":
                 //handle clone later
@@ -421,10 +418,11 @@ export const updateReactions =async (userId:string,workoutId:number,action:{type
         return "success"
     }catch(err) {return "failure"}
 }
-export const addNewReaction = async (userID:string,workoutID:number) =>{
+export const addNewReaction = async (userID:string,workoutID:number,action:"upvote"|"downvote") =>{
     try{
-        console.log(userID,workoutID)
-        await db.insert(Reactions).values({userId:userID,workoutId:workoutID})
+        if(action == "downvote")
+        await db.insert(Reactions).values({userId:userID,workoutId:workoutID,downvote:true})
+        else await db.insert(Reactions).values({userId:userID,workoutId:workoutID,upvote:true})
         return {message:"success"}
     }catch(err) {
         if(err instanceof DrizzleError){
@@ -1006,3 +1004,12 @@ export async function getWorkoutsForAdmin (){
     return res
 }
 
+export async function getAllUsersForAdmin ( ){
+    const res = db.query.users.findMany({
+        columns:{
+            email:true,id:true,name:true,image:true,numberOfConnects:true
+        }
+    ,
+    orderBy:(users,{desc})=>[desc(users.name)]})
+    return res
+}

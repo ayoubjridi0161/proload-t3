@@ -37,6 +37,7 @@ import {
 } from '@dnd-kit/sortable';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { toast } from 'sonner'
+import { stringToAscii } from '~/lib/utils'
 
 
 type ResponseExercise = {
@@ -60,14 +61,36 @@ type WorkoutPlan = {
 export default function CreateWorkout() 
 { 
   const formRef = React.useRef<HTMLFormElement>(null)
+  const [isSubmitting, setIsSubmitting] = React.useState(false)
 
-  const [isPublished, setIsPublished] = React.useState<boolean>()
-//    React.useEffect(()=>{
-//   console.log("submit");
-//   if( typeof isPublished === 'boolean' )
-//     formRef.current?.requestSubmit()
-//     // router.push('/workouts')
-// },[isPublished])
+  const [isPublished, setIsPublished] = React.useState<boolean|null>(null)
+   React.useEffect(()=>{
+const handleSubmit = async ()=>{
+  if( typeof isPublished === 'boolean' )
+    try{setIsSubmitting(true)
+    const sent = new FormData()
+    sent.append('workoutName', store.workoutName);
+    sent.append('description', store.description);
+    sent.append('days', JSON.stringify(store.days));
+    sent.append("isPublished", isPublished?.toString() ?? "false")
+    if(store.days.length > 0 && store.workoutName){
+    const response = await addWorkout(sent);
+    if(response?.code === 402){
+      toast.error(response?.message)
+    }else{
+      toast.success("workout created")
+    }
+  }else{
+    toast.error("some required fields are empty")
+  }
+}catch(error){
+  toast.error("couldn't save workout")
+}finally{
+  setIsSubmitting(false)
+  setIsPublished(null)
+}}
+void handleSubmit()
+},[isPublished])
     const store = useWorkout()
     console.log(store.days)
     const exerciseNames = store.exerciseNames.map(x => x.name)
@@ -89,14 +112,14 @@ export default function CreateWorkout()
         const newDays: WorkoutDay[] = [];
         
         for (const day of parsedResponse.days) {
+          const dayId = Math.floor(Math.random() * 10000)+ stringToAscii(day.name)
           if(day.exercises && day.exercises.length > 0) {
-            const dayId = Math.floor(Math.random() * 100)+ Date.now()
             newDays.push({
               id: dayId,
               type: 'workout',
               name: day.name,
-              exercises: day.exercises.map(ex => ({
-                id: Math.floor(Math.random() * 100000)+ Date.now(),
+              exercises: day.exercises.map((ex,index) => ({
+                id: dayId+index,
                 name: ex.name,
                 sets: ex.sets,
                 reps: ex.reps
@@ -104,13 +127,12 @@ export default function CreateWorkout()
             });
           } else {
             newDays.push({
-              id: Math.floor(Math.random() * 100000)+ Date.now(),
+              id: dayId,
               type: 'rest',
               name: day.name
             });
           }
         }
-        console.log("", newDays);
         
         // Update all days at once
         store.setDays(newDays);
@@ -128,25 +150,21 @@ export default function CreateWorkout()
   
     function handleDragEnd(event: DragEndEvent) {
       const { active, over } = event;
-  
       if (over && active.id !== over.id) {
         const days = store.days;
         const oldIndex = days.findIndex((item) => item.id === active.id);
         const newIndex = days.findIndex((item) => item.id === over.id);
-        
         store.setDays(arrayMove(days, oldIndex, newIndex));
       }
     }
     return (
       <div className='h-full w-full relative z-10 mx-auto'>
-        <form action={async (formData: FormData) => {
-          const sent = new FormData()
-          sent.append('workoutName', store.workoutName);
-          sent.append('description', store.description);
-          sent.append('days', JSON.stringify(store.days));
-          sent.append("isPublished", isPublished?.toString() ?? "false")
-          await addWorkout(sent);
-        }}  className=" z-30 h-full bg-transparent sm:p-6 space-y-4" >
+        {isSubmitting && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+        </div>
+      )}
+        <form className=" z-30 h-full bg-transparent sm:p-6 space-y-4" >
           <input type="hidden" name='published' value={isPublished?.toString()} />
           <div className='pt-1 flex justify-between items-center'>
             <Input className='w-1/5' onChange={(e)=> {store.setWorkoutName(e.target.value)}} placeholder="Workout name..." aria-label="Enter workout name" value={store.workoutName} />
@@ -178,7 +196,7 @@ export default function CreateWorkout()
             {store.days.map((day, index) => {
               if(day.type === 'workout' ){
               return(
-              <AddDay id={day.id} key={day.id} details={day}/>
+              <AddDay id={day.id} key={day.id+index} details={day}/>
             ) }
             else {
               return(
@@ -198,8 +216,8 @@ export default function CreateWorkout()
                 Add Rest Day
               </Button>
             </div>
-            {/* <Dialog setPubslished={setIsPublished} /> */}
-            <Button>save</Button>
+            <Dialog setPubslished={setIsPublished} />
+            {/* <Button>save</Button> */}
           </div>
         </form>
       </div>
@@ -218,13 +236,12 @@ const Dialog = ({setPubslished} : {setPubslished : (arg0: boolean)=> void  }) =>
       <AlertDialogHeader>
         <AlertDialogTitle className='text-accent-foreground'>Would you like to share your workout</AlertDialogTitle>
         <AlertDialogDescription className='text-muted-foreground'>
-          This action will make your workouts seen to the public and you can remove it at any time
+          would you like to make this workout public for everyone to see
         </AlertDialogDescription>
       </AlertDialogHeader>
       <AlertDialogFooter>
-      <AlertDialogAction className='bg-primary-foreground hover:bg-primary-foreground/50' onClick={()=>{setPubslished(false)}}  >No</AlertDialogAction>
-      
-      <AlertDialogAction  onClick={()=>{setPubslished(true)}} >Yes</AlertDialogAction>
+      <AlertDialogAction className='hover:opacity-30' onClick={()=>{setPubslished(false)}}  >No</AlertDialogAction>
+      <AlertDialogAction className='hover:opacity-30' onClick={()=>{setPubslished(true)}} >Yes</AlertDialogAction>
       </AlertDialogFooter>
     </AlertDialogContent>
   </AlertDialog>

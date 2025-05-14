@@ -134,7 +134,7 @@ type WorkoutDay = {
         await InsertExercice({name:exercice.name,sets:exercice.sets,reps:exercice.reps},dayID)
       }
     }
-    redirect('/workouts')
+    
   }
 
   export const postWorkouts = async (prev : any , formData : FormData) =>{

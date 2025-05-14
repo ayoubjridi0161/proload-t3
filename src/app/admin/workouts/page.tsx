@@ -9,54 +9,7 @@ import { getWorkoutsForAdmin } from "~/lib/data"
 import WorkoutActions from "~/components/ui/admin/workoutActions"
 
 
-// Sample workout data
-const workouts = [
-  {
-    id: "1",
-    name: "Full Body Blast",
-    category: "Strength",
-    difficulty: "Intermediate",
-    duration: "45 min",
-    exercises: 12,
-    createdAt: "Jan 15, 2023",
-  },
-  {
-    id: "2",
-    name: "HIIT Cardio",
-    category: "Cardio",
-    difficulty: "Advanced",
-    duration: "30 min",
-    exercises: 8,
-    createdAt: "Feb 20, 2023",
-  },
-  {
-    id: "3",
-    name: "Yoga Flow",
-    category: "Flexibility",
-    difficulty: "Beginner",
-    duration: "60 min",
-    exercises: 15,
-    createdAt: "Mar 5, 2023",
-  },
-  {
-    id: "4",
-    name: "Core Crusher",
-    category: "Core",
-    difficulty: "Intermediate",
-    duration: "25 min",
-    exercises: 10,
-    createdAt: "Apr 10, 2023",
-  },
-  {
-    id: "5",
-    name: "Upper Body Focus",
-    category: "Strength",
-    difficulty: "Intermediate",
-    duration: "40 min",
-    exercises: 9,
-    createdAt: "May 15, 2023",
-  },
-]
+
 
 export default async function WorkoutsPage() {
   const workoutList = await getWorkoutsForAdmin();

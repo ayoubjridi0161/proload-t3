@@ -35,6 +35,34 @@ export default function WorkoutCards({}:Props) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const pathname = usePathname()
+  const [isNavigating, setIsNavigating] = useState(false)
+
+  // Add loading bar state
+  const [loadingProgress, setLoadingProgress] = useState(0)
+
+  // Wrap router.push with loading state
+  const goToCreate = useCallback(() => {
+    setIsNavigating(true)
+    setLoadingProgress(0)
+    router.push("/workouts/create")
+  }, [router])
+
+  // Handle loading animation
+  useEffect(() => {
+    if (!isNavigating) return
+
+    const interval = setInterval(() => {
+      setLoadingProgress(prev => (prev + 2) % 100);
+    }, 20);
+
+    return () => clearInterval(interval);
+  }, [isNavigating]);
+
+  // Reset loading state when navigation completes
+  useEffect(() => {
+    setIsNavigating(false)
+    setLoadingProgress(0)
+  }, [])
 
   // Get current search/sort state from URL parameters
   const currentSearchQuery = searchParams?.get("search") ?? ""
@@ -93,10 +121,20 @@ export default function WorkoutCards({}:Props) {
       params.delete("search")
     }
     params.delete("page");
-    router.replace(`${pathname}?${params.toString()}`)
+    router.push(`${pathname}?${params.toString()}`)
+    
+    
   }
   return (
     <div className="space-y-6">
+      {isNavigating && (
+        <div className="fixed top-0 left-0 w-full h-[2px] bg-gray-200 z-50">
+          <div 
+            className="h-full bg-blue-500 w-1/5 absolute transition-all duration-200 ease-linear" 
+            style={{ left: `${loadingProgress}%` }}
+          />
+        </div>
+      )}
       <h1 className="text-3xl font-bold mb-6">Workout Library</h1>
       <p className="text-muted-foreground mb-8">
         Browse workouts shared by the community. Find the perfect routine for your fitness goals.
@@ -163,7 +201,7 @@ export default function WorkoutCards({}:Props) {
           </DropdownMenu>
         </div>
 
-        <Button className="w-full sm:w-auto">
+        <Button onClick={()=>goToCreate()} className="w-full sm:w-auto">
           <Plus className="h-4 w-4 mr-2" />
           Create Workout
         </Button>

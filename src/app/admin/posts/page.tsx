@@ -13,6 +13,7 @@ import {
 import { Badge } from "~/components/ui/badge"
 import { MoreHorizontal, Plus, Search } from "lucide-react"
 
+
 // Sample posts data
 const posts = [
   {
@@ -63,6 +64,7 @@ const posts = [
 ]
 
 export default function PostsPage() {
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">

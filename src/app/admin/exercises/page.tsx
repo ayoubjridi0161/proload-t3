@@ -2,6 +2,7 @@ import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
 import { Input } from "~/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table"
+import Image from "next/image"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +13,7 @@ import {
 } from "~/components/ui/dropdown-menu"
 import { Badge } from "~/components/ui/badge"
 import { MoreHorizontal, Plus, Search } from "lucide-react"
+import { getExerciceNames } from "~/lib/data"
 
 // Sample exercise data
 const exercises = [
@@ -62,7 +64,12 @@ const exercises = [
   },
 ]
 
-export default function ExercisesPage() {
+export default async function ExercisesPage() {
+  const data = await getExerciceNames();
+const filteredData = data.filter(item => 
+  item.images.length > 0 && 
+  item.images[0]?.startsWith('https://s3.eu-north-1')
+);
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
@@ -93,27 +100,26 @@ export default function ExercisesPage() {
           <Table>
             <TableHeader>
               <TableRow>
+              <TableHead>Image</TableHead>
                 <TableHead>Name</TableHead>
-                <TableHead>Category</TableHead>
                 <TableHead>Equipment</TableHead>
-                <TableHead>Difficulty</TableHead>
                 <TableHead>Muscle Group</TableHead>
-                <TableHead>Created</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {exercises.map((exercise) => (
-                <TableRow key={exercise.id}>
+              {filteredData.map((exercise) => (
+                <TableRow key={exercise.name}>
+                  <TableCell>{exercise.images[0] ? <Image src={exercise.images[0]} className="aspect-square" alt="image" width={60} height={10}/> : null}</TableCell>
                   <TableCell className="font-medium">{exercise.name}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{exercise.category}</Badge>
-                  </TableCell>
+                  {/* <TableCell>
+                    <Badge variant="outline">{exercise.}</Badge>
+                  </TableCell> */}
                   <TableCell>{exercise.equipment}</TableCell>
-                  <TableCell>
+                  {/* <TableCell>
                     <Badge
                       variant={
-                        exercise.difficulty === "Beginner"
+                        exercise.rating === "Beginner"
                           ? "outline"
                           : exercise.difficulty === "Intermediate"
                             ? "default"
@@ -121,10 +127,10 @@ export default function ExercisesPage() {
                       }
                     >
                       {exercise.difficulty}
-                    </Badge>
-                  </TableCell>
+                    </Badge> 
+                  </TableCell>*/}
                   <TableCell>{exercise.muscleGroup}</TableCell>
-                  <TableCell>{exercise.createdAt}</TableCell>
+                  
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>

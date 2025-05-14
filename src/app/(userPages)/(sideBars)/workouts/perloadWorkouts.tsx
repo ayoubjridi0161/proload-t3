@@ -1,6 +1,7 @@
 import React from 'react'
 import { WorkoutCard } from '~/components/ui/neoworkout/workout-card';
 import WorkoutGrid from '~/components/ui/neoworkout/workoutGrid';
+import { getUserProfile } from '~/lib/actions/userActions';
 import { getWorkoutList } from '~/lib/actions/workout';
 
 type Props = {
@@ -20,6 +21,6 @@ export default async function PerloadWorkouts({page,sortFiled,order,search}: Pro
     if(!workoutSummaryList) return null
     const workouts = await Promise.all(workoutSummaryList) 
   return (
-    <WorkoutGrid workouts = {workouts} />
+    <WorkoutGrid  workouts = {workouts} />
   )
 }

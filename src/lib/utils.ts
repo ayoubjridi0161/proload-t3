@@ -64,5 +64,12 @@ export function timeAgo(timestamp: Date): string {
         requiredRepRange?: [number, number];
         requiredSetRange?: [number, number];
     }
+
+export function stringToAscii(input: string): number {
+  return parseInt(input
+    .split('')
+    .map(char => char.charCodeAt(0))
+    .join(' '))
+}
     
   

@@ -3,11 +3,22 @@ import { auth } from "auth"
 import { revalidatePath } from "next/cache"
 import { getProfileByID, updateUserProfile, editUserBio, editUserDetails, getFullUser, getFollows, getSideConnects, getUsersByName, getFriendList } from "../data"
 import { uploadToS3 } from "./s3Actions"
+import {type OnboardingData } from "~/lib/types"
+
 
   // export const getUserProfile = async (id:string)=>{
   //   const user = await getProfileByID(id)
   //   return user
   // }
+  const getAuthenticatedUser = async () => {
+    const session = await auth();
+    if (!session?.user?.id || !session?.user?.name) return null;
+    return {
+      id: session.user.id,
+      name: session.user.name,
+      email: session.user.email
+    };
+  };
 
   export const addBio = async (content:string) =>{
     const session = await auth();
@@ -34,11 +45,10 @@ import { uploadToS3 } from "./s3Actions"
     fitnessGoal: string,
   })=>
   {
-    const session = await auth();
-    const userID = session?.user?.id;
-    if (!userID) return false;
+    const session = await getAuthenticatedUser();
+    if (!session) return false;
     try{
-    const res = await editUserDetails(userID,data)
+    const res = await editUserDetails(session.id,data)
     revalidatePath("/dashboard/recommendations")
   }catch(err) {console.error(err)}
   }
@@ -142,4 +152,8 @@ import { uploadToS3 } from "./s3Actions"
     if(!userID) return null
     const res = await getFriendList(userID)
     return res
+  }
+
+  export const finishProfileAction = async (data:OnboardingData)=>{
+    console.log(data)
   }

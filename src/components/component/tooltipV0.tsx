@@ -1,34 +1,102 @@
+"use client"
 import { Button } from "~/components/ui/button"
 import { TooltipTrigger, TooltipContent, Tooltip, TooltipProvider } from "~/components/ui/tooltip"
+import { ArrowBigDownDash, ArrowBigUpDash, CopyIcon, MessageSquare } from 'lucide-react'
 import Link from "next/link"
-import { type JSX, type SVGProps } from "react"
-import {Clone, Downvote, Upvote} from "./Reactions"
+import { useState, type JSX, type SVGProps } from "react"
+import { Clone, Downvote, Upvote } from "./Reactions"
 import { getUserReactions } from "~/lib/data"
+import { Toggle } from "../ui/toggle"
+import { addUserReaction } from "~/lib/actions/userInteractions"
+import { toast } from "sonner"
 type Props = {
-  userId:string | undefined,
-  workoutId:number,
-  Reactions : {upvotes:number,downvotes:number,clones:number}
-  isOwner : boolean,
+  userId: string | undefined,
+  workoutId: number,
+  Reactions: { upvotes: number, downvotes: number, clones: number }
+  userReactions: { upvote: boolean, downvote: boolean } | undefined,
+  isOwner: boolean,
 }
 
-async function TooltipBox(props:Props) {
-  if(!props.userId) return <div>no user</div>
-  const UserReactions = await getUserReactions(props.workoutId,props.userId) 
-  if(!props.Reactions) return <div>failed to fetch reactions</div>
+
+function TooltipBox(props: Props) {
+  const [userReactions, setUserReactions] = useState(props.userReactions)
+  console.log("userReactions", userReactions)
+  const pressButton = async (type: "upvote" | "downvote") => {
+    const oldReactions = userReactions
+    if(type == "upvote"){
+      setUserReactions(prev => prev ? { downvote:prev.upvote ? prev.downvote : false ,upvote:!prev.upvote } : { upvote: true, downvote: false })
+      const res = await addUserReaction(props.workoutId, { type: "upvote", payload: userReactions  })
+      if(res !== "success"){
+        setUserReactions(oldReactions ? {...oldReactions} : undefined)
+        toast.error(res)
+      }
+    } else {
+      setUserReactions(prev => prev ? { downvote: !prev.downvote , upvote: prev.downvote ? prev.upvote : false  } : { upvote: false, downvote: true })
+      
+      if(res !== "success"){
+        setUserReactions(oldReactions ? {...oldReactions} : undefined)
+        toast.error(res)
+      }
+    }
+  }
+  useEffect(()=>{
+    
+  },[userReactions])
   return (
     <div className="flex justify-around items-start gap-x-2 ">
       <TooltipProvider>
         <div>
-        <Clone workoutId={props.workoutId} />        
-        <div className="text-center text-sm text-gray-500 dark:text-gray-400">{props.Reactions.clones }</div>
+          {/* <Clone workoutId={props.workoutId} /> */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button className="text-black" size="icon" variant="ghost" 
+              onClick={() => {
+                void (async () => {
+                  const result = await addUserReaction(props.workoutId, { type: "clone", payload: undefined })
+                  console.log("result", result)
+                  return (toast(result === "success" ? "workout is cloned" : "failed to clone workout"))
+                })
+              }}
+              >
+                <CopyIcon className="h-5 w-5" />
+                <span className="sr-only">Clone</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Clone</TooltipContent>
+          </Tooltip>
+          <div className="text-center text-sm text-gray-500 dark:text-gray-400">{props.Reactions.clones}</div>
         </div>
         <div>
-        <Upvote EUR= {!!UserReactions} pressed = { UserReactions?.upvote ?? false } workoutId = {props.workoutId}  />
-        <div className="text-center text-sm text-gray-500 dark:text-gray-400">{props.Reactions.upvotes}</div>
+          {/* <Upvote EUR={!!UserReactions} pressed={UserReactions?.upvote ?? false} workoutId={props.workoutId} /> */}
+          <Tooltip  >
+            <TooltipTrigger asChild onClick={() => { void pressButton("upvote") }}>
+              <Toggle className={userReactions?.upvote ? " text-green-500" : ""}>
+                <ArrowBigUpDash className="h-5 w-5 " />
+                <span className="sr-only">Upvote</span>
+              </Toggle>
+            </TooltipTrigger>
+
+            <TooltipContent>Upvote </TooltipContent>
+
+          </Tooltip>
+          <div className="text-center text-sm text-gray-500 dark:text-gray-400">{props.Reactions.upvotes}</div>
         </div>
         <div>
-        <Downvote EUR= {!!UserReactions} pressed = { UserReactions?.downvote ?? false } workoutId = {props.workoutId}  />
-        <div className="text-center text-sm text-gray-500 dark:text-gray-400">{props.Reactions.downvotes}</div>
+          {/* <Downvote EUR={!!UserReactions} pressed={UserReactions?.downvote ?? false} workoutId={props.workoutId} /> */}
+          <Tooltip  >
+            <TooltipTrigger asChild onClick={() =>
+              void (pressButton("downvote"))
+            }>
+              <Toggle className={userReactions?.downvote ? "text-red-500" : ""}>
+                <ArrowBigDownDash className="h-5 w-5 " />
+                <span className="sr-only">Downvote</span>
+              </Toggle>
+            </TooltipTrigger>
+
+            <TooltipContent>Downvote </TooltipContent>
+
+          </Tooltip>
+          <div className="text-center text-sm text-gray-500 dark:text-gray-400">{props.Reactions.downvotes}</div>
         </div>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -39,41 +107,11 @@ async function TooltipBox(props:Props) {
           </TooltipTrigger>
           <TooltipContent>Share</TooltipContent>
         </Tooltip>
-        {/* <Popover>
-          <PopoverTrigger asChild>
-            <Button className="text-black" size="icon" variant="ghost">
-              <MoveHorizontalIcon className="h-5 w-5" />
-              <span className="sr-only">More</span>
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-80 p-4 grid gap-4">
-            <div className="space-y-2">
-              <h4 className="font-medium">Share this workout</h4>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Share this workout on your favorite social media platforms.
-              </p>
-              <div className="flex items-center gap-2">
-                <Button className="w-10 h-10" size="icon" variant="outline">
-                  <FacebookIcon className="h-5 w-5" />
-                </Button>
-                <Button className="w-10 h-10" size="icon" variant="outline">
-                  <TwitterIcon className="h-5 w-5" />
-                </Button>
-                <Button className="w-10 h-10" size="icon" variant="outline">
-                  <InstagramIcon className="h-5 w-5" />
-                </Button>
-                <Button className="w-10 h-10" size="icon" variant="outline">
-                  <LinkedinIcon className="h-5 w-5" />
-                </Button>
-              </div>
-            </div>
-          </PopoverContent>
-        </Popover> */}
         <Tooltip>
           <TooltipTrigger asChild>
             <Link href={`/workouts/${props.workoutId}/edit`} >
               <Button className="text-black font-bold bg-red-900" variant={"link"}>
-              {props.isOwner ? "Edit" : "Request edit"}
+                {props.isOwner ? "Edit" : "Request edit"}
               </Button>
             </Link>
           </TooltipTrigger>
@@ -83,153 +121,6 @@ async function TooltipBox(props:Props) {
   )
 }
 
-function ArrowDownIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M12 5v14" />
-      <path d="m19 12-7 7-7-7" />
-    </svg>
-  )
-}
-
-
-function ArrowUpIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="m5 12 7-7 7 7" />
-      <path d="M12 19V5" />
-    </svg>
-  )
-}
-
-
-function CopyIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
-      <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
-    </svg>
-  )
-}
-
-
-function FacebookIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-    </svg>
-  )
-}
-
-
-function InstagramIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
-      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
-    </svg>
-  )
-}
-
-
-function LinkedinIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-      <rect width="4" height="12" x="2" y="9" />
-      <circle cx="4" cy="4" r="2" />
-    </svg>
-  )
-}
-
-
-function MoveHorizontalIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="18 8 22 12 18 16" />
-      <polyline points="6 8 2 12 6 16" />
-      <line x1="2" x2="22" y1="12" y2="12" />
-    </svg>
-  )
-}
 
 
 function ShareIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {

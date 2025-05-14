@@ -5,7 +5,14 @@ import Resend from "next-auth/providers/resend"
 
 
 export default {
-    providers: [Github,Google,Resend({
+    providers: [
+      Github,
+      Google({
+      clientId: process.env.AUTH_GOOGLE_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET,
+      
+      }),
+      Resend({
       from:"proof@proload.me"
     }),],
 } satisfies NextAuthConfig;

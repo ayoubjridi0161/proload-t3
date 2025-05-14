@@ -6,17 +6,20 @@ import Workout from "~/components/ui/workoutShowCase/Workout";
 import WorkoutSkeleton from "~/components/ui/workoutShowCase/skeleton/workoutSkeleton";
 import UserDeatails from "~/components/ui/workoutShowCase/UserDetails";
 import { auth } from "auth";
-import { fetchWorkoutById, getUserWorkoutsShortVersion } from "~/lib/data";
+import { fetchWorkoutById, getUserReactions, getUserWorkoutsShortVersion } from "~/lib/data";
 import RightSidebar from "~/components/ui/sidebars/rightAside";
 import Container from "~/components/ui/userDashboard/Container";
 import { WorkoutCard } from "~/components/ui/neoworkout/workout-side-card";
 
 
 const page = async ({params} : {params:{id:string}}) => {
-  const session =await auth()
+    const session =await auth()
     const user = session?.user
     const workout = await fetchWorkoutById(parseInt(params.id))
+    if(!workout ) return (<div>no workout found!</div>)
+    if(!user?.id) return (<div>no user found!</div>)
     const userWorkouts = await getUserWorkoutsShortVersion(workout?.userId ?? "")
+    const UserReactions = await getUserReactions(workout?.id,user?.id)
     const isOwner = user?.id === workout?.userId
     if(!workout) throw new Error ("failed to fetch workout")
     const Reactions = {upvotes : workout.upvotes ,downvotes:workout.downvotes , clones:workout.clones }
@@ -33,7 +36,7 @@ const page = async ({params} : {params:{id:string}}) => {
       <div className="grid grid-cols-4 gap-5">
         <div className="col-span-3 space-y-3">
         <Container className="bg-xtraContainer dark:bg-xtraDarkPrimary space-y-3">
-      <TooltipBox isOwner={isOwner} userId = {user?.id } Reactions = {Reactions} workoutId = {parseInt(params.id)} />
+      <TooltipBox userReactions={UserReactions} isOwner={isOwner} userId = {user?.id } Reactions = {Reactions} workoutId = {parseInt(params.id)} />
       {/* </Suspense> */}
       </Container>
       <Container className="dark:bg-xtraDarkPrimary" >
