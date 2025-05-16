@@ -1,14 +1,6 @@
 
-import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
-import { Card, CardHeader, CardContent, CardFooter } from "~/components/ui/card"
-import { Button } from "~/components/ui/button"
-import Link from "next/link"
 import { type JSX, type SVGProps } from "react"
-import { auth } from "auth"
-import { getPosts, getWorkoutsByUser } from "~/lib/data"
-import PostCard from "../Posts/PostCard"
 import { getUserProfile } from "~/lib/actions/userActions"
-
 export default async function Component({id}:{id:string}) {   
     const userDetails = await getUserProfile([])
     console.log(userDetails)
