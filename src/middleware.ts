@@ -11,7 +11,6 @@ export default async function middleware(request: NextRequest){
 
 
     const {pathname} = request.nextUrl
-    console.log("invoked")
     const isProtected = protectedRoutes.some(route => 
         pathname === route || pathname.startsWith(`${route}/`)  // More precise matching
       );

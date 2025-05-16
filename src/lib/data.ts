@@ -5,6 +5,7 @@ import { DrizzleEntityClass, DrizzleError, and, arrayContains, asc, count, desc,
 import { unstable_noStore as noStore , unstable_cache as cached } from 'next/cache'
 import { removeRedundancy } from './utils'
 import { PgSelect } from 'drizzle-orm/pg-core'
+import {type ExtraDetails} from "~/lib/types"
 /*Read Data*/
 
 export const fetchAllWorkouts = async(filters:{query?:string,currentPage?:number,sortFiled?:"name"|"days"|"upvotes"|"time",order?:"asc"|"desc"})=>{
@@ -358,46 +359,66 @@ export const updateExercice = async (data:{name:string,sets:number,reps:number},
         throw err
     }
 }
-export const updateReactions =async (userId:string,workoutId:number,action:{type:"upvote"|"downvote"|"clone",payload:boolean})=>{
-    
+export const updateReactions =async (
+    userId:string,
+    workoutId:number,
+    action:{
+    type:"upvote"|"downvote"|"clone",
+    payload:{
+    upvote: boolean;
+    downvote: boolean;
+    } | undefined}
+)=>{
     try{
-        switch (action.type){
-            case "upvote" : 
-            await db.transaction(async (tx) => {
+    if(action.type === "clone"){
+        const res = await cloneWorkout(workoutId,userId)
+        if(res && res == "failed"){
+            return "failed"
+        }else {return "success"}
+    }else{
+        await db.transaction(async (tx) => {
+            const existingReactions = await tx
+              .query
+              .Reactions
+              .findFirst({
+                 where: and(eq(Reactions.userId, userId), eq(Reactions.workoutId, workoutId)),
+                })
+                
+            if(existingReactions){
                 await tx
-                    .update(Reactions)
-                    .set({
-                        upvote: action.payload,
-                        downvote: action.payload ? false : sql`${Reactions.downvote}`
+                  .update(Reactions)
+                  .set({
+                        upvote:action.payload?.upvote,
+                        downvote:action.payload?.downvote
                     })
-                    .where(and(eq(Reactions.userId, userId), eq(Reactions.workoutId, workoutId)));
+                  .where(and(eq(Reactions.userId, userId), eq(Reactions.workoutId, workoutId)));
+            }else{
                 await tx
-                   .update(workouts)
-                   .set({ upvotes: sql`upvotes + ${action.payload ? 1 : -1}` })
-                   .where(eq(workouts.id, workoutId));
-            });
-            break
+                    .insert(Reactions)
+                    .values({
+                        userId: userId,
+                        workoutId: workoutId,
+                        upvote: action.payload?.upvote ?? false,
+                        downvote: action.payload?.downvote ?? false,
+                    });
+            }
+            await tx.update(workouts).set({ 
+                upvotes: sql`upvotes + ${action.type === "upvote" ? 1 : 0 }` ,
+                }).where(eq(workouts.id, workoutId));
+        }
+    )
 
-            case "downvote":
-                await db.transaction(async (tx) => {
-                    await tx
-                        .update(Reactions)
-                        .set({
-                            downvote: action.payload,
-                            upvote: action.payload ? false : sql`${Reactions.downvote}`
-                        })
-                        .where(and(eq(Reactions.userId, userId), eq(Reactions.workoutId, workoutId)));
-                    await tx
-                       .update(workouts)
-                       .set({ downvotes: sql`downvotes + ${action.payload ? 1 : -1}` })
-                       .where(eq(workouts.id, workoutId));
-                });
-              break
-              case "clone":
-                //handle clone later
-                const clonedWorkout = await fetchWorkoutById(workoutId)
+    }
+    return "success"
+    }catch(err) {
+        return "failure"
+    }
+}
+
+export const cloneWorkout = async (workoutID:number,userID:string)=>{
+    const clonedWorkout = await fetchWorkoutById(workoutID)
                 if(clonedWorkout){
-                   const workoutIdResponse= await InsertWorkout({description:clonedWorkout.description,name:clonedWorkout.name,numberOfDays:clonedWorkout.numberOfDays ?? 0,published:false,userId:userId})
+                   const workoutIdResponse= await InsertWorkout({description:clonedWorkout.description,name:clonedWorkout.name,numberOfDays:clonedWorkout.numberOfDays ?? 0,published:false,userId:userID})
                     if(workoutIdResponse && typeof workoutIdResponse === "number"){
                         for(const day of clonedWorkout.days){
                             const dayId = await InsertDay({index:day.dayIndex,name:day.name},workoutIdResponse)
@@ -409,14 +430,8 @@ export const updateReactions =async (userId:string,workoutId:number,action:{type
                             }else return "failed"
                         }
                     }else return "failed"
-                    await db.update(workouts).set({clones:sql`clones + 1 `}).where(eq(workouts.id,workoutId))
+                    await db.update(workouts).set({clones:sql`clones + 1 `}).where(eq(workouts.id,workoutID))
                 }else return "failed"
-                break
-              default:
-                throw new Error ("Invalid action type")
-        }
-        return "success"
-    }catch(err) {return "failure"}
 }
 export const addNewReaction = async (userID:string,workoutID:number,action:"upvote"|"downvote") =>{
     try{
@@ -576,15 +591,15 @@ export const getProfileByID = async (id:string)=>{
     return res
 }
 
-export const updateUserProfile = async (data:{username:string,profilePic:string},id:string)=>{
+export const updateUserProfile = async (data:{name:string,profilePic?:string,bio?:string,details?:ExtraDetails,cover?:string},userId:string)=>{
+    let updatedFields :{name:string,image?:string,bio?:string,details?:ExtraDetails,cover?:string} = {name:data.name}
+    if(data.profilePic) updatedFields = {...updatedFields,image:data.profilePic}
+    if(data.bio) updatedFields = {...updatedFields,bio:data.bio}
+    if(data.details) updatedFields = {...updatedFields,details:data.details} 
+    if(data.cover) updatedFields = {...updatedFields,cover:data.cover}
     try{
-        const updateData: { name: string; image?: string } = { name: data.username };
-        if (data.profilePic) {
-            updateData.image = data.profilePic;
-        }
-        console.log(updateData)
-        const res = await db.update(users).set(updateData).where(eq(users.id,id)).returning()
-        return {message : res }
+        const res = await db.update(users).set({...updatedFields,onboarded:true}).where(eq(users.id,userId)).returning()
+        return res ? "success" : "failure"
     }catch(err){
         throw err
     }
@@ -1012,4 +1027,10 @@ export async function getAllUsersForAdmin ( ){
     ,
     orderBy:(users,{desc})=>[desc(users.name)]})
     return res
+}
+
+export async function makeCurrentWorkout(userId:string,workoutId:number){
+    try{const res = await db.update(users).set({currentWorkout:workoutId}).where(eq(users.id,userId)).returning({id:users.id})
+        return res[0]?.id ? "success" : "failed"
+}catch(err){console.error(err);return "failed"}
 }

@@ -49,6 +49,7 @@ export type publicUser = {
     details: ProfileDetails | null;
     connects: string[] | null;
     numberOfConnects: number;
+    cover:string | null;
 }
 
 export type ProfileDetails = {
@@ -113,3 +114,14 @@ export type OnboardingData = {
     coverPhoto: string | null;
     step: number;
   }
+
+export type ExtraDetails = {
+    gender: string;
+    age: string
+    height: string
+    weight: string
+    fitnessGoal: string
+    experience: string
+    bmi: string
+    fitnessLevel: string
+}

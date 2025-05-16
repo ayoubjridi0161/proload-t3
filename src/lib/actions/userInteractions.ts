@@ -12,18 +12,18 @@ import { sendNotification } from "./notifications";
     console.log(action)
     const id = session?.user?.id;
     if(!id) {throw new Error ("no user authenticated")}
-    // if(action.type==="clone"){
-    //   const res = await getNumberOfWorkoutsPerUser(id)
-    //   if(res.NumberOfWorkouts !== undefined && res.NumberOfWorkouts<330){
-    //     const res = await updateReactions(id,workoutID,action)
-    //     revalidatePath(`workouts/${workoutID}`)
-    //     return res
-    //   }else return("workout limit exeeded")
-    // }
-    // if(!action.payload) {const res = await addNewReaction(id,workoutID,action.type);
-    //   if(res.message !== "success" ) throw new Error(res.message)
-    // }
-    // const res = await updateReactions(id,workoutID,action)
+    if(action.type==="clone"){
+      const res = await getNumberOfWorkoutsPerUser(id)
+      if(res.NumberOfWorkouts !== undefined && res.NumberOfWorkouts<330){
+        const res = await updateReactions(id,workoutID,action)
+        revalidatePath(`workouts/${workoutID}`)
+        return res
+      }else return("workout limit exeeded")
+    }
+    if(!action.payload) {const res = await addNewReaction(id,workoutID,action.type);
+      if(res.message !== "success" ) throw new Error(res.message)
+    }
+    const res = await updateReactions(id,workoutID,action)
     return "success"
   }
   

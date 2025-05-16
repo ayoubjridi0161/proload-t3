@@ -10,9 +10,10 @@ type Props = {
     numberOfConnects:number
     userID:string
     isfollowed:boolean
+    userCover:string|null
 }
 
-export default function ProfileHeader({userImage,userName,numberOfConnects,userID,isfollowed}: Props) {
+export default function ProfileHeader({userImage,userName,numberOfConnects,userID,isfollowed,userCover}: Props) {
     const [followed,setFollowed ] = useState(isfollowed)
     const [isLoading,setIsLoading] = useState(false)
     async function handleFollow(): Promise<void>{
@@ -30,7 +31,8 @@ export default function ProfileHeader({userImage,userName,numberOfConnects,userI
   return (
     <header className='relative h-auto min-h-[200px] md:min-h-[300px] mb-6'>
         {/* Background cover photo */}
-        <div className='absolute inset-0 h-3/4 bg-slate-200 bg-s3gym bg-bottom bg-cover'></div>
+        <div className='absolute inset-0 h-3/4 bg-slate-200 bg-center bg-cover'
+        style={{backgroundImage:`url(${userCover ?? "//s3.eu-north-1.amazonaws.com/proload.me/widegym.png"})`}}></div>
         
         {/* Profile info - positioned for overlap */}
         <div className='relative pt-[15%] md:pt-[12%] px-4 pb-4 flex flex-col sm:flex-row items-end justify-between sm:items-end gap-4 z-10'>

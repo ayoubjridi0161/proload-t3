@@ -8,6 +8,7 @@ import { DialogHeader, DialogFooter, Dialog, DialogContent, DialogTitle, DialogD
 import { Button } from '../button';
 import { shareWorkoutAction } from '~/lib/actions/socialActions';
 import { toast } from 'sonner';
+import { useSession } from 'next-auth/react';
 
 type Props = {
     workouts: {
@@ -28,6 +29,9 @@ type Props = {
 }
 
 export default function WorkoutGrid({workouts}: Props) {
+    const {data,status} = useSession()
+    console.log(data);
+    
     const [open, setOpen] = React.useState(false)
     const [postText, setPostText] = React.useState("")
     const [workoutInfo, setWorkoutInfo] = React.useState<{workoutId:number,userId:string}>()

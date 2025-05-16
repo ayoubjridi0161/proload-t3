@@ -1,11 +1,9 @@
 "use client"
 import { Button } from "~/components/ui/button"
 import { TooltipTrigger, TooltipContent, Tooltip, TooltipProvider } from "~/components/ui/tooltip"
-import { ArrowBigDownDash, ArrowBigUpDash, CopyIcon, MessageSquare } from 'lucide-react'
+import { ArrowBigDownDash, ArrowBigUpDash, CopyIcon, Edit } from 'lucide-react'
 import Link from "next/link"
 import { useState, type JSX, type SVGProps } from "react"
-import { Clone, Downvote, Upvote } from "./Reactions"
-import { getUserReactions } from "~/lib/data"
 import { Toggle } from "../ui/toggle"
 import { addUserReaction } from "~/lib/actions/userInteractions"
 import { toast } from "sonner"
@@ -16,56 +14,43 @@ type Props = {
   userReactions: { upvote: boolean, downvote: boolean } | undefined,
   isOwner: boolean,
 }
-
-
 function TooltipBox(props: Props) {
   const [userReactions, setUserReactions] = useState(props.userReactions)
-  console.log("userReactions", userReactions)
   const pressButton = async (type: "upvote" | "downvote") => {
     const oldReactions = userReactions
     if(type == "upvote"){
       setUserReactions(prev => prev ? { downvote:prev.upvote ? prev.downvote : false ,upvote:!prev.upvote } : { upvote: true, downvote: false })
-      const res = await addUserReaction(props.workoutId, { type: "upvote", payload: userReactions  })
+      const res = await addUserReaction(
+        props.workoutId, 
+        { 
+          type: "upvote",
+          payload: oldReactions ? { downvote:oldReactions.upvote ? oldReactions.downvote : false ,upvote:!oldReactions.upvote } : { upvote: true, downvote: false }
+        }
+      )
       if(res !== "success"){
         setUserReactions(oldReactions ? {...oldReactions} : undefined)
         toast.error(res)
       }
     } else {
+      const oldReactions = userReactions
       setUserReactions(prev => prev ? { downvote: !prev.downvote , upvote: prev.downvote ? prev.upvote : false  } : { upvote: false, downvote: true })
-      
+      const res = await addUserReaction(
+        props.workoutId, 
+        { 
+          type: "upvote",
+          payload: oldReactions ? { downvote: !oldReactions.downvote , upvote: oldReactions.downvote ? oldReactions.upvote : false  } : { upvote: false, downvote: true }
+        }
+      )
       if(res !== "success"){
         setUserReactions(oldReactions ? {...oldReactions} : undefined)
         toast.error(res)
       }
     }
   }
-  useEffect(()=>{
-    
-  },[userReactions])
   return (
     <div className="flex justify-around items-start gap-x-2 ">
       <TooltipProvider>
-        <div>
-          {/* <Clone workoutId={props.workoutId} /> */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button className="text-black" size="icon" variant="ghost" 
-              onClick={() => {
-                void (async () => {
-                  const result = await addUserReaction(props.workoutId, { type: "clone", payload: undefined })
-                  console.log("result", result)
-                  return (toast(result === "success" ? "workout is cloned" : "failed to clone workout"))
-                })
-              }}
-              >
-                <CopyIcon className="h-5 w-5" />
-                <span className="sr-only">Clone</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Clone</TooltipContent>
-          </Tooltip>
-          <div className="text-center text-sm text-gray-500 dark:text-gray-400">{props.Reactions.clones}</div>
-        </div>
+
         <div>
           {/* <Upvote EUR={!!UserReactions} pressed={UserReactions?.upvote ?? false} workoutId={props.workoutId} /> */}
           <Tooltip  >
@@ -87,8 +72,8 @@ function TooltipBox(props: Props) {
             <TooltipTrigger asChild onClick={() =>
               void (pressButton("downvote"))
             }>
-              <Toggle className={userReactions?.downvote ? "text-red-500" : ""}>
-                <ArrowBigDownDash className="h-5 w-5 " />
+              <Toggle className={userReactions?.downvote ? "text-red-700" : ""}>
+                <ArrowBigDownDash className="h-5 w-5  hover:scale-110 ease-in" />
                 <span className="sr-only">Downvote</span>
               </Toggle>
             </TooltipTrigger>
@@ -97,6 +82,26 @@ function TooltipBox(props: Props) {
 
           </Tooltip>
           <div className="text-center text-sm text-gray-500 dark:text-gray-400">{props.Reactions.downvotes}</div>
+        </div>
+        <div>
+          {/* <Clone workoutId={props.workoutId} /> */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button className="text-black" size="icon" variant="ghost" 
+              onClick={() => {
+                void (async () => {
+                  const result = await addUserReaction(props.workoutId, { type: "clone", payload: undefined })
+                  return (toast(result === "success" ? "workout is cloned" : "failed to clone workout"))
+                })
+              }}
+              >
+                <CopyIcon className="h-5 w-5" />
+                <span className="sr-only">Clone</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Clone</TooltipContent>
+          </Tooltip>
+          <div className="text-center text-sm text-gray-500 dark:text-gray-400">{props.Reactions.clones}</div>
         </div>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -110,11 +115,12 @@ function TooltipBox(props: Props) {
         <Tooltip>
           <TooltipTrigger asChild>
             <Link href={`/workouts/${props.workoutId}/edit`} >
-              <Button className="text-black font-bold bg-red-900" variant={"link"}>
-                {props.isOwner ? "Edit" : "Request edit"}
+              <Button className="font-bold" variant={"link"}>
+                <Edit/> 
               </Button>
             </Link>
           </TooltipTrigger>
+          <TooltipContent>{props.isOwner ? "Edit" : "Request edit"}</TooltipContent>
         </Tooltip>
       </TooltipProvider>
     </div>

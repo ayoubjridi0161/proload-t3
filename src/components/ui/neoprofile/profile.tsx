@@ -18,11 +18,12 @@ async function Profile({user,isPublic}: {user: publicUser,isPublic:boolean}) {
   return (
     <div className='w-2/3'>
       {typeof isfollowed == 'boolean' ? 
-      <ProfileHeader isfollowed={isfollowed ?? false} numberOfConnects={user.numberOfConnects} userID={user.id} userImage={user.image ?? ""} userName={user.name}/>
+      <ProfileHeader userCover={user.cover} isfollowed={isfollowed ?? false} numberOfConnects={user.numberOfConnects} userID={user.id} userImage={user.image ?? ""} userName={user.name}/>
       :
       <header className='relative h-auto min-h-[200px] md:min-h-[300px] mb-6'>
         {/* Background cover photo */}
-        <div className='absolute inset-0 h-3/4 bg-slate-200 bg-s3gym bg-bottom bg-cover'></div>
+        <div className='absolute inset-0 h-3/4 bg-slate-200 bg-center bg-cover'
+        style={{backgroundImage:`url(${user.cover ?? "//s3.eu-north-1.amazonaws.com/proload.me/widegym.png"})`}}></div>
         
         {/* Profile info - positioned for overlap */}
         <div className='relative pt-[15%] md:pt-[12%] px-4 pb-4 flex flex-col sm:flex-row items-start sm:items-end gap-4 z-10'>

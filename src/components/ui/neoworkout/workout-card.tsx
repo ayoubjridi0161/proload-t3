@@ -4,13 +4,12 @@ import { Clock, Dumbbell, Heart, MapPin, Share2 } from "lucide-react"
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "~/components/ui/card"
-
-// No need to import ChartContainer
-import { type WorkoutDetail } from "~/lib/types"
 import Link from "next/link"
 import React from "react"
 import { cn, mapToMainMuscleGroup } from "~/lib/utils"
-
+import { TooltipContent, TooltipProvider, TooltipTrigger, Tooltip } from "../tooltip"
+import { toast } from "sonner"
+import {cloneAndUseWorkoutAction, makeCurrentWorkoutAction } from "~/lib/actions/workout"
 interface WorkoutCardProps {
   workout: {
     exercices: {
@@ -31,12 +30,28 @@ interface WorkoutCardProps {
   handleOpenDialog?: React.Dispatch<React.SetStateAction<boolean>>; // Add the new prop type
 }
 export function WorkoutCard({ workout, handleShareEvent, handleOpenDialog }: WorkoutCardProps) {
+  const [loading,isLoading] = React.useState(false)
 
   const { name, dayNames, description, exercices, id, numberOfDays, upvotes, username } = workout
   const muscleGroups = exercices?.map(ex => ({
     name: ex.mg as string,
     value: ex.exerciseCount
   }))
+  const handleUseWorkout = async ()=>{
+    try{
+      isLoading(true)
+    const res= await cloneAndUseWorkoutAction(workout.id)
+    if(res == "success"){
+      toast.success("workout is now in your library")
+    }else{
+      toast.error("something went wrong")
+    }
+  }catch(err){
+    console.log(err)
+  }finally{
+    isLoading(false)
+  }
+  }
 
   // const  shareBehaviour = async ()=>{ await  handleShareEvent(workout.id,workout.userId ?? "")}
 
@@ -82,17 +97,40 @@ export function WorkoutCard({ workout, handleShareEvent, handleOpenDialog }: Wor
               <span>{upvotes}</span>
             </Button>
             <div className="flex gap-2">
-              <Button variant="ghost" size="sm">
-                <Dumbbell className="h-4 w-4" />
-                <span className="sr-only">Try workout</span>
-              </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                  disabled={loading}
+                    onClick = {()=> {void handleUseWorkout()}}
+                    variant="ghost" 
+                    size="sm"
+                    className={cn("", {
+                      "opacity-50 cursor-not-allowed": loading
+                    })}
+                  >
+                    <Dumbbell className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  use Workout
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
               <Button variant="ghost" size="sm" onClick={() => {
                 handleShareEvent({ userId: workout.userId ?? "", workoutId: id });
                 handleOpenDialog(true);
               }}>
                 <Share2 className="h-4 w-4" />
-                <span className="sr-only">Share</span>
               </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+              Share
+              </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+              
             </div>
           </div>
         </CardFooter>}

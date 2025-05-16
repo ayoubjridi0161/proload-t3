@@ -20,12 +20,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         signIn:"/login",
     },
     callbacks: {
-      // session({ session, user }) {
-      //   session.user.id = user.id
-      //   console.log(session)
-      //   session.user.onboarded = user.onboarded as boolean
-      //   return session
-      // },
+      session({ session, user  }) {
+        const newSession = {
+          userId: user.id,
+          user: user
+        };
+        return newSession as typeof session
+      },
       // signIn({ profile }) {
       //   console.log(profile)
       //   return true

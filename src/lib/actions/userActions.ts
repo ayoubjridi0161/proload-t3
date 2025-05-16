@@ -12,7 +12,7 @@ import {type OnboardingData } from "~/lib/types"
   // }
   const getAuthenticatedUser = async () => {
     const session = await auth();
-    if (!session?.user?.id || !session?.user?.name) return null;
+    if (!session?.user?.id || !session?.user?.name) return {id:null,email:null,name:null};
     return {
       id: session.user.id,
       name: session.user.name,
@@ -46,7 +46,7 @@ import {type OnboardingData } from "~/lib/types"
   })=>
   {
     const session = await getAuthenticatedUser();
-    if (!session) return false;
+    if (!session.id) return false;
     try{
     const res = await editUserDetails(session.id,data)
     revalidatePath("/dashboard/recommendations")
@@ -103,7 +103,7 @@ import {type OnboardingData } from "~/lib/types"
     profilePicURL = await uploadToS3(newFormData);
     }
     try{
-      const res= await updateUserProfile({username:formData.get("userName") as string,profilePic:profilePicURL},userID)
+      const res= await updateUserProfile({name:formData.get("userName") as string,profilePic:profilePicURL},userID)
       revalidatePath('/')
       return res? "success" : "failure";
     }catch(err){
@@ -154,6 +154,42 @@ import {type OnboardingData } from "~/lib/types"
     return res
   }
 
-  export const finishProfileAction = async (data:OnboardingData)=>{
-    console.log(data)
+  export const finishProfileAction = async (data:FormData)=>{
+    const details = {
+      age: data.get("age") as string,
+      fitnessLevel: "",
+      fitnessGoal: data.get("fitnessGoal") as string,
+      height: data.get("height") as string,
+      weight: data.get("weight") as string,
+      gender: data.get("gender") as string,
+      experience: "",
+      bmi: "",
+    }
+    let profilePicURL = ""
+    let coverPicURL = ""
+    const profilePic = data.get("profilePic") as File
+    if(profilePic){
+      const newFormData = new FormData();
+      newFormData.append("file", profilePic);
+      profilePicURL = await uploadToS3(newFormData);
+    }
+    const cover = data.get("cover") as File
+    if(cover){
+      const newFormData = new FormData();
+      newFormData.append("file", cover);
+      console.log("coverfile:",newFormData)
+      coverPicURL = await uploadToS3(newFormData);
+    }
+    const bio = data.get("bio") as string
+    const name = data.get("name") as string
+
+    console.log(coverPicURL)
+    const { id } = await getAuthenticatedUser()
+    if(!id) return "failure"
+    try{
+      const res = await updateUserProfile({name,bio,details,profilePic:profilePicURL,cover:coverPicURL},id)
+      if(res == "success") revalidatePath('/home')
+    }catch(err){
+      return "failure"
+    }
   }

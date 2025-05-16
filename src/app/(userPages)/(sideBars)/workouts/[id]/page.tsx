@@ -1,7 +1,7 @@
 "use server"
 import { Suspense } from "react";
 import Comments from "~/components/component/WorkoutComments";
-import TooltipBox from "~/components/component/tooltipV0";
+import TooltipBox from "~/components/component/workoutReactions";
 import Workout from "~/components/ui/workoutShowCase/Workout";
 import WorkoutSkeleton from "~/components/ui/workoutShowCase/skeleton/workoutSkeleton";
 import UserDeatails from "~/components/ui/workoutShowCase/UserDetails";
@@ -44,14 +44,14 @@ const page = async ({params} : {params:{id:string}}) => {
         </Container>
         </div>
         <Container className="h-fit min-h dark:bg-xtraDarkPrimary">
-        <UserDeatails userID = {workout.userId} />
+        <UserDeatails userID = {workout.userId} isOwner={isOwner} workoutID={Number(params.id)}/>
         </Container>
         
       </div>
       </div>
       <RightSidebar>
         <p className="text-xtraDark font-semibold text-md pt-3 px-3">More Workouts:</p>
-        {userWorkouts?.splice(0,2).map((workout) => (
+        {userWorkouts?.filter(w => w.id !== Number(params.id)).sort((a,b) => (a.numberOfDays ?? 0) - (b.numberOfDays ?? 0)).splice(0,3).map((workout) => (
           <WorkoutCard key={workout.id} workout={workout} />
         ))}
       </RightSidebar>

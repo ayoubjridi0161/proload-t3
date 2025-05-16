@@ -47,13 +47,14 @@ export default function Track({ workout, totalSets, totalReps,lastSession }: Pro
         <p className="mb-3 text-sm opacity-70">Today, {date.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</p>
         
       </div>
-      <Container className="grid w-full grid-cols-1 content-around justify-center gap-5 bg-xtraDark dark:bg-xtraDarkPrimary text-[#fcfcfc] md:grid-cols-6 ">
+      <Container className="grid w-full grid-cols-1 content-around justify-center gap-5 bg-xtraDark/40 dark:bg-xtraDarkPrimary text-[#fcfcfc] md:grid-cols-6 ">
         <Image
-          src={"https://s3.eu-north-1.amazonaws.com/proload.me/ach4.jpg"}
-          className="aspect-square w-full md:w-1/2"
+          src={"https://s3.eu-north-1.amazonaws.com/proload.me/proloadV2.png"}
+          className="w-full"
           alt={"ach"}
           width={7}
           height={1}
+          
         />
         <div className="">
           <h1 className="text-xl font-semibold">Workout:</h1>

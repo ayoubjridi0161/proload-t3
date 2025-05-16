@@ -18,7 +18,7 @@ async function PublicProfile({user}: {user: publicUser}) {
   const isfollowed = await isFollowed(user.id)
   return (
     <div className='w-2/3'>
-      <ProfileHeader isfollowed={isfollowed} numberOfConnects={user.numberOfConnects} userID={user.id} userImage={user.image ?? ""} userName={user.name}/>
+      <ProfileHeader userCover={user.cover} isfollowed={isfollowed} numberOfConnects={user.numberOfConnects} userID={user.id} userImage={user.image ?? ""} userName={user.name}/>
       <Tabs defaultValue="Profile" className="w-full">
         <div className="overflow-x-auto">
           <TabsList className='bg-transparent whitespace-nowrap min-w-max'>

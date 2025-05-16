@@ -1,7 +1,7 @@
 "use server"
 import { auth } from "auth"
 import { DrizzleError } from "drizzle-orm"
-import { deleteDay, 
+import { cloneWorkout, deleteDay, 
     deleteRemovedExercices, 
     deleteWorkout, 
     fetchAllWorkouts, 
@@ -17,6 +17,7 @@ import { deleteDay,
     InsertDay, 
     InsertExercice, 
     InsertWorkout, 
+    makeCurrentWorkout, 
     updateDay, 
     updateExercice, 
     updateWorkout } from "../data"
@@ -384,4 +385,25 @@ type WorkoutDay = {
         return {status:404,message:"not found"}
     }
   }
+}
+
+export const cloneAndUseWorkoutAction = async (workoutId:number)=>{
+  const session = await auth()
+  if(!session?.user?.id) return "failed"
+  try{
+    const response = await cloneWorkout(workoutId,session?.user?.id)
+    await makeCurrentWorkout(session?.user?.id,workoutId)
+    if(response && response == "failed"){
+      return response
+    }else return "success"
+  }catch(err){
+    console.error(err)
+    return "failed"
+  }
+  
+}
+
+export const makeCurrentWorkoutAction = async (userId:string,workoutId:number)=>{
+    const res = await makeCurrentWorkout(userId,workoutId)
+    return res
 }
