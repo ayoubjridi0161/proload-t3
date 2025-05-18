@@ -1,10 +1,11 @@
 "use client"
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@nextui-org/dropdown'
+
 import React from 'react'
 import { Providers } from '~/app/providers'
 import Link from 'next/link'
 import { Avatar, AvatarFallback ,AvatarImage } from './avatar'
 import { signOut, useSession } from 'next-auth/react'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './dropdown-menu'
 type Props = {
     UUID:string 
     userName:string
@@ -12,30 +13,22 @@ type Props = {
     
 }
 const DropDown = (props:Props) => {
-  const {data:session} = useSession()
-  // console.log(session)
   return (
-    
-<Providers>
-      <Dropdown>
-      <DropdownTrigger>
-      {/* <Link href={`/profile/${props.UUID}`}> */}
-              <Avatar >
+      <DropdownMenu >
+      <DropdownMenuTrigger asChild>
+              <Avatar className='cursor-pointer' >
                 <AvatarImage src={props.image}></AvatarImage>
-
                 <AvatarFallback >{ `${props.userName[0]?.toUpperCase()}${props.userName[1]}` }</AvatarFallback>
               </Avatar>
               {/* </Link> */}
-      </DropdownTrigger>
-      <DropdownMenu aria-label="Static Actions">
-      <DropdownItem key="new"><Link href={`/profile`}>Profile</Link></DropdownItem>
-
-      <DropdownItem key="new"><button onClick={() => void signOut()}>Sign Out</button></DropdownItem>
-
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" aria-label="Static Actions">
+      <DropdownMenuItem key="new"><Link href={`/profile`}>Profile</Link></DropdownMenuItem>
+      <DropdownMenuItem key="new"><Link href={'/profile/settings'} >Settings</Link></DropdownMenuItem>
+      <DropdownMenuItem key="new"><button onClick={() => void signOut()}>Sign Out</button></DropdownMenuItem>
+      </DropdownMenuContent>
       </DropdownMenu>
-    </Dropdown>
-
-    </Providers>  )
+     )
 }
 
 export default DropDown

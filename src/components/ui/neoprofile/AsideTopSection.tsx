@@ -51,7 +51,6 @@ export default function AthleticProfile({data,isPublic}:Props) {
     setShowBioForm(false)
     await addBio(bio)
   }
-  console.log(details)
 
   // Add this state for tracking save operation
   const [isSaving, setIsSaving] = useState(false)

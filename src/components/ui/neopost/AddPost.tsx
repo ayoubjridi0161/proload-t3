@@ -2,10 +2,10 @@
 
 import type React from "react"
 
-import { useActionState, useState } from "react"
+import { useActionState, useEffect, useState } from "react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faImage } from "@fortawesome/free-solid-svg-icons"
-import { Paperclip, MapPin, Smile } from "lucide-react"
+import { Paperclip, MapPin, Smile,Dumbbell } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import Image from 'next/image'
 import {
@@ -19,19 +19,36 @@ import {
 import { Textarea } from "~/components/ui/textarea"
 import { Label } from "~/components/ui/label"
 import { Input } from "~/components/ui/input"
-import { useFormState } from "react-dom"
 import { Avatar } from "../avatar"
 import { addPostAction } from "~/lib/actions/socialActions"
+import { WorkoutCard } from "../neoworkout/workout-card"
+
 
 interface Props {
   image?: string
+  awaitedWorkouts: {
+    exercices: {
+        mg: string;
+        exerciseCount: number;
+    }[];
+    id: number;
+    userId: string | null;
+    name: string;
+    username: string | null | undefined;
+    description: string;
+    numberOfDays: number | null;
+    dayNames: string[];
+    upvotes: number;
+}[]
 }
 
-export default function AddPost({ image }: Props) {
+export default function AddPost({ image, awaitedWorkouts }: Props) {
   const [open, setOpen] = useState(false)
   const [postText, setPostText] = useState("")
   const [selectedImages, setSelectedImages] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [selectedWorkout, setSelectedWorkout] = useState<number | null>(null)
+  const [showWorkouts, setShowWorkouts] = useState(false)
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
@@ -57,6 +74,9 @@ export default function AddPost({ image }: Props) {
       }
       
       formData.append("text", postText);
+      if (selectedWorkout) {
+        formData.append("workoutId", selectedWorkout.toString());
+      }
 
       const res = await addPostAction(formData);
       console.log(res);
@@ -69,6 +89,11 @@ export default function AddPost({ image }: Props) {
       setIsSubmitting(false);
     }
   }
+  useEffect(() => {
+    if(!open){
+      setSelectedWorkout(null)
+    }
+  },[open])
 
   return (
     <>
@@ -84,7 +109,7 @@ export default function AddPost({ image }: Props) {
             duration-300 placeholder:text-zinc-600 placeholder:opacity-50 px-4 py-1 
             shadow-md focus:shadow-lg focus:shadow-rose-400 w-full dark:bg-zinc-800 dark:text-zinc-200 dark:placeholder:text-zinc-400 dark:ring-zinc-200 dark:focus:ring-rose-400 dark:focus:shadow-rose-400"
             autoComplete="off"
-            placeholder="What's on your mind athlete"
+            placeholder={"What's on your mind athlete"}
             name="text"
             type="text"
             readOnly
@@ -116,15 +141,43 @@ export default function AddPost({ image }: Props) {
             <DialogTitle>Create Post</DialogTitle>
             <DialogDescription>Share what's on your mind with your followers</DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-          </div>
+          {selectedWorkout && (
+            <div className="relative">
+              <button
+                onClick={() => setSelectedWorkout(null)}
+                className="absolute -top-2 -right-2 bg-black/50  text-white rounded-sm p-1 w-6 h-6 flex items-center justify-center z-10"
+              >
+                ×
+              </button>
+              <WorkoutCard 
+                workout={awaitedWorkouts.find(w => w.id === selectedWorkout)!} 
+                // onClose={() => setSelectedWorkout(null)}
+              />
+              </div>
+          )}
             <Textarea
-              placeholder="What's on your mind athlete"
+              placeholder={selectedWorkout ?"Add a note" : "What's on your mind athlete"}
               className="min-h-[120px] resize-none dark:bg-xtraDarkText dark:text-xtraText dark:placeholder:text-zinc-400 dark:ring-zinc-200 dark:focus:ring-rose-400 dark:focus:shadow-rose-400"
               value={postText}
               onChange={(e) => setPostText(e.target.value)}
               name="text"
             />
+            {showWorkouts && (
+            <div className="max-h-[200px] overflow-y-auto border rounded-lg p-2">
+              {awaitedWorkouts.map((workout) => (
+                <div
+                  key={workout.id}
+                  onClick={() => {
+                    setSelectedWorkout(workout.id)
+                    setShowWorkouts(false)
+                  }}
+                  className="p-2 hover:bg-gray-100 cursor-pointer rounded-md"
+                >
+                  {workout.name}
+                </div>
+              ))}
+            </div>
+          )}
             {selectedImages.length > 0 && (
               <div className="grid grid-cols-2 gap-2">
                 {selectedImages.map((img, index) => (
@@ -164,10 +217,13 @@ export default function AddPost({ image }: Props) {
                 onChange={handleImageUpload} 
               />
 
-              <Label className="cursor-pointer">
+              <Label onClick={() => 
+                {setShowWorkouts(prev => !prev)
+                
+                }} className="cursor-pointer">
                 <div className="flex items-center gap-2 text-[#b4b4b4] hover:text-primary">
-                  <MapPin size={20} />
-                  <span>Add Location</span>
+                  <Dumbbell size={20} />
+                  <span>{showWorkouts ? 'Hide Workouts' : 'Add Workout'}</span>
                 </div>
               </Label>
             </div>

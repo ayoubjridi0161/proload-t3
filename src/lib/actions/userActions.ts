@@ -11,6 +11,7 @@ import {type OnboardingData } from "~/lib/types"
   //   return user
   // }
   const getAuthenticatedUser = async () => {
+    
     const session = await auth();
     if (!session?.user?.id || !session?.user?.name) return {id:null,email:null,name:null};
     return {
@@ -155,6 +156,7 @@ import {type OnboardingData } from "~/lib/types"
   }
 
   export const finishProfileAction = async (data:FormData)=>{
+
     const details = {
       age: data.get("age") as string,
       fitnessLevel: "",
@@ -177,19 +179,24 @@ import {type OnboardingData } from "~/lib/types"
     if(cover){
       const newFormData = new FormData();
       newFormData.append("file", cover);
-      console.log("coverfile:",newFormData)
       coverPicURL = await uploadToS3(newFormData);
     }
     const bio = data.get("bio") as string
     const name = data.get("name") as string
 
-    console.log(coverPicURL)
-    const { id } = await getAuthenticatedUser()
-    if(!id) return "failure"
+    const session = await auth()
+    const id = session?.user?.id
+    if(!id) {
+      console.log("could not get user")
+      return "failure"
+    }
     try{
       const res = await updateUserProfile({name,bio,details,profilePic:profilePicURL,cover:coverPicURL},id)
-      if(res == "success") revalidatePath('/home')
+      if(res == "success") {
+        console.log(res)
+        revalidatePath('/dashboard')}
     }catch(err){
+      console.error(err)
       return "failure"
     }
   }

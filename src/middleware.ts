@@ -8,18 +8,15 @@ const protectedRoutes = ["/profile","/neopost","/neoworkout","dashboard","home"]
 
 export default async function middleware(request: NextRequest){
     const session = await auth()
-
-
     const {pathname} = request.nextUrl
     const isProtected = protectedRoutes.some(route => 
         pathname === route || pathname.startsWith(`${route}/`)  // More precise matching
       );
-    // if(pathname !== "/onboarding"){
-    //     if((session && session?.user as { onboarded?: boolean })?.onboarded === true){
-    //         return NextResponse.redirect(new URL("/onboarding",request.nextUrl))
-    //     }
-    // }
-
+    if((session && session?.user as { onboarded?: boolean })?.onboarded === false){
+        if(pathname !== "/onboarding"){
+            return NextResponse.redirect(new URL("/onboarding",request.nextUrl))
+        }
+    }
     if (isProtected && !session){
         return NextResponse.redirect(new URL("/api/auth/signin",request.nextUrl))
     }

@@ -480,10 +480,10 @@ export const getNumberOfWorkoutsPerUser = async (userId:string) =>{
         return {message:"failure"}
     }
 }
-export const createPost = async (post:{title:string,content:string,userId:string,resources?:string[]}) =>{
+export const createPost = async (post:{title:string,content:string,userId:string,resources?:string[],workoutId?:number}) =>{
     
         try{
-            await db.insert(Posts).values({title:post.title,content:post.content,userId:post.userId,resources:post.resources ??[]})
+            await db.insert(Posts).values({title:post.title,content:post.content,userId:post.userId,resources:post.resources ??[],sharedWorkoutId:post.workoutId})
             return {message:"success"}
         }
         catch(err){
@@ -592,6 +592,8 @@ export const getProfileByID = async (id:string)=>{
 }
 
 export const updateUserProfile = async (data:{name:string,profilePic?:string,bio?:string,details?:ExtraDetails,cover?:string},userId:string)=>{
+    console.log(data)
+    console.log(userId)
     let updatedFields :{name:string,image?:string,bio?:string,details?:ExtraDetails,cover?:string} = {name:data.name}
     if(data.profilePic) updatedFields = {...updatedFields,image:data.profilePic}
     if(data.bio) updatedFields = {...updatedFields,bio:data.bio}

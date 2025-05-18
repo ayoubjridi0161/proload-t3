@@ -5,7 +5,7 @@ import DropDown from "../DropDown"
 import { Notifs } from "./Notifs"
 import { MessagesNotif } from "./MessagesNotif"
 import Link from "next/link"
-import { useState ,useEffect} from "react";
+import { useState, useEffect } from "react";
 import { useDebounce } from "@uidotdev/usehooks";
 import Avatar from "~/components/component/Avatar"
 import { Moon, Sun } from "lucide-react"
@@ -18,14 +18,14 @@ import './darkSwitch.css'
 
 
 type Props = {
-    name:string ,
-  image: string ;
+  name: string,
+  image: string;
   UUID?: string;
 }
 
 const SearchBar = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [profiles, setProfiles] = useState<{name:string|null,id:string,image:string|null}[]>([]);
+  const [profiles, setProfiles] = useState<{ name: string | null, id: string, image: string | null }[]>([]);
   const [isFocused, setIsFocused] = useState(false);
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
@@ -99,37 +99,37 @@ const SearchBar = () => {
   );
 }
 
-function Header({name,image,UUID}: Props) {
+function Header({ name, image, UUID }: Props) {
   const { setTheme } = useTheme()
   return (
     <div className='sticky h-[--header-height] top-0 z-50 w-full flex items-center border-b dark:border-xtraDarkAccent dark:bg-xtraDarkSecondary bg-dashboardBackground px-5'>
       <div className=" mx-auto flex justify-between items-center w-full">
-        <Link href={"/home"}><Image src="https://s3.eu-north-1.amazonaws.com/proload.me/proloadV3.png" className="h-full mt-3 w-28" width={40} height={80}  alt="logo" />
+        <Link href={"/home"}><Image src="https://s3.eu-north-1.amazonaws.com/proload.me/proloadV3.png" className="h-full mt-3 w-28" width={40} height={80} alt="logo" />
         </Link>
         <SearchBar />
         <div className="flex gap-2">
-            <Notifs/>
-            <DropdownMenu >
-      <DropdownMenuTrigger asChild>
-        <Button variant={"ghost"} style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 0.8)' }} size="icon" className="relative h-10 w-10  rounded-none border-black border-1 p-2">
-          <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-          <span className="sr-only">Toggle theme</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
-          Light
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
-          Dark
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
-          System
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-{/* <label
+          <Notifs />
+          <DropdownMenu >
+            <DropdownMenuTrigger asChild>
+              <Button variant={"ghost"} style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 0.8)' }} size="icon" className="relative h-10 w-10  rounded-none border-black border-1 p-2">
+                <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                <span className="sr-only">Toggle theme</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setTheme("light")}>
+                Light
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("dark")}>
+                Dark
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("system")}>
+                System
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          {/* <label
   htmlFor="themeToggle"
   className="themeToggle st-sunMoonThemeToggleBtn"
 >
@@ -163,9 +163,9 @@ function Header({name,image,UUID}: Props) {
   </svg>
 </label> */}
 
-            <DropDown image = {image} UUID={UUID ?? ""} userName={name}/> 
-      </div>
+          <DropDown image={image} UUID={UUID ?? ""} userName={name} />
         </div>
+      </div>
 
     </div>
   )

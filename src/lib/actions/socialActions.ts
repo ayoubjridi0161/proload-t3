@@ -22,11 +22,13 @@ export const addPostAction = async (formData:FormData) => {
       }
   
       const content = formData.get("text") as string
-
+      const workoutID = formData.get("workoutId") as string
+      const parsedWorkoutId = workoutID ? parseInt(workoutID, 10) : undefined;
       const res = await createPost({
         content: content,
         resources: urls,
         userId: userID,
+        workoutId:parsedWorkoutId,
         title: ""
       })
       return res

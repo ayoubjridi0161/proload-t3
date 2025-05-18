@@ -12,9 +12,12 @@ import { Suspense } from 'react'
 import { timeAgo } from '~/lib/utils'
 import ProfileHeader from './profileHeader'
 import { isFollowed } from '~/lib/actions/userActions'
+import { getUserWorkouts } from '~/lib/actions/workout'
 
 async function Profile({user,isPublic}: {user: publicUser,isPublic:boolean}) {
   const isfollowed = isPublic ? await isFollowed(user.id) : null
+  const workoutsToShare = await getUserWorkouts(true,user.id)
+  const awaitedWorkouts = await Promise.all(workoutsToShare) 
   return (
     <div className='w-2/3'>
       {typeof isfollowed == 'boolean' ? 
@@ -28,7 +31,7 @@ async function Profile({user,isPublic}: {user: publicUser,isPublic:boolean}) {
         {/* Profile info - positioned for overlap */}
         <div className='relative pt-[15%] md:pt-[12%] px-4 pb-4 flex flex-col sm:flex-row items-start sm:items-end gap-4 z-10'>
           <Image 
-            src={user.image ?? "https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png"} 
+            src={user.image ?? "/liftingBarbell.png"} 
             alt={user.name ?? "Profile"} 
             width={180} 
             height={180} 
@@ -66,7 +69,7 @@ async function Profile({user,isPublic}: {user: publicUser,isPublic:boolean}) {
         <TabsContent value="Profile" className='min-w-full'>
           <main className='flex flex-col lg:flex-row gap-4'>
             <ProfileAside userID={user.id} isPublic={isPublic} />
-            <MainSection user={user} />
+            <MainSection awaitedWorkouts={awaitedWorkouts} user={user} />
           </main>
         </TabsContent>
         <TabsContent value="Workouts" className='min-w-full'>
@@ -126,12 +129,25 @@ export const ProfileAside = async ({userID,isPublic}:{isPublic:boolean,userID:st
   )
 }
 
-export const MainSection = async ({user}:{user:publicUser}) => {
+export const MainSection = async ({user,awaitedWorkouts}:{user:publicUser,awaitedWorkouts:{
+  exercices: {
+      mg: string;
+      exerciseCount: number;
+  }[];
+  id: number;
+  userId: string | null;
+  name: string;
+  username: string | null | undefined;
+  description: string;
+  numberOfDays: number | null;
+  dayNames: string[];
+  upvotes: number;
+}[]}) => {
   const likes = await getUserLikes(user.id)
   const FetchedPosts = await getPosts(user.id)
   return(
     <section className='w-full lg:w-3/5 p-3'>
-      <AddPost image={user.image ?? "https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png"} />
+      <AddPost awaitedWorkouts={awaitedWorkouts} image={user.image ?? "https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png"} />
       {FetchedPosts.map((post,i) => (
         <Post 
         sharedPost = {post.sharedPost}

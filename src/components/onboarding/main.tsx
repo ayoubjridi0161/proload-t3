@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, type ChangeEvent } from "react";
+import { useState, useRef, type ChangeEvent, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -10,7 +10,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { type OnboardingData } from "~/lib/types"
 import { finishProfileAction } from "~/lib/actions/userActions";
-import { useRouter } from "next/navigation";
 
 type Props = {
     name: string
@@ -18,7 +17,17 @@ type Props = {
 }
 
 export default function Onboarding(props: Props) {
-    const router = useRouter()
+    const [loading, isLoading] = useState(false)
+    const [loadingProgress, setLoadingProgress] = useState(0)
+    useEffect(() => {
+        if (!loading) return
+
+        const interval = setInterval(() => {
+            setLoadingProgress(prev => (prev + 2) % 100);
+        }, 20);
+
+        return () => clearInterval(interval);
+    }, [loading]);
     const [data, setData] = useState<OnboardingData>({
         name: props.name,
         picture: props.image,
@@ -32,15 +41,15 @@ export default function Onboarding(props: Props) {
         coverPhoto: null,
         step: 1
     });
-    
+
     // Add refs for file inputs
     const profilePicInputRef = useRef<HTMLInputElement>(null);
     const coverPhotoInputRef = useRef<HTMLInputElement>(null);
-    
+
     // Add state for file objects (not just data URLs)
     const [profilePicFile, setProfilePicFile] = useState<File | null>(null);
     const [coverPhotoFile, setCoverPhotoFile] = useState<File | null>(null);
-    
+
     const totalSteps = 10;
     const progress = (data.step / totalSteps) * 100;
 
@@ -59,7 +68,7 @@ export default function Onboarding(props: Props) {
             } else {
                 setCoverPhotoFile(file);
             }
-            
+
             // Create preview
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -108,8 +117,9 @@ export default function Onboarding(props: Props) {
     };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        isLoading(true)
         e.preventDefault();
-        
+
         // Create FormData for submission
         const formData = new FormData();
         formData.append("name", data.name);
@@ -120,7 +130,7 @@ export default function Onboarding(props: Props) {
         formData.append("weight", data.weight.toString());
         formData.append("fitnessGoal", data.fitnessGoal);
         formData.append("fitnessType", data.fitnessType);
-        
+
         // Process profile picture file if available
         if (profilePicFile) {
             const imageURL = URL.createObjectURL(profilePicFile);
@@ -133,7 +143,7 @@ export default function Onboarding(props: Props) {
                 console.error("Error processing profile picture:", error);
             }
         }
-        
+
         // Process cover photo file if available
         if (coverPhotoFile) {
             const imageURL = URL.createObjectURL(coverPhotoFile);
@@ -146,10 +156,9 @@ export default function Onboarding(props: Props) {
                 console.error("Error processing cover photo:", error);
             }
         }
-        
+
         // Call the action with FormData
         await finishProfileAction(formData);
-        router.push("/home");
     };
 
     const renderStep = () => {
@@ -178,9 +187,9 @@ export default function Onboarding(props: Props) {
                         <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                             <div className="w-40 h-40 relative border-2 border-dashed border-gray-300 rounded-lg overflow-hidden">
                                 {data.picture ? (
-                                    <Image 
-                                        src={data.picture} 
-                                        alt="Profile Preview" 
+                                    <Image
+                                        src={data.picture}
+                                        alt="Profile Preview"
                                         fill
                                         className="object-cover"
                                     />
@@ -234,8 +243,8 @@ export default function Onboarding(props: Props) {
                         <h2 className="text-xl font-semibold text-gray-800">What's your gender?</h2>
                         <div className="space-y-2">
                             <Label htmlFor="gender">Gender</Label>
-                            <Select 
-                                name="gender" 
+                            <Select
+                                name="gender"
                                 value={data.gender}
                                 onValueChange={(value) => setData(prev => ({ ...prev, gender: value }))}
                             >
@@ -321,8 +330,8 @@ export default function Onboarding(props: Props) {
                 return (
                     <div className="space-y-4">
                         <h2 className="text-xl font-semibold text-gray-800">What's your fitness goal?</h2>
-                        <RadioGroup 
-                            value={data.fitnessGoal} 
+                        <RadioGroup
+                            value={data.fitnessGoal}
                             onValueChange={(value) => setData(prev => ({ ...prev, fitnessGoal: value as "Weight loss" | "Weight gain" | "" }))}
                             className="space-y-3"
                         >
@@ -341,8 +350,8 @@ export default function Onboarding(props: Props) {
                 return (
                     <div className="space-y-4">
                         <h2 className="text-xl font-semibold text-gray-800">What type of fitness do you prefer?</h2>
-                        <RadioGroup 
-                            value={data.fitnessType} 
+                        <RadioGroup
+                            value={data.fitnessType}
                             onValueChange={(value) => setData(prev => ({ ...prev, fitnessType: value as "Muscular fitness" | "Cardio fitness" | "" }))}
                             className="space-y-3"
                         >
@@ -364,9 +373,9 @@ export default function Onboarding(props: Props) {
                         <div className="flex flex-col gap-4">
                             <div className="w-full h-40 relative border-2 border-dashed border-gray-300 rounded-lg overflow-hidden">
                                 {data.coverPhoto ? (
-                                    <Image 
-                                        src={data.coverPhoto} 
-                                        alt="Cover Preview" 
+                                    <Image
+                                        src={data.coverPhoto}
+                                        alt="Cover Preview"
                                         fill
                                         className="object-cover"
                                     />
@@ -403,11 +412,20 @@ export default function Onboarding(props: Props) {
     };
 
     return (
-        <div className="max-w-2xl mx-auto p-8 bg-white rounded-xl shadow-md">
+        <main className="w-screen h-screen md:h-[70vh] grid place-items-center ">
+        <div className="w-full h-full md:h-fit max-w-2xl p-8 bg-white rounded-xl shadow-md">
+            {loading && (
+                <div className="fixed top-0 left-0 w-full h-[2px] bg-gray-200 z-50">
+                    <div
+                        className="h-full bg-blue-500 w-1/5 absolute transition-all duration-200 ease-linear"
+                        style={{ left: `${loadingProgress}%` }}
+                    />
+                </div>
+            )}
             <div className="mb-8">
                 <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                    <div 
-                        className="h-full bg-primary transition-all duration-300 ease-in-out" 
+                    <div
+                        className="h-full bg-primary transition-all duration-300 ease-in-out"
                         style={{ width: `${progress}%` }}
                     ></div>
                 </div>
@@ -416,20 +434,20 @@ export default function Onboarding(props: Props) {
                 </div>
             </div>
 
-            <form onSubmit={data.step === totalSteps ? (e) => {void handleSubmit(e)} : (e) => { e.preventDefault(); nextStep(); }}>
+            <form onSubmit={data.step === totalSteps ? (e) => { void handleSubmit(e) } : (e) => { e.preventDefault(); nextStep(); }}>
                 {renderStep()}
 
                 <div className="flex justify-between mt-8">
                     {data.step > 1 && (
-                        <Button 
-                            type="button" 
-                            onClick={prevStep} 
+                        <Button
+                            type="button"
+                            onClick={prevStep}
                             variant="outline"
                         >
                             Back
                         </Button>
                     )}
-                    
+
                     <div className={data.step > 1 ? "ml-auto" : ""}>
                         {data.step < totalSteps ? (
                             <Button type="submit">
@@ -444,5 +462,6 @@ export default function Onboarding(props: Props) {
                 </div>
             </form>
         </div>
+        </main>
     );
 }

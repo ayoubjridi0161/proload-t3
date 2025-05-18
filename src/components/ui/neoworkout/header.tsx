@@ -201,7 +201,7 @@ export default function WorkoutCards({}:Props) {
           </DropdownMenu>
         </div>
 
-        <Button onClick={()=>goToCreate()} className="w-full sm:w-auto">
+        <Button onClick={()=>goToCreate()} className="w-full bg-xtraGreen hover:bg-xtraDarkAccent/50 sm:w-auto">
           <Plus className="h-4 w-4 mr-2" />
           Create Workout
         </Button>

@@ -209,10 +209,10 @@ void handleSubmit()
           </div>  
           <div className='flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0'>
             <div className='flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4'>
-              <Button type='button' onClick={()=> {store.addWorkoutDay()}} className="z-50 w-full sm:w-auto" size="sm" variant="default">
+              <Button type='button' onClick={()=> {store.addWorkoutDay()}} className="z-50 bg-xtraGreen hover:bg-xtraGreen/90 w-full sm:w-auto" size="sm" >
                 Add Workout Day
               </Button>
-              <Button type='button' onClick={()=>{store.addRestDay()}} className=" z-50 w-full sm:w-auto" size="sm" variant="default">
+              <Button type='button' onClick={()=>{store.addRestDay()}} className=" z-50 bg-xtraGreen hover:bg-xtraGreen/90 w-full sm:w-auto" size="sm">
                 Add Rest Day
               </Button>
             </div>

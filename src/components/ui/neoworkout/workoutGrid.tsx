@@ -30,7 +30,6 @@ type Props = {
 
 export default function WorkoutGrid({workouts}: Props) {
     const {data,status} = useSession()
-    console.log(data);
     
     const [open, setOpen] = React.useState(false)
     const [postText, setPostText] = React.useState("")
