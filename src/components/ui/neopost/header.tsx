@@ -102,7 +102,7 @@ const SearchBar = () => {
 function Header({ name, image, UUID }: Props) {
   const { setTheme } = useTheme()
   return (
-    <div className='sticky h-[--header-height] top-0 z-50 w-full flex items-center border-b dark:border-xtraDarkAccent dark:bg-xtraDarkSecondary bg-dashboardBackground px-5'>
+    <div className='sticky h-[--header-height] top-0 z-50 overflow-y-hidden w-full flex items-center border-b dark:border-xtraDarkAccent dark:bg-xtraDarkSecondary bg-dashboardBackground px-5'>
       <div className=" mx-auto flex justify-between items-center w-full">
         <Link href={"/home"}><Image src="https://s3.eu-north-1.amazonaws.com/proload.me/proloadV3.png" className="h-full mt-3 w-28" width={40} height={80} alt="logo" />
         </Link>

@@ -131,7 +131,6 @@ export type Post = {
     userId: string;
     content: string;
     createdAt: Date;
-    updatedAt: Date;
     likes: number;
     comments: Comment[];
     users: {
@@ -166,6 +165,7 @@ export type Post = {
     sharedPostId?: number | null;
     sharedWorkoutId?: number | null;
     title:string;    
+    shares:number
   }
 export type Comment = {
     content: string;
