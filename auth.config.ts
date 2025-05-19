@@ -1,52 +1,54 @@
 import type { NextAuthConfig } from "next-auth";
-import { redirect } from "next/navigation";
+import Github from "next-auth/providers/github"
+import Google from "next-auth/providers/google"
+import Resend from "next-auth/providers/resend"
 
-export const authConfig = {
-    pages:{
-        signIn:'/login',
-        error:'/auth/error',
-        newUser:'/editprofile'
-    },
-    callbacks:{
-      async signIn({ user, account, profile, email, credentials }) {
-        console.log("sign in")
-        if (user) {
-          const isLoggedIn = !!user;
-          if (isLoggedIn) {
-            console.log("logged in")
-              return true;
-          }
-      }
-      return false;
-      },
-      async session({ session, user }) {
-        console.log("session:",session);
-        
-        return session;
-      },
-        async authorized({ request: { nextUrl }, auth }) {
-          console.log("authorization")
-          const isLoggedIn = !!auth?.user;
-          const { pathname } = nextUrl;
-          if (pathname.startsWith('/login') && isLoggedIn) {
-            console.log("authed user already");
-            return Response.redirect(new URL('/', nextUrl));
-        }
-          const userName = auth?.user?.name
-          if(!userName){
-            return Response.redirect(new URL(`/profile/${auth?.user?.id}/setup`, nextUrl));
-          }
 
-          return true;
-      },
-      // async session({ session, user }) {
-      //   console.log("session")
-      //   if (!user.name) {
-      //     redirect( '/profile/setup');
-      //   }
-      //   return session;
-      // },
-      },
-    
-    providers:[]
+export default {
+    providers: [
+      Github,
+      Google({
+      clientId: process.env.AUTH_GOOGLE_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET,
+      
+      }),
+      Resend({
+      from:"proof@proload.me"
+    }),],
 } satisfies NextAuthConfig;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      // Credentials({
+      //     async authorize(credentials) {
+      //         const parsedCredentials = z
+      //           .object({ email: z.string().email(), password: z.string().min(2)  })
+      //           .parse(credentials);
+      //           if(!parsedCredentials)
+      //           throw new Error("zod :Invalid credentials")
+  
+      //             const {email,password} = parsedCredentials;
+      //             const user = await db.query.users.findFirst({where:eq(users.email,email)})
+      //             if(!user) {throw new Error("User not found");}
+      //             const passwordMatch = password === user.password
+      //             if(!passwordMatch) {throw new Error("wrong passwrd")}
+      //             console.log(user)
+  
+      //             return {name:user.username,id:user.id,email:user.email}    
+      //     }
+      // })

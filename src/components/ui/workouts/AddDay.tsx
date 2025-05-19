@@ -1,5 +1,5 @@
 "use client"
-import React, { ReactElement, useRef } from 'react'
+import React, { type ReactElement, useRef } from 'react'
 import { Label } from '../label'
 import { Button } from '../button'
 import { Pencil, GrabIcon, TrashIcon, Dumbbell, Check, Plus, Edit } from 'lucide-react'
@@ -9,19 +9,14 @@ import { cn } from '~/lib/utils'
 import Container from '../Container'
 import { ButtonBlack, ButtonWhite } from '../UIverse/Buttons'
 import { Input } from '../input'
+import { type ExerciseNames } from '~/lib/types'
 
 
 type Props = {
-    muscles: string,
-    id: number,
-    remove: (id:number)=>void,
-    exerciceNames:{
-      name: string;
-      musclesTargeted: string[];
-      muscleGroup: string;
-      equipment: string[];
-  }[]
-
+    muscles: string
+    remove: (id:number)=>void
+    id: number
+    exerciceNames: ExerciseNames
 }
 type exercice = {
   exName: string,
@@ -37,15 +32,8 @@ export default function AddDay(props : Props) {
     const [nbrExercices,setNbrExercices] = React.useState(0)
     const dayNameProps = useRef<HTMLInputElement>(null)
     const dayIndex = props.id
-
-    /*function addExercice (item : exercice){
-      setExercices(prev => [...prev,<div key={JSON.stringify(item)}>
-        <h1><span>{item.exName}</span> : <span>{item.sets}</span> : <span>{item.reps}</span></h1>
-      </div>])
-      setIsExercice(false)
-    }*/
   return (
-    <div className='bg-slate-200 rounded-lg px-4 space-y-4'>
+    <div className='bg-slate-200 z-10 rounded-lg px-4 space-y-4'>
         <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
             <div className="flex items-center space-x-4">
             {/*dumbbell*/}

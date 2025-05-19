@@ -1,0 +1,185 @@
+notation chen
+typeface clean
+styleMode shadow
+colorMode outline
+title Fitness & Social Platform Data Model
+
+// define tables
+users [icon: user, color: yellow]{
+  id string pk
+  cover string
+  name string
+  email string
+  emailVerified date
+  image string
+  currentWorkout integer
+  likes integer[]
+  bio string
+  achievements json[]
+  details json
+  personalRecords json[]
+  connects string[]
+  numberOfConnects integer
+}
+
+workouts [icon: activity, color: green]{
+  id integer pk
+  name string
+  userId string
+  createdAt timestamp
+  description string
+  upvotes integer
+  downvotes integer
+  clones integer
+  published boolean
+  numberOfDays integer
+}
+
+days [icon: calendar, color: blue]{
+  id integer pk
+  name string
+  dayIndex integer
+  workoutId integer
+}
+
+exercises [icon: dumbbell, color: orange]{
+  id integer pk
+  name string
+  sets integer
+  reps integer
+  dayId integer
+}
+
+exercise_library [icon: book, color: purple]{
+  name string pk
+  musclesTargeted string[]
+  muscleGroup string
+  equipment string
+  video string
+  images string[]
+  description string
+  rating real
+}
+
+user_logs [icon: file-text, color: teal]{
+  id integer pk
+  userId string
+  workoutId integer
+  date timestamp
+  duration integer
+  logs json
+}
+
+comments [icon: message-circle, color: lightblue]{
+  id integer pk
+  content string
+  userId string
+  userName string
+  workoutId integer
+  postId integer
+  createdAt timestamp
+}
+
+replies [icon: corner-down-right, color: lightgreen]{
+  id integer pk
+  content string
+  userId string
+  userName string
+  commentId integer
+  createdAt timestamp
+}
+
+reactions [icon: thumbs-up, color: pink]{
+  userId string
+  workoutId integer
+  upvote boolean
+  downvote boolean
+  indexes {
+    (userId, workoutId) pk
+  }
+}
+
+posts [icon: edit, color: red]{
+  id integer pk
+  title string
+  sharedPostId integer
+  likes integer
+  shares integer
+  content string
+  resources string[]
+  userId string
+  createdAt timestamp
+}
+
+accounts [icon: key, color: gray]{
+  userId string
+  type string
+  provider string
+  providerAccountId string
+  refresh_token string
+  access_token string
+  expires_at integer
+  token_type string
+  scope string
+  id_token string
+  session_state string
+  indexes {
+    (userId, provider, providerAccountId) pk
+  }
+}
+
+session [icon: clock, color: brown]{
+  sessionToken string pk
+  userId string
+  expires date
+}
+
+verificationToken [icon: shield, color: indigo]{
+  identifier string
+  token string
+  expires date
+  indexes {
+    (identifier, token) pk
+  }
+}
+
+authenticator [icon: lock, color: cyan]{
+  credentialID string pk
+  userId string
+  providerAccountId string
+  credentialPublicKey string
+  counter integer
+  credentialDeviceType string
+  credentialBackedUp boolean
+  transports string
+}
+
+notifications [icon: bell, color: gold]{
+  id integer pk
+  userId string
+  title string
+  content string
+  time timestamp
+  read boolean
+}
+
+// define relationships
+exercises.name > exercise_library.name
+user_logs.userId > users.id
+user_logs.workoutId > workouts.id
+comments.userId > users.id
+comments.workoutId > workouts.id
+comments.postId > posts.id
+replies.userId > users.id
+replies.commentId > comments.id
+reactions.userId > users.id
+reactions.workoutId > workouts.id
+posts.userId > users.id
+posts.sharedPostId > posts.id
+accounts.userId > users.id
+session.userId > users.id
+authenticator.userId > users.id
+notifications.userId > users.id
+workouts.userId > users.id
+days.workoutId > workouts.id
+exercises.dayId > days.id

@@ -1,13 +1,8 @@
 
-import { auth } from 'auth'
 import React from 'react'
-import { ButtonBlack, ButtonWhite } from '~/components/ui/UIverse/Buttons';
-import { Button } from '~/components/ui/button';
 import EmailLogin from '~/components/ui/form/emailLogin';
-import { Login } from '~/components/ui/form/login'
-import { signout } from '~/lib/actions';
 
-const page = async  () => {
+const page =  () => {
   return (
     <>
     <div className=' grid place-items-center h-screen  ' style={{
@@ -21,8 +16,6 @@ const page = async  () => {
             <EmailLogin />
           </div>
         </div>
-    
-    
     </div>
     </>
 

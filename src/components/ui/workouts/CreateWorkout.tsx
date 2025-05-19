@@ -1,22 +1,15 @@
 "use client"
-import React, { MouseEventHandler, ReactElement } from 'react'
-import { Input } from '../input'
-import {ButtonBlack,ButtonWhite} from '~/components/ui/UIverse/Buttons'
+import React, { type ReactElement } from 'react'
 import '~/components/ui/UIverse/Button.css'
 
 import { Button } from '../button'
-import { Label } from '../label'
 import AddDay from './AddDay'
-import { DeleteIcon, GrabIcon, TrashIcon } from 'lucide-react'
-import { Accordion } from '../accordion'
-import addWorkout from '~/lib/actions'
+import addWorkout from '~/lib/actions/workout'
 import UIverseButton from '~/components/UIverseButton'
 import AddRestDay from './AddRestDay'
-import Container from '../Container'
 import {
   AlertDialog,
   AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -24,72 +17,68 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog"
-import { ShootingStars } from '../UIverse/shootingStarBackground/shooting-stars'
-import { StarsBackground } from '../UIverse/shootingStarBackground/stars-background'
 import { useRouter } from 'next/navigation'
+import { Textarea } from '../textarea'
+import { type ExerciseNames } from '~/lib/types'
 
 
-export default function CreateWorkout({token,exerciceNames}:{token:string , 
-  exerciceNames: {
-  name: string;
-  musclesTargeted: string[];
-  muscleGroup: string;
-  equipment: string[];
-}[]}) 
-{
+export default function CreateWorkout({exerciseNames}:{
+  exerciseNames: ExerciseNames
+}) 
+{ 
     const [newKey, setNewKey] = React.useState(0) 
     const [dayRest, setDayRest] = React.useState<{day: string ,change:number}>( )
     const [isPublished, setIsPublished] = React.useState<boolean>()
     const [days, setDays] = React.useState<ReactElement[]>([])
-    const sessionToken = token 
     const [removedDay,setRemovedDay] = React.useState<number>()
-    const router = useRouter()
-
     const formRef = React.useRef<HTMLFormElement>(null)
-
     function removeDay(id:number){
         setRemovedDay(id)
     }
     //remove Day
-    React.useEffect(()=>{
+    
+    React.useEffect(()=>{      
       if(removedDay){
-        // setDays([...days]?.filter(day => day.key != removedDay))
         setDays([...days]?.filter(day => Number(day.key) != removedDay))
       }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[removedDay])
     
     //add Day component
     React.useEffect(()=>{
       if(newKey)
         if(dayRest?.day === 'train')
-        setDays(days => [...days , <AddDay exerciceNames = {exerciceNames} remove={removeDay} id={newKey} key={newKey} muscles='legs,arms,chest'  />])
+        setDays(days => [...days , <AddDay exerciceNames = {exerciseNames} remove={removeDay} id={newKey} key={newKey} muscles='legs,arms,chest'  />])
         else setDays(days => [...days , <AddRestDay remove={removeDay} id={newKey} key={newKey} />])   
         // console.log(days) 
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[newKey])
     //add Day to order
     React.useEffect(()=>{
       if(dayRest){
       setNewKey(newKey+1)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[dayRest])
     // submit form
     React.useEffect(()=>{
+      console.log("submit");
+      
       if( typeof isPublished === 'boolean' )
         formRef.current?.requestSubmit()
         // router.push('/workouts')
     },[isPublished])
 
     return (
-    <div className=' h-full w-full relative rounded-md bg-slate-100 shadow-sm  mx-auto'>
-      <form ref={formRef} className=" h-full  rounded-lg border border-border p-4 sm:p-6 shadow-sm space-y-4" action={addWorkout}>
-        {/* ... existing hidden inputs ... */}
-        <input type="hidden" name='sessionToken' value={sessionToken} />
+    <div className='bg-xtraContainer h-full w-full relative z-10 rounded-md  shadow-sm mx-auto'>
+      {/* <div className="absolute inset-0 bg-aiLifter bg-center bg-cover filter opacity-5 blur-sm z-0" /> */}
+      <form ref={formRef} className=" z-30 h-full bg-transparent  rounded-lg border border-border p-4 sm:p-6 shadow-sm space-y-4" action={async (formData: FormData) => { await addWorkout(formData); }}>
         <input type="hidden" name='NoD' value={days.length}  />
         <input type="hidden" name='published' value={isPublished?.toString()} />
         <div className='pt-1 flex items-center'>
-          <UIverseButton name='workoutName' placeHolder="Workout name..."  />
+          <UIverseButton name='workoutName' placeHolder="Workout name..." aria-label="Enter workout name" />
         </div>
+        <Textarea name='description' className='z-10' placeholder='drop out a note for the workout'/>
         <div className='space-y-4 '>
           {days}
         </div>  

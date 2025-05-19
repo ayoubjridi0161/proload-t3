@@ -1,7 +1,7 @@
 import { auth } from "auth";
 import HeaderNav from "~/components/ui/homePage/HeaderNav";
 
-export default async function RootLayout({
+export default function RootLayout({
     children,
   }: {
     children: React.ReactNode;

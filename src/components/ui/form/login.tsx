@@ -1,5 +1,4 @@
 'use client'
-import { githubSignIn, login } from "~/lib/actions"
 
 import { useFormState, useFormStatus } from "react-dom"
 import { GitBranch,Github } from "lucide-react"
@@ -12,6 +11,7 @@ import Link from "next/link"
 import LockIcon from "../svg/lockIcon"
 import MailIcon from "../svg/mailIcon"
 import { signIn } from "auth"
+import { githubSignIn, login } from "~/lib/actions/authentication"
 export const Login =  ()=>{
     // const [error,action,isPending] = useActionState(login,null);
     const [error,action] = useFormState(login,null)
@@ -29,7 +29,7 @@ export const Login =  ()=>{
   <Link href={"/"}  className=" self-end font-medium">Forgot password</Link >
   <LocalButton />
   <p className="text-black text-center">Dont have an account <a className="text-black font-semibold underline" href="/signup">Register!</a></p>
-   <p className="text-red-950">{error && error.message}</p>
+   <p className="text-red-950">{error?.message}</p>
  </form>
 <form action={githubSignIn}>
       <button type="submit">Github : <Github /></button>

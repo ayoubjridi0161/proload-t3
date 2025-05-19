@@ -1,8 +1,9 @@
 "use client"
 import React from 'react'
-
+import Image from "next/image"
 import { Button } from "~/components/ui/button"
 import { CardTitle, CardDescription, CardHeader, CardContent, Card } from "~/components/ui/card"
+import { Chip } from '@nextui-org/react'
 
 type Props = {
     name:string
@@ -11,6 +12,7 @@ type Props = {
     reps:number
     delete:()=>void
     className:string 
+    image:string | null
 }
 
 export default function ExerciceCard(props: Props) {
@@ -22,19 +24,27 @@ export default function ExerciceCard(props: Props) {
               <CardTitle className='min-h-8'>{props.name}</CardTitle>
               <CardDescription>Back, Biceps</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Sets: {props.sets}</span>
-                <span className="text-sm font-medium">Reps: {props.reps}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <Button type='button' onClick={props.edit} size="sm" variant="ghost">
+            
+            <CardContent className="grid grid-cols-3 grid-rows-2 gap-4">
+                <Chip className="col-start-1 row-start-1 place-self-center ">Sets: {props.sets}</Chip>
+                <Button className='border-xtraDark border-1 col-start-1 row-start-2 text-xtraText rounded-[25px]' type='button' onClick={props.edit} size="sm" variant="ghost">
                   Edit
                 </Button>
-                <Button onClick={props.delete} type='button' color="destructive" size="sm" variant="ghost">
+              {props.image && (
+                <div className="row-span-2 flex items-center justify-center">
+                  <Image 
+                    src={props.image} 
+                    alt={props.name}
+                    width={20}
+                    height={20}
+                    className="max-h-40 w-20 object-contain"
+                  />
+                </div>
+              )}
+                <Chip className="col-start-3  place-self-center self-center">Reps: {props.reps}</Chip>
+                <Button className='col-start-3 border-xtraDark border-1 row-start-2 text-xtraText rounded-[25px]' onClick={props.delete} type='button' color="destructive" size="sm" variant="ghost">
                   Delete
                 </Button>
-              </div>
             </CardContent>
           </Card>
   )

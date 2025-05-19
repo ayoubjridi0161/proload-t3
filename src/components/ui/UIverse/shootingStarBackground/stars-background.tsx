@@ -4,7 +4,7 @@ import React, {
   useState,
   useEffect,
   useRef,
-  RefObject,
+  type RefObject,
   useCallback,
 } from "react";
 
@@ -88,6 +88,7 @@ export const StarsBackground: React.FC<StarBackgroundProps> = ({
 
     return () => {
       if (canvasRef.current) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         resizeObserver.unobserve(canvasRef.current);
       }
     };

@@ -1,6 +1,7 @@
-import React, { ReactElement } from 'react'
+import React, { type ReactElement } from 'react'
 import Day from './Day'
-import { fetchWorkoutById } from '~/lib/data'
+import { Button } from '../button';
+
 type split = 
     {
         id: number;
@@ -15,26 +16,31 @@ type split =
         numberOfDays : number | null,
         days:dayDetails[]
     }
-    
+    type Exercise = {
+        id: number;
+        name: string;
+        sets: number;
+        reps: number;
+        dayId: number;
+        exerciseLibrary: {
+          images: string[];
+        };
+      }
     type dayDetails = {
         dayIndex:number,
         name : string,
-        exercices :null | {
-            name : string,
-            sets : number,
-            reps : number,
-        }[] 
+        exercices :Exercise[]
     }
-const Workout = async ({id,fetchedWorkout}:{id:number,fetchedWorkout:split}) => {
+const Workout =  ({fetchedWorkout}:{id?:number,fetchedWorkout:split}) => {
 
     
     if (fetchedWorkout === undefined) {
         return <div>Workout not found</div>;
     }
-    const NOD = fetchedWorkout.numberOfDays || 10
+    const NOD = fetchedWorkout.numberOfDays ?? 10
     const days = fetchedWorkout.days.sort((a,b)=> (a.dayIndex,b.dayIndex))
     function renderDays(){
-        const renderDays: any = [];
+        const renderDays: ReactElement[] = [];
     for (let i = 1, j = 0; i <= NOD; i++) {
     // Check if the current day matches the dayIndex in the days array
     if (days[j] && i === days[j]?.dayIndex) {
@@ -50,12 +56,15 @@ const Workout = async ({id,fetchedWorkout}:{id:number,fetchedWorkout:split}) => 
         return renderDays
     }
   return (
-    <div className="">
-      <h2 className="text-2xl font-bold mb-6 text-[#006400] dark:text-[#00FF00]">
+    <div className="text-xtraLight  ">
+
+        <h2 className="text-2xl font-bold mb-4 ">
         {fetchedWorkout?.name || "Workout"}
       </h2>
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 gap-6">
+
+      <p className="text-gray-500 mb-4">{fetchedWorkout?.description || "Description"}</p>
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 gap-4">
         {renderDays()}
         </div>
     </div>

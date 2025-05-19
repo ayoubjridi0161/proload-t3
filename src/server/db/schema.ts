@@ -8,6 +8,7 @@ import {
   pgTable,
   pgTableCreator,
   serial,
+  json,
   timestamp,
   primaryKey,
   varchar,
@@ -16,6 +17,8 @@ import {
   boolean as pgBoolean,
   text,
   boolean,
+  real,
+  type AnyPgColumn,
 } from "drizzle-orm/pg-core";
 import { number } from "zod";
 
@@ -37,6 +40,7 @@ export const workouts = pgTable("workouts",{
   upvotes:integer('upvotes').default(0).notNull(),
   downvotes:integer('downvotes').default(0).notNull(),
   clones:integer('clones').default(0).notNull(),
+  shares:integer("shares").default(0),
   published:pgBoolean('published').default(false).notNull(),
   numberOfDays:integer('number_of_days')
 })
@@ -44,6 +48,7 @@ export const workouts = pgTable("workouts",{
 export const workoutsRelations = relations(workouts,({many,one})=>({days : many(days),
   users: one(users,{fields:[workouts.userId],references:[users.id]}),
   comments:many(comments),
+  logs:many(userLogs),
 
 }));
 
@@ -62,7 +67,7 @@ export const daysRelations = relations(days,({one,many})=> ({
 }))
 export const exercices = pgTable("exercises",{
   id:serial('id').primaryKey(),
-  name: varchar('exercice_name',{length:256}).references(()=>exerciceNames.name).notNull(),
+  name: varchar('exercice_name',{length:256}).references(()=>exerciseLibrary.name).notNull(),
   sets: integer('sets').notNull(),
   reps: integer('reps').notNull(),
   dayId:integer('day_id').notNull().references(()=>days.id),
@@ -72,29 +77,72 @@ export const exercicesRelations= relations(exercices, ({one}) => (
   fields:[exercices.dayId],
   references:[days.id],
   }),
-  exerciceNames: one(exerciceNames,{
+  exerciseLibrary: one(exerciseLibrary,{
     fields:[exercices.name],
-    references:[exerciceNames.name]
+    references:[exerciseLibrary.name]
   })
 }
 ));
+
+export const userLogs = pgTable("user_logs",{
+  id: serial('id').primaryKey(),  
+  userId: text('user_id').references(()=>users.id),
+  workoutId: integer('workout_id').references(()=>workouts.id),
+  date: timestamp('date',{withTimezone:true}).default(sql`CURRENT_TIMESTAMP`).notNull(),
+  duration: integer('duration'),
+  logs: json('logs'),
+})
 
 export const users = pgTable("user", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
+  cover: varchar('cover',{length:250}),
   name: text("name"),
   email: text("email").unique(),
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   image: text("image"),
-
+  currentWorkout: integer("current_workout"),
+  onboarded: boolean("onboarded").default(false).notNull(),
+  likes: integer('likes').array(),
+  bio: text("bio").default(""),
+  achievements: json("achievements").$type<{name:string,date:string}>().array(),
+  details: json("details").$type<{
+    bmi: string;
+    age: string;
+    gender: string;
+    height: string;
+    weight: string;
+    experience: string;
+    fitnessGoal:string;
+    fitnessLevel:string;
+    }>().$default(() => ({
+    bmi: "",
+    age: "",
+    gender: "",
+    height: "",
+    weight: "",
+    experience: "",
+    fitnessGoal:"",
+    fitnessLevel:"",
+  })),
+  personalRecords: json("personal_records")
+  .$type<{
+    exercise: string;
+    records: number[];}>()
+  .array()
+  .$default(() => []),
+  connects:text("connects").array(),
+  numberOfConnects:integer('number_of_connects').default(0).notNull()
 })
 
 export const usersRelations = relations(users,({many})=>({
   workouts:many(workouts),
   comments:many(comments),
   replys:many(replys),
-  posts:many(Posts)
+  posts:many(Posts),
+  logs:many(userLogs),
+  notifications:many(notifications)
 }));
 export const stateEnum = pgEnum('state', ['comment', 'reply']);
 export const comments = pgTable("comments",{
@@ -153,32 +201,42 @@ export const Posts = pgTable(
   'Posts',{
     id:serial('id').primaryKey(),
     title: varchar('title',{length:250}).notNull(),
+    sharedPostId: integer('shared_post_id').references((): AnyPgColumn => Posts.id),
+    sharedWorkoutId: integer('shared_workout_id').references(() => workouts.id),
+    likes:integer('likes').default(0).notNull(),
+    shares:integer('shares').default(0).notNull(),
     content:varchar('content',{length:3000}).notNull(),
     resources: text('resources').array().notNull()
     .default(sql`ARRAY[]::text[]`),
     userId : text('user_id').notNull().references(()=> users.id),
-    createdAt:timestamp('created_at',{withTimezone:true}).default(sql`CURRENT_TIMESTAMP`).notNull()
+    createdAt:timestamp('created_at',{withTimezone:true}).default(sql`CURRENT_TIMESTAMP`).notNull(),
+
     
   }
 )
 export const PostsRelations= relations(Posts,({many,one})=>({
   users:one(users,{fields:[Posts.userId],references:[users.id]}),
   comments:many(comments),
+  workouts:one(workouts,{fields:[Posts.sharedWorkoutId],references:[workouts.id]}),
+  sharedPost:one(Posts,{fields:[Posts.sharedPostId],references:[Posts.id]})
 })
 )
 
-export const exerciceNames = pgTable(
-  'exerciceNames',
+
+export const exerciseLibrary = pgTable(
+  'exercise_library',
   {
     name: varchar('name', { length: 256 }).notNull().primaryKey(),
     musclesTargeted: text('muscles_targeted').array().notNull().default(sql`ARRAY[]::text[]`),
     muscleGroup: varchar('muscle_group', { length: 256 }).notNull(),
-    equipment:text('equipment').array().notNull().default(sql`ARRAY[]::text[]`),
+    equipment:text('equipment'),
     video: varchar('video', { length: 256 }),
-    image: varchar('image', { length: 256 }),
-  },
-);
-export const exerciceNamesRelations = relations(exerciceNames, ({ many }) => ({
+    images: text('images').array().notNull().default(sql`ARRAY[]::text[]`),
+    description: text('description'),
+    rating: real('rating'),
+  }
+)
+export const exerciseLibraryRelations = relations(exerciseLibrary, ({ many }) => ({
   exercices: many(exercices),
 }));
 
@@ -248,4 +306,22 @@ export const authenticators = pgTable(
       columns: [authenticator.userId, authenticator.credentialID],
     }),
   })
+)
+
+export const notifications = pgTable(
+  "notifications",
+  {
+    id: integer("id").primaryKey().default(sql`floor(random() * 1000000)`),
+    userId: text("user_id").notNull().references(() => users.id),
+    title: varchar("title", { length: 256 }).notNull(),
+    content: text("content").notNull(),
+    time: timestamp("time", { withTimezone: true }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+    read:boolean("read").notNull().default(false)
+  }
+)
+
+export const notifRelations= relations(notifications,({one})=>({
+  users:one(users,{fields:[notifications.userId],references:[users.id]}),
+  
+})
 )

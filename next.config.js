@@ -11,6 +11,10 @@ const config = {
         // your project has ESLint errors.
         ignoreDuringBuilds: true,
       },
+      images:{
+        unoptimized:true,
+      }
+ 
 };
 
 export default config;
