@@ -34,7 +34,7 @@ export const fetchAllWorkouts = async(filters:{query?:string,currentPage?:number
 
     const result = await db.query.workouts.findMany({
         columns: {published:false}, // Exclude columns as before
-        where: filters.query ? sql`LOWER(${workouts.name}) LIKE LOWER(${`%${filters.query}%`})` : undefined, // Apply search filter
+        where: and(filters.query ? sql`LOWER(${workouts.name}) LIKE LOWER(${`%${filters.query}%`})` : undefined,eq(workouts.published,true)),
         with:{ // Keep the 'with' clause for related data
             users :{
                 columns : {name:true}
@@ -498,7 +498,7 @@ export const deletePost = async (postId:number) =>{
         throw err
     }
 }
-export const getPosts = async (userId?:string)=>{
+export const getPosts = async ( page: number = 1, limit: number = 10,userId?: string) => {
     try{
         const posts = await db.query.Posts.findMany({
             where: userId ? eq(Posts.userId, userId) : undefined,
@@ -509,7 +509,9 @@ export const getPosts = async (userId?:string)=>{
                           with:{replys:{columns:{content:true,id:true},with:{users:{columns:{name:true}}}},users:{columns:{name:true
                           }}}},
             },
-            orderBy:(Posts,{desc})=>[desc(Posts.id)]
+            orderBy:(Posts,{desc})=>[desc(Posts.id)],
+            offset: (page - 1) * limit,
+            limit: limit
         })
         
         // Use Promise.all to wait for all async map operations to complete
@@ -536,7 +538,10 @@ export const getPosts = async (userId?:string)=>{
         }));
         
         // Return the array of posts with resolved shared post data
-        return postsWithShared;
+        return {
+            posts : postsWithShared,
+            nextPage: posts.length> 0 ? page +1 : null
+        }
     }catch(err){
         throw err;
     }

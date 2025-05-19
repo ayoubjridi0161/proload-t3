@@ -125,3 +125,53 @@ export type ExtraDetails = {
     bmi: string
     fitnessLevel: string
 }
+
+export type Post = {
+    id: number;
+    userId: string;
+    content: string;
+    createdAt: Date;
+    updatedAt: Date;
+    likes: number;
+    comments: Comment[];
+    users: {
+      name: string | null;
+      image: string | null;
+    };
+    sharedPost?:{
+        id: number,
+        userId: string,
+        content: string,
+        resources: string[],
+        users: {
+            name: string | null,
+            image: string | null,
+        }
+      }|undefined
+      sharedWorkout?: {
+        exercices: {
+            mg: string;
+            exerciseCount: number;
+        }[];
+        id: number;
+        name: string;
+        userId: string | null;
+        username: string | null | undefined;
+        description: string;
+        numberOfDays: number | null;
+        dayNames: string[];
+        upvotes: number;
+    } | null | undefined
+    resources: string[];
+    sharedPostId?: number | null;
+    sharedWorkoutId?: number | null;
+    title:string;    
+  }
+export type Comment = {
+    content: string;
+    id: number;
+    replys?: Comment[];
+    users: {
+      name: string | null;
+    } | null;
+  };

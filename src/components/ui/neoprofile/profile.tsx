@@ -144,11 +144,11 @@ export const MainSection = async ({user,awaitedWorkouts}:{user:publicUser,awaite
   upvotes: number;
 }[]}) => {
   const likes = await getUserLikes(user.id)
-  const FetchedPosts = await getPosts(user.id)
+  const FetchedPosts = await getPosts(1,10,user.id)
   return(
     <section className='w-full lg:w-3/5 p-3'>
       <AddPost awaitedWorkouts={awaitedWorkouts} image={user.image ?? "https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png"} />
-      {FetchedPosts.map((post,i) => (
+      {FetchedPosts.posts.map((post,i) => (
         <Post 
         sharedPost = {post.sharedPost}
         sharedWorkout={post.sharedWorkout}

@@ -165,10 +165,10 @@ export const ProfileAside = ({savedBio, profileDetails}: {
 // }
 export const MainSection = async ({user}:{user:publicUser}) => {
   const likes = await getUserLikes(user.id)
-  const FetchedPosts = await getPosts(user.id)
+  const FetchedPosts = await getPosts(1,10,user.id)
   return(
     <section className='w-full lg:w-3/5 p-3'>
-      {FetchedPosts.map((post,i) => (
+      {FetchedPosts.posts.map((post,i) => (
         <Post 
         sharedPost = {post.sharedPost}
         sharedWorkout={post.sharedWorkout}
