@@ -40,12 +40,11 @@ export function InfiniteScrollPosts({ UUID, userName }: Props) {
   if (inView && hasNextPage) {
     void fetchNextPage();
   }
-
   return (
     <div className="space-y-4">
       {data?.pages?.map((page) => (
         page.posts.map((post) => (
-          <Post sharedWorkout={post?.sharedWorkout}  shares={post?.shares} sharedPost={post?.sharedPost} appUser={userName} media={post?.resources} likes={post?.likes} key={post?.id + Math.random() * 1000} id={post?.id} userImage={post.users.image ?? ""} liked={likes.includes(post.id)} userName={post?.users.name ?? ""} userId={post.userId ?? "undefined"} postContent={post?.content} comments={post?.comments} />))
+          <Post sharedWorkout={post?.sharedWorkout}  shares={post?.shares} time={timeAgo(new Date(post.createdAt))} sharedPost={post?.sharedPost} appUser={userName} media={post?.resources} likes={post?.likes} key={post?.id + Math.random() * 1000} id={post?.id} userImage={post.users.image ?? ""} liked={likes.includes(post.id)} userName={post?.users.name ?? ""} userId={post.userId ?? "undefined"} postContent={post?.content} comments={post?.comments} />))
       ))}
 
       {isFetchingNextPage && (

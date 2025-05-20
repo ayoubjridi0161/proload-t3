@@ -12,6 +12,7 @@ import { cloneWorkout, deleteDay,
     getExerciceByName, 
     getMuscleGroups, 
     getUserByEmail, 
+    getWorkoutDaysById, 
     getWorkoutsByUser, 
     getWorkoutShortVersion, 
     InsertDay, 
@@ -406,4 +407,11 @@ export const cloneAndUseWorkoutAction = async (workoutId:number)=>{
 export const makeCurrentWorkoutAction = async (userId:string,workoutId:number)=>{
     const res = await makeCurrentWorkout(userId,workoutId)
     return res
+}
+
+export const getWorkoutDaysByID = async (id:number)=>{
+ try{ const res = await getWorkoutDaysById(id)
+  return res}catch(error){
+    return null
+  }
 }

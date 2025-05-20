@@ -31,6 +31,7 @@ interface WorkoutCardProps {
 }
 export function WorkoutCard({ workout, handleShareEvent, handleOpenDialog }: WorkoutCardProps) {
   const [loading,isLoading] = React.useState(false)
+  
 
   const { name, dayNames, description, exercices, id, numberOfDays, upvotes, username } = workout
   const muscleGroups = exercices?.map(ex => ({

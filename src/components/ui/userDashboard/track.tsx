@@ -116,7 +116,7 @@ export default function Track({ workout, totalSets, totalReps,lastSession }: Pro
   <Container className=" border-0 border-green-600 dark:bg-xtraDarkPrimary bg-xtraLight/15  shadow-md">
     <Tabs className="space-y-10 px-7" defaultValue="1">   
       <p>Choose a workout</p>
-      <TabsList className="bg-transparent gap-2">
+      <TabsList className="bg-transparent gap-2 flex-wrap">
         {workout?.days.map((day, i) => (
           <TabsTrigger
             value={day.dayIndex.toString()}

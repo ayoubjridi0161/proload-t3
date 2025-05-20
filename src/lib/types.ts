@@ -79,6 +79,7 @@ export type WorkoutDetail = {
 
 export type UserLog = {
     id: number
+    dayName:string|undefined
     userId: string | null
     workoutId: number |null
     date: Date
@@ -130,7 +131,7 @@ export type Post = {
     id: number;
     userId: string;
     content: string;
-    createdAt: Date;
+    createdAt: string;
     likes: number;
     comments: Comment[];
     users: {

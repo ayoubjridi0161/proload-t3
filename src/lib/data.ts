@@ -279,17 +279,29 @@ export const InsertWorkout = async (workout:types.workout)  =>{
         return{message:"failed"}
     }
 }
-// export const InsertUser = async (user:{username:string,password:string,email:string})=>{
-//     try{
-//         await db.insert(users).values({name:user.username,password:user.password,email:user.email})
-//         return true
-        
-//     }catch(err){
-        
-//         console.log(err)
-//         throw new DrizzleError({message:"failed to insert user",cause:err})
-//     }
-// }
+
+export const getWorkoutDaysById = async (id:number) => {
+    try{
+        const Days = await db.query.workouts.findFirst({
+            where: eq(workouts.id, id),
+            columns: {numberOfDays:true},
+            with:{
+                days:{
+                    columns:{name:true,dayIndex:true}
+                }
+            }
+        });
+        if(!Days) return null
+        const maxIndex = Days?.numberOfDays ?? 7;
+      const dayNamesSorted = Array.from({ length: maxIndex }, (_, index) => {
+        const day = Days.days.find(day => day.dayIndex === index + 1);
+        return day ? day.name : 'rest';
+      });
+        return dayNamesSorted
+    }catch(error){
+        throw error
+    }
+}
 export const updateWorkout = async (data:{numberOfDays:number,name:string,description:string},workoutId:number)=>{
     const parsedData = data.description ? data : {
         numberOfDays: data.numberOfDays,
@@ -498,7 +510,7 @@ export const deletePost = async (postId:number) =>{
         throw err
     }
 }
-export const getPosts = async ( page: number = 1, limit: number = 10,userId?: string) => {
+export const getPosts = async ( page: number = 1, limit: number = 10,userId?: string,connects?: string[]) => {
     try{
         const posts = await db.query.Posts.findMany({
             where: userId ? eq(Posts.userId, userId) : undefined,
@@ -509,7 +521,11 @@ export const getPosts = async ( page: number = 1, limit: number = 10,userId?: st
                           with:{replys:{columns:{content:true,id:true},with:{users:{columns:{name:true}}}},users:{columns:{name:true
                           }}}},
             },
-            orderBy:(Posts,{desc})=>[desc(Posts.id)],
+            orderBy:(Posts,{desc, sql})=>[
+                // First sort by whether the post is from a connected user
+                sql`CASE WHEN ${Posts.userId} IN (${sql.raw(connects?.map(id => `'${id}'`).join(',') ?? 'NULL')}) THEN 0 ELSE 1 END`,                // Then sort by post date
+                desc(Posts.createdAt)
+            ],
             offset: (page - 1) * limit,
             limit: limit
         })
@@ -623,7 +639,7 @@ export const getUsers = async ()=>{
 
 export const addLogs= async (workoutID:number,userID:string,dayName:string,logs:{ name: string; sets: { setIndex: string; weight: string }[] }[])=>{
     try{
-        const res = await db.insert(userLogs).values({userId:userID,logs:logs,workoutId:workoutID}).returning()
+        const res = await db.insert(userLogs).values({userId:userID,logs:logs,workoutId:workoutID,dayName:dayName}).returning()
         return res
     }catch(err){
         throw err
@@ -666,7 +682,7 @@ export const getUserLikes = async (userID:string)=>{
 export const createComment = async (userName: string, content: string, userID: string, postID: number) => {
     try {
        
-         const res = await db.insert(comments).values({ content: content, userId: userID, postId: postID, userName: userName }).returning({ id: comments.id });
+         const res = await db.insert(comments).values({ userName:userName,content: content, userId: userID, postId: postID}).returning({ id: comments.id });
          return res[0]?.id;
         
 
@@ -844,7 +860,7 @@ export const getWorkoutCycle = async (workoutID:number)=>{
 export const createWorkoutComment = async (userName: string, content: string, userID: string, WorkoutID: number) => {
     try {
        
-         const res = await db.insert(comments).values({ content: content, userId: userID, workoutId: WorkoutID, userName: userName }).returning({ id: comments.id });
+         const res = await db.insert(comments).values({ content: content, userId: userID, workoutId: WorkoutID,userName:userName }).returning({ id: comments.id });
          return res[0]?.id;
         
 
@@ -863,7 +879,7 @@ export const getUserLogs = async (userID:string)=>{
 }
 export const getWorkoutDates = async (userID:string)=>{
     try {
-        const res = await db.query.userLogs.findMany({where:eq(userLogs.userId,userID),columns:{date:true}})
+        const res = await db.query.userLogs.findMany({where:eq(userLogs.userId,userID),columns:{date:true,dayName:true}})
         return res
     } catch (error) {
         console.error(error);

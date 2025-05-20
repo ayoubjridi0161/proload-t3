@@ -113,7 +113,7 @@ export const fetchUserLogs = async ()=>{
         await updateUserPrs(userID,maxWeight)
         const res = await addLogs(workoutID,userID,dayName,parsedExercises)
         await updateUserTotalWeight(userID,totalWeight)
-        redirect("/dashboard")
+        revalidatePath("/")
         return {message:res ? "success" : "failure"}
       }catch(err){
         console.log(err)

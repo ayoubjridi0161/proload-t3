@@ -88,6 +88,7 @@ export const userLogs = pgTable("user_logs",{
   id: serial('id').primaryKey(),  
   userId: text('user_id').references(()=>users.id),
   workoutId: integer('workout_id').references(()=>workouts.id),
+  dayName: varchar('day_name',{length:256}).$default(()=> ("")),
   date: timestamp('date',{withTimezone:true}).default(sql`CURRENT_TIMESTAMP`).notNull(),
   duration: integer('duration'),
   logs: json('logs'),

@@ -25,8 +25,8 @@ export default async function page({}: Props) {
       <section className='w-full md:w-1/2 lg:w-2/5 p-5  overflow-y-auto'>
         <AddPost awaitedWorkouts={awaitedWorkouts} image={image ?? "https://s3.eu-north-1.amazonaws.com/proload.me/2tUwhlyV-0Os5QTONBxxQ"} />
         <Suspense fallback={<><PostSkeleton /><PostSkeleton /></>}>
-            {/* <PreloadPosts UUID={UUID} userName={userName} /> */}
-            <InfiniteScrollPosts UUID={UUID} userName={userName} />
+            <PreloadPosts UUID={UUID} userName={userName} />
+            {/* <InfiniteScrollPosts UUID={UUID} userName={userName} /> */}
         </Suspense>
       </section>
     <Sidebar side='right'  className="border-left-1 dark:border-xtraDarkAccent px-3 top-[--header-height] !h-[calc(100svh-var(--header-height))]" >

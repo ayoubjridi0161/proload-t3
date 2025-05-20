@@ -1,4 +1,4 @@
-import { UserLog , WorkoutLog } from "~/lib/types";
+import { type UserLog , type WorkoutLog } from "~/lib/types";
 interface ProgressResult {
   exerciseName: string;
   increasePercentage: number;
