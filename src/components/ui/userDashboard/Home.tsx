@@ -17,12 +17,13 @@ export default function Home({userLogs}:{userLogs:
     workoutId: number | null;
     logs: unknown;
     duration: number | null;
+    dayName:string|null
 }[]
 }) {
   //  const workoutDates = await fetchWorkoutDates();
   
   
-const workoutDates = userLogs?.map(log => ({date:log.date}));
+const workoutDates = userLogs?.map(log => ({date:log.date,dayName:log.dayName}));
 const progressResults = calculateExerciseProgress(userLogs  );
   return (
     <>
@@ -127,6 +128,7 @@ const ProgressIcon =()=>{
 
   const LocalSideBar = ({workoutDates}:{workoutDates:{
     date: Date;
+    dayName: string | null;
 }[]
 })=>{
     return(
