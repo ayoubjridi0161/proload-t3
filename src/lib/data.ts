@@ -6,7 +6,6 @@ import { unstable_noStore as noStore , unstable_cache as cached } from 'next/cac
 import { removeRedundancy } from './utils'
 import { PgSelect } from 'drizzle-orm/pg-core'
 import {type ExtraDetails} from "~/lib/types"
-import { getAchievement } from './actions/achievements'
 /*Read Data*/
 
 export const fetchAllWorkouts = async(filters:{query?:string,currentPage?:number,sortFiled?:"name"|"days"|"upvotes"|"time",order?:"asc"|"desc"})=>{
