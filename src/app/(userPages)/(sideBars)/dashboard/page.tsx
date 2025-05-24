@@ -1,3 +1,4 @@
+"use server"
 import Home from "~/components/ui/userDashboard/Home"
 import NewUser from "~/components/ui/userDashboard/newUser"
 import { fetchUserLogs } from "~/lib/actions/userLogsActions"
