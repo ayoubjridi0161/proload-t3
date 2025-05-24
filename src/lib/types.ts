@@ -79,12 +79,12 @@ export type WorkoutDetail = {
 
 export type UserLog = {
     id: number
-    dayName:string|undefined
     userId: string | null
     workoutId: number |null
     date: Date
     duration: number | null
     logs: unknown
+    dayName:string|null
     
   }
 export type WorkoutLog = {

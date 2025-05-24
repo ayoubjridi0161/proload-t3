@@ -14,7 +14,7 @@ export default function NewUser({userLogs}:{userLogs:
     workoutId: number | null;
     logs: unknown;
     duration: number | null;
-    dayName:string|null;
+    dayName:string|null
 }[]
 }) {
 const workoutDates = userLogs?.map(log => ({date:log.date,dayName:log.dayName}));

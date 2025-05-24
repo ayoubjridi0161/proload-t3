@@ -23,7 +23,7 @@ export default function Home({userLogs}:{userLogs:
   
   
 const workoutDates = userLogs?.map(log => ({date:log.date,dayName:log.dayName}));
-const progressResults = calculateExerciseProgress(userLogs as UserLog[]);
+const progressResults = calculateExerciseProgress(userLogs  );
   return (
     <>
     <div className={ `    w-full p-5 ${andika.className}`}>
@@ -127,7 +127,7 @@ const ProgressIcon =()=>{
 
   const LocalSideBar = ({workoutDates}:{workoutDates:{
     date: Date;
-    dayName:string|null
+    dayName: string | null;
 }[]
 })=>{
     return(
