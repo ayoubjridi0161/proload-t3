@@ -42,6 +42,11 @@ const sidebarItems = [
     href: "/admin/posts",
   },
   {
+    title:"Achievemnts",
+    icon: Dumbbell,
+    href: "/admin/achievements"
+  },
+  {
     title: "Settings",
     icon: Settings,
     href: "/admin/settings",

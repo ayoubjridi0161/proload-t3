@@ -137,14 +137,31 @@ export const users = pgTable("user", {
   numberOfConnects:integer('number_of_connects').default(0).notNull()
 })
 
+
+
 export const usersRelations = relations(users,({many})=>({
   workouts:many(workouts),
   comments:many(comments),
   replys:many(replys),
   posts:many(Posts),
   logs:many(userLogs),
-  notifications:many(notifications)
+  notifications:many(notifications),
+  achievements:many(userAchievements)
 }));
+
+export const userAchievements = pgTable("user_achievements",{
+    id:serial('id').primaryKey(),
+    userId:text('user_id').references(()=>users.id),
+    date:timestamp('date',{withTimezone:true}).default(sql`CURRENT_TIMESTAMP`).notNull(),
+    achievement:text('achievement').notNull(),
+    description:text('description'),
+    image:text('image'),
+    tier:integer('tier'),
+})
+
+export const userAchievementsRelations = relations(userAchievements,({one})=>({
+  users:one(users,{fields:[userAchievements.userId],references:[users.id]})
+}))
 export const stateEnum = pgEnum('state', ['comment', 'reply']);
 export const comments = pgTable("comments",{
   id:serial('id').primaryKey(),

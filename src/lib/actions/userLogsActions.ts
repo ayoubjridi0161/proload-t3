@@ -29,7 +29,7 @@ export const fetchUserLogs = async ()=>{
     const userLogs = await getUserLogs(userID);
     if (!userLogs) return null
     const logs  = userLogs.map(log => log.logs as WorkoutLog[]);
-  
+    let totalWeight = 0
   // Create a map to track max weight for each exercise
     const exerciseRecords: { exercise: string, record: number }[] = [];
   
@@ -37,6 +37,7 @@ export const fetchUserLogs = async ()=>{
     logs.forEach(log => {
       log.forEach(exercise => {
         const weight = Math.max(...exercise.sets.map(set => parseFloat(set.weight) || 0));
+        totalWeight += exercise.sets.reduce((acc, set) => acc + (parseFloat(set.weight) || 0), 0);
   
         // Check if the exercise is already in the map
         const existingRecord = exerciseRecords.find(record => record.exercise === exercise.name);
@@ -54,6 +55,7 @@ export const fetchUserLogs = async ()=>{
       }) 
     })
     const res = await updateUserPrs(userID,exerciseRecords)
+    await updateUserTotalWeight(userID,totalWeight)
     revalidatePath("/")
     return res
   }
@@ -113,6 +115,7 @@ export const fetchUserLogs = async ()=>{
         await updateUserPrs(userID,maxWeight)
         const res = await addLogs(workoutID,userID,dayName,parsedExercises)
         await updateUserTotalWeight(userID,totalWeight)
+        // await addAchievement(userID,{type:"totalWeight",value:totalWeight})
         revalidatePath("/")
         return {message:res ? "success" : "failure"}
       }catch(err){
@@ -126,3 +129,13 @@ export const fetchUserLogs = async ()=>{
     }
   };
 
+// export const addAchievementAction = async (formdata:FormData)=> {
+//   const type = formdata.get("type") as string
+//   try {
+//     const res = await addAchievement(formdata.get("userID") as string,{type:type,value:parseInt(formdata.get("value") as string)})
+//     revalidatePath("/")
+//   } catch (err) {
+//     console.log(err)  
+//     return { message: "failure" };
+//    }
+// }
