@@ -27,7 +27,7 @@ export default async function WorkoutSection({userID,privacy}: Props) {
   const workoutSummaryList = await getUserWorkouts(privacy,userID)
   const workouts = await Promise.all(workoutSummaryList) 
   return (
-    <div className="w-full py-8">
+    <div className="w-full pt-3">
       <div className="grid grid-cols-1 w-full md:grid-cols-2 lg:grid-cols-3 gap-6">
           {workouts.length > 0 ? workouts.map(workout => <WorkoutCard key={workout.id} workout={workout} />) : <div className='w-full text-center'>No Workouts</div>}
       </div>

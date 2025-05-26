@@ -21,7 +21,7 @@ export default async function page(props: {
     user = session?.user as publicUser;
   }
   return (
-    <div className="grid place-items-center mx-auto">
+    <div className="flex justify-center">
         <Profile user = {user} isPublic={!!publicUserID}/>
     </div>
   )

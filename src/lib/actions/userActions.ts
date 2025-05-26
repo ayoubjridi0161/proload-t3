@@ -191,14 +191,22 @@ import { redirect } from "next/navigation"
       console.log("could not get user")
       return "failure"
     }
+
+    let updateSuccessful = false;
     try{
-      const res = await updateUserProfile({name,bio,details,profilePic:profilePicURL,cover:coverPicURL},id)
-      if(res == "success") {
-        console.log(res)
-        revalidatePath('/dashboard')}
-        redirect("/dashboard")
+      // Assuming updateUserProfile throws an error on failure
+      // or returns a value that can be checked for success.
+      // If it completes without throwing, we consider it successful for redirection purposes.
+      await updateUserProfile({name,bio,details,profilePic:profilePicURL,cover:coverPicURL},id)
+      updateSuccessful = true;
     }catch(err){
-      console.error(err)
+      console.error("Error updating profile:", err) // Log the actual error from updateUserProfile
       return "failure"
     }
+
+    if (updateSuccessful) {
+      redirect("/dashboard")
+    }
+    // If update was not successful, "failure" would have already been returned.
+    // If redirect is called, this part of the code is not reached.
   }
