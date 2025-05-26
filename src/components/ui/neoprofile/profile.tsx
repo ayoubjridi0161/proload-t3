@@ -13,6 +13,8 @@ import { timeAgo } from '~/lib/utils'
 import ProfileHeader from './profileHeader'
 import { isFollowed } from '~/lib/actions/userActions'
 import { getUserWorkouts } from '~/lib/actions/workout'
+import Achievements from './achievementsWall'
+import AchievementsSection from './achievementSection'
 
 async function Profile({user,isPublic}: {user: publicUser,isPublic:boolean}) {
   const isfollowed = isPublic ? await isFollowed(user.id) : null
@@ -61,6 +63,13 @@ async function Profile({user,isPublic}: {user: publicUser,isPublic:boolean}) {
             >
               Workouts
             </TabsTrigger>
+            <TabsTrigger 
+              value="Achievements" 
+              style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 0.8)' }} 
+              className="py-1 sm:py-2 rounded-none font-semibold text-[#4a4a4a] border-black border-1 px-3 sm:px-7"
+            >
+              Achievements
+            </TabsTrigger>
           </TabsList>
         </div>
         <Separator className='mt-3'/>
@@ -75,6 +84,11 @@ async function Profile({user,isPublic}: {user: publicUser,isPublic:boolean}) {
             <WorkoutSection privacy={false} userID={user.id} />
           </Suspense>
         </TabsContent>
+        <TabsContent value="Achievements" className='w-full px-2 sm:px-0'>
+          <div className='w-full'>
+          <AchievementsSection userID={user.id} />
+          </div>
+        </TabsContent>
       </Tabs>
     </div>
   )
@@ -87,42 +101,7 @@ export const ProfileAside = async ({userID,isPublic}:{isPublic:boolean,userID:st
   return (
     <aside className='w-full lg:w-2/5 p-2 sm:p-3 space-y-3'>
       <AsideTopSection data={details} isPublic={isPublic}/>
-      <div className='shadow-bottom w-full p-2 space-y-3 bg-xtraContainer dark:bg-xtraDarkPrimary rounded-md'>
-        <div className='flex justify-between items-center'>
-          <h1 className='text-lg sm:text-xl font-bold'>Achievements photos</h1> 
-          <MoveRight color='#a4a4a4' />
-        </div>
-        <div className='grid grid-cols-2 gap-2'>
-          <Image 
-            src={'https://s3.eu-north-1.amazonaws.com/proload.me/ach1.avif'} 
-            width={200} 
-            height={200} 
-            className='w-full aspect-square object-cover' 
-            alt={'achievement 1'} 
-          />
-          <Image 
-            src={'https://s3.eu-north-1.amazonaws.com/proload.me/ach2.jpg'} 
-            width={200} 
-            height={200} 
-            className='w-full aspect-square object-cover' 
-            alt={'achievement 2'} 
-          />
-          <Image 
-            src={'https://s3.eu-north-1.amazonaws.com/proload.me/ach3.jpg'} 
-            width={200} 
-            height={200} 
-            className='w-full aspect-square object-cover' 
-            alt={'achievement 3'} 
-          />
-          <Image 
-            src={'https://s3.eu-north-1.amazonaws.com/proload.me/ach4.jpg'} 
-            width={200} 
-            height={200} 
-            className='w-full aspect-square object-cover' 
-            alt={'achievement 4'} 
-          />
-        </div>
-      </div>
+      <Achievements userID={userID}/>
     </aside>
   )
 }

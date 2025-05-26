@@ -1219,4 +1219,20 @@ const achievements: string[] = [];
     return [];
   }
 }
+export async function getAchievements(userID:string){
+    try {
+      const res = await db.query.userAchievements.findMany({
+        columns:{
+          achievement:true,
+          description:true,
+          tier:true,
+
+        },
+        where:eq(userAchievements.userId,userID),
+      })
+      return res
+    }catch(err){
+        console.error(err)
+    }
+}
 
