@@ -7,6 +7,21 @@ type Props = {
     userID:string
     privacy:boolean
 }
+const emptyWorkout = {
+  exercices: [{
+    mg: "back",
+    exerciseCount: 0
+  }],
+  id: 0,
+  name: "random",
+  username: null,
+  description: "",
+  numberOfDays: null,
+  dayNames: [],
+  upvotes: 0,
+  userId: null
+}
+
 
 export default async function WorkoutSection({userID,privacy}: Props) {
   const workoutSummaryList = await getUserWorkouts(privacy,userID)
@@ -14,7 +29,7 @@ export default async function WorkoutSection({userID,privacy}: Props) {
   return (
     <div className="w-full py-8">
       <div className="grid grid-cols-1 w-full md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {workouts.length > 0 ? workouts.map(workout => <WorkoutCard key={workout.id} workout={workout} />) : <div className='w-[100vw] overflow-x-hidden max-w-full'>No Workouts</div>}
+          {workouts.length > 0 ? workouts.map(workout => <WorkoutCard key={workout.id} workout={workout} />) : <div className='w-full text-center'>No Workouts</div>}
       </div>
     </div>
   )

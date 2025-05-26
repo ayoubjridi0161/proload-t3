@@ -13,7 +13,7 @@ import {cloneAndUseWorkoutAction, makeCurrentWorkoutAction } from "~/lib/actions
 interface WorkoutCardProps {
   workout: {
     exercices: {
-      mg: unknown;
+      mg: string;
       exerciseCount: number;
     }[];
     id: number;
@@ -31,11 +31,9 @@ interface WorkoutCardProps {
 }
 export function WorkoutCard({ workout, handleShareEvent, handleOpenDialog }: WorkoutCardProps) {
   const [loading,isLoading] = React.useState(false)
-  
-
   const { name, dayNames, description, exercices, id, numberOfDays, upvotes, username } = workout
   const muscleGroups = exercices?.map(ex => ({
-    name: ex.mg as string,
+    name: ex.mg,
     value: ex.exerciseCount
   }))
   const handleUseWorkout = async ()=>{

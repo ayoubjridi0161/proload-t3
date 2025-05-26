@@ -19,7 +19,7 @@ async function Profile({user,isPublic}: {user: publicUser,isPublic:boolean}) {
   const workoutsToShare = await getUserWorkouts(true,user.id)
   const awaitedWorkouts = await Promise.all(workoutsToShare) 
   return (
-    <div className='w-2/3'>
+    <div className='min-w-2/3 max-w-2/3'>
       {typeof isfollowed == 'boolean' ? 
       <ProfileHeader userCover={user.cover} isfollowed={isfollowed ?? false} numberOfConnects={user.numberOfConnects} userID={user.id} userImage={user.image ?? ""} userName={user.name}/>
       :
@@ -69,7 +69,7 @@ async function Profile({user,isPublic}: {user: publicUser,isPublic:boolean}) {
         <TabsContent value="Profile" className='min-w-full'>
           <main className='flex flex-col lg:flex-row gap-4'>
             <ProfileAside userID={user.id} isPublic={isPublic} />
-            <MainSection awaitedWorkouts={awaitedWorkouts} user={user} />
+            <MainSection isPublic={isPublic} awaitedWorkouts={awaitedWorkouts} user={user} />
           </main>
         </TabsContent>
         <TabsContent value="Workouts" className='min-w-full'>
@@ -87,7 +87,7 @@ export default Profile
 export const ProfileAside = async ({userID,isPublic}:{isPublic:boolean,userID:string}) => {
   const details = await getUserBioAndDetails(userID)
   return (
-    <aside className='w-full lg:w-2/5 p-3 space-y-3 '>
+    <aside className='w-full md:w-2/5 p-3 space-y-3 '>
       <AsideTopSection data={details} isPublic={isPublic}/>
       <div className='shadow-bottom w-full p-2 space-y-3 bg-xtraContainer dark:bg-xtraDarkPrimary'>
         <div className='flex justify-between items-center'>
@@ -129,7 +129,7 @@ export const ProfileAside = async ({userID,isPublic}:{isPublic:boolean,userID:st
   )
 }
 
-export const MainSection = async ({user,awaitedWorkouts}:{user:publicUser,awaitedWorkouts:{
+export const MainSection = async ({user,awaitedWorkouts,isPublic}:{isPublic:boolean,user:publicUser,awaitedWorkouts:{
   exercices: {
       mg: string;
       exerciseCount: number;
@@ -147,8 +147,8 @@ export const MainSection = async ({user,awaitedWorkouts}:{user:publicUser,awaite
   const FetchedPosts = await getPosts(1,10,user.id)
   return(
     <section className='w-full lg:w-3/5 p-3'>
-      <AddPost awaitedWorkouts={awaitedWorkouts} image={user.image ?? "https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png"} />
-      {FetchedPosts.posts.map((post,i) => (
+{!isPublic && <AddPost awaitedWorkouts={awaitedWorkouts} image={user.image ?? "https://s3.eu-north-1.amazonaws.com/proload.me/ProloadLogo.png"} />
+}      {FetchedPosts.posts.map((post,i) => (
         <Post 
         sharedPost = {post.sharedPost}
         sharedWorkout={post.sharedWorkout}

@@ -215,9 +215,9 @@ export function AppSidebar({className, user, ...props}: AppSidebarProps & React.
       {/*third group*/}
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
-      <SidebarFooter className="">
+      {/* <SidebarFooter className="">
         <NavUser user={{avatar:user.image ?? "",email:user.email ?? "",name:user.name}} />
-      </SidebarFooter>
+      </SidebarFooter> */}
     </Sidebar>
   )
 }

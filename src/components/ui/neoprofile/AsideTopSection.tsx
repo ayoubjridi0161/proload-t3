@@ -28,22 +28,22 @@ type Props = {
   data: {
     bio: string | null;
     details: {
-        bmi: string;
-        age: string;
-        gender: string;
-        height: string;
-        weight: string;
-        experience: string;
+      bmi: string;
+      age: string;
+      gender: string;
+      height: string;
+      weight: string;
+      experience: string;
     } | null;
-} | undefined
+  } | undefined
 }
-export default function AthleticProfile({data,isPublic}:Props) {
+export default function AthleticProfile({ data, isPublic }: Props) {
   const [bio, setBio] = useState(data?.bio ?? "")
   const [showBioForm, setShowBioForm] = useState(false)
   const [savedBio, setSavedBio] = useState(data?.bio)
 
   const [showDetailsDialog, setShowDetailsDialog] = useState(false)
-  const [details, setDetails] = useState(data?.details ?? {age:"",bmi:"",experience:"",gender:"",height:"",weight:""})
+  const [details, setDetails] = useState(data?.details ?? { age: "", bmi: "", experience: "", gender: "", height: "", weight: "" })
   const [savedDetails, setSavedDetails] = useState<null | typeof details>(data?.details ?? null)
 
   const handleSaveBio = async () => {
@@ -56,7 +56,7 @@ export default function AthleticProfile({data,isPublic}:Props) {
   const [isSaving, setIsSaving] = useState(false)
 
   const handleSaveDetails = async () => {
-    if (details){
+    if (details) {
       setIsSaving(true)
       try {
         setSavedDetails({ ...details })
@@ -77,10 +77,10 @@ export default function AthleticProfile({data,isPublic}:Props) {
     if (details.weight && details.height) {
       const weightValue = parseFloat(details.weight.replace(/[^0-9.]/g, ''));
       const heightValue = parseFloat(details.height.replace(/[^0-9.]/g, ''));
-      
+
       if (!isNaN(weightValue) && !isNaN(heightValue)) {
         let bmiValue: number;
-        
+
         if (details.weight.includes('kg') && details.height.includes('cm')) {
           // Convert cm to meters and calculate BMI
           bmiValue = weightValue / Math.pow(heightValue / 100, 2);
@@ -92,7 +92,7 @@ export default function AthleticProfile({data,isPublic}:Props) {
         } else {
           return;
         }
-        
+
         setDetails(prev => ({ ...prev, bmi: bmiValue.toFixed(1) }));
       }
     }
@@ -100,14 +100,11 @@ export default function AthleticProfile({data,isPublic}:Props) {
   return (
     <div className="shadow-bottom w-full p-2 space-y-3 bg-xtraContainer dark:bg-xtraDarkPrimary">
       <h1 className="text-xl font-bold">Athletic Profile</h1>
-
-      {savedBio && !showBioForm && (
-        <div className="border border-gray-200 p-3 mb-3">
-          <p className="text-sm text-gray-700">{savedBio}</p>
-        </div>
-      )}
-
-      {showBioForm ? (
+      <div className="border border-gray-200 p-3 mb-3">
+        {savedBio && savedBio.length > 0 ? <p className="text-sm text-gray-700">{savedBio}</p>
+        :<p className="text-lg text-gray-700">user has no bio</p>}
+      </div>
+      {showBioForm && (
         <div className="space-y-2">
           <Textarea
             placeholder="Enter your bio here..."
@@ -121,7 +118,7 @@ export default function AthleticProfile({data,isPublic}:Props) {
               variant="default"
               style={{ boxShadow: "2px 2px 0px rgba(0, 0, 0, 0.8)" }}
               className="rounded-none font-semibold border-black border-1 px-4 py-0"
-              onClick={()=>{void handleSaveBio()}}
+              onClick={() => { void handleSaveBio() }}
             >
               SAVE BIO
             </Button>
@@ -135,20 +132,20 @@ export default function AthleticProfile({data,isPublic}:Props) {
             </Button>
           </div>
         </div>
-      ) : (
-        <Button
+      )}
+        {!isPublic && !showBioForm && <Button
           variant="ghost"
           style={{ boxShadow: "2px 2px 0px rgba(0, 0, 0, 0.8)" }}
           className="w-3/4 rounded-none font-semibold text-[#4a4a4a] border-black border-1 px-7 py-0"
           onClick={() => setShowBioForm(true)}
         >
           {savedBio ? "EDIT BIO" : "ADD BIO"}
-        </Button>
-      )}
+        </Button>}
 
-      
 
-      {savedDetails && (
+
+
+      {!isPublic && savedDetails && (
         <div className="border border-gray-200 p-3 mb-3 text-sm">
           <div className="grid grid-cols-2 gap-2">
             {savedDetails.height && (
@@ -190,7 +187,7 @@ export default function AthleticProfile({data,isPublic}:Props) {
           </div>
         </div>
       )}
-      <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
+      {!isPublic &&<Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
         <DialogTrigger asChild>
           <Button
             variant="ghost"
@@ -222,8 +219,8 @@ export default function AthleticProfile({data,isPublic}:Props) {
                   className="flex-1"
                   placeholder={details.height?.includes('cm') ? "e.g., 150" : "e.g., 5.9"}
                 />
-                <Select 
-                  value={details.height?.includes('cm') ? 'cm' : 'ft'} 
+                <Select
+                  value={details.height?.includes('cm') ? 'cm' : 'ft'}
                   onValueChange={(unit) => {
                     const value = details.height?.replace(/[^0-9.]/g, '') || '';
                     setDetails({ ...details, height: `${value}${unit}` });
@@ -255,8 +252,8 @@ export default function AthleticProfile({data,isPublic}:Props) {
                   className="flex-1"
                   placeholder={details.weight?.includes('kg') ? "e.g., 75" : "e.g., 165"}
                 />
-                <Select 
-                  value={details.weight?.includes('kg') ? 'kg' : 'lbs'} 
+                <Select
+                  value={details.weight?.includes('kg') ? 'kg' : 'lbs'}
                   onValueChange={(unit) => {
                     const value = details.weight?.replace(/[^0-9.]/g, '') || '';
                     setDetails({ ...details, weight: `${value}${unit}` });
@@ -279,7 +276,7 @@ export default function AthleticProfile({data,isPublic}:Props) {
               <Input
                 id="age"
                 value={details.age}
-                onChange={(e) => setDetails({ ...details,age: e.target.value })}
+                onChange={(e) => setDetails({ ...details, age: e.target.value })}
                 className="col-span-3"
                 placeholder="e.g., 17"
               />
@@ -298,10 +295,10 @@ export default function AthleticProfile({data,isPublic}:Props) {
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="" className="text-right">
-                  gender
+                gender
               </Label>
-              <Select 
-                value={details.gender} 
+              <Select
+                value={details.gender}
                 onValueChange={(value) => setDetails({ ...details, gender: value })}
               >
                 <SelectTrigger className="col-span-3 bg-white">
@@ -315,7 +312,7 @@ export default function AthleticProfile({data,isPublic}:Props) {
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="" className="text-right">
-                  bmi
+                bmi
               </Label>
               <Input
                 id="bmi"
@@ -328,7 +325,7 @@ export default function AthleticProfile({data,isPublic}:Props) {
           </div>
           <DialogFooter>
             <Button
-              onClick={()=>{void handleSaveDetails()}}
+              onClick={() => { void handleSaveDetails() }}
               style={{ boxShadow: "2px 2px 0px rgba(0, 0, 0, 0.8)" }}
               className="rounded-none font-semibold border-black border-1"
               disabled={isSaving}
@@ -337,7 +334,7 @@ export default function AthleticProfile({data,isPublic}:Props) {
             </Button>
           </DialogFooter>
         </DialogContent>
-      </Dialog>
+      </Dialog>}
 
       {/* <Button
         variant="ghost"

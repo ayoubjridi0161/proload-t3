@@ -56,6 +56,8 @@ export const fetchUserLogs = async ()=>{
     })
     const res = await updateUserPrs(userID,exerciseRecords)
     await updateUserTotalWeight(userID,totalWeight)
+    const achievementResults = await checkForAchievements(userID);
+    console.log(achievementResults);
     revalidatePath("/")
     return res
   }
@@ -116,8 +118,6 @@ export const fetchUserLogs = async ()=>{
         const res = await addLogs(workoutID,userID,dayName,parsedExercises)
         await updateUserTotalWeight(userID,totalWeight)
         // await addAchievement(userID,{type:"totalWeight",value:totalWeight})
-        const achievementResults = await checkForAchievements(userID);
-        console.log(achievementResults);
         revalidatePath("/")
         return {message:res ? "success" : "failure"}
       }catch(err){

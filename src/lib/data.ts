@@ -1117,7 +1117,7 @@ const achievements: string[] = [];
         columns: { date: true }
       });
       const session = userlogs.length
-    const totalWeight = userTotalWeight?.records[userTotalWeight.records.length-1] ?? 0
+        const totalWeight = userTotalWeight?.records[userTotalWeight.records.length-1] ?? 0
         const weightMilestones = [1000, 5000, 10000, 25000, 50000];
         for (const milestone of weightMilestones) {
           if (totalWeight >= milestone) {
@@ -1162,8 +1162,58 @@ const achievements: string[] = [];
             }
           }
         }
-      
-    }) 
+        const targetExercises = [
+            "Bench Press - Powerlifting",
+            "Barbell Squat",
+            "Barbell Deadlift"
+        ];
+        const PowerliftingPrs : {exercise:string,PR:number}[] =[]
+        for (const pr of (userPRs?.personalRecords ?? []) as Array<{exercise:string,records:number[]}>) {
+
+            if (targetExercises.includes(pr.exercise))
+                // Assuming records are sorted or the last one is the latest
+                // If not sorted, you might need to sort them by date if a date is available
+                // or assume the last entry in the array is the latest.
+                if (pr.records.length > 0) {
+                    PowerliftingPrs.push({exercise:pr.exercise,PR:pr.records[pr.records.length - 1] ?? 0})
+                }
+        }
+        const maxWeightMilestones = [
+            {exercise:"Bench Press - Powerlifting",milestone:[
+                50,75,100,120,150,200
+            ]},
+            {exercise:"Barbell Squat",milestone:[
+                70,100,140,180,220,280
+            ]},
+            {exercise:"Barbell Deadlift",milestone:[
+                100,150,200,250,300,350
+            ]}]
+        for (const exercise of maxWeightMilestones) {
+            const pr = PowerliftingPrs.find(pr => pr.exercise === exercise.exercise);
+            if (pr) {
+                for (const milestone of exercise.milestone) {
+                    if (pr.PR >= milestone) {
+                        const existing = await tx.query.userAchievements.findFirst({
+                            where: and(
+                                eq(userAchievements.userId, userId),
+                                eq(userAchievements.achievement, `${exercise.exercise}_${milestone}`)
+                            )
+                        })
+                        if (!existing) {
+                            await tx.insert(userAchievements).values({
+                                userId,
+                                achievement: `${exercise.exercise}_${milestone}`,
+                                description: `Achieved ${exercise.exercise}: ${milestone}kg`,
+                                tier: exercise.milestone.indexOf(milestone) + 1
+                            })
+                            achievements.push(`${exercise.exercise}: ${milestone}kg`);
+                        }
+                    }
+                }
+            }
+        }
+    })
+     
     return achievements;
   } catch (err) {
     console.error('Error checking achievements:', err);

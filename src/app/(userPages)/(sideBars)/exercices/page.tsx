@@ -9,7 +9,7 @@ const filteredData = data.filter(item =>
 
   return (
     <main className='w-full p-5'>
-  <ExercicesTable data={filteredData}/>
+  <ExercicesTable data={data}/>
   </main>
 )
 };
