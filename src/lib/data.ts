@@ -527,7 +527,6 @@ export const getPosts = async ( page: number = 1, limit: number = 10,userId?: st
                 desc(Posts.createdAt)
             ],
             offset: (page - 1) * limit,
-            limit: limit
         })
         
         // Use Promise.all to wait for all async map operations to complete

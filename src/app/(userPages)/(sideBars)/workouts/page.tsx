@@ -5,13 +5,10 @@ import Header from '~/components/ui/neoworkout/header'
 import { SidebarContent,Sidebar } from '~/components/ui/sidebar'
 import WorkoutCalendar from '~/components/ui/userDashboard/workoutCalendar'
 import { fetchWorkoutDates } from '~/lib/actions/userLogsActions'
-import { getWorkoutList } from '~/lib/actions/workout'
 import Footer from '~/components/ui/neoworkout/footer'
-import { WorkoutCard } from '~/components/ui/neoworkout/workout-card'
 import PerloadWorkouts from './perloadWorkouts'
 import { Suspense } from 'react'
 import { WorkoutCardSkeleton } from '~/components/skeletons/workout-cardSkeleton'
-import { getUserProfile } from '~/lib/actions/userActions'
 export default async function page(props: {
   searchParams?: Promise<{
     search?: string;

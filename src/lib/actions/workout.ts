@@ -23,7 +23,6 @@ import { cloneWorkout, deleteDay,
     updateExercice, 
     updateWorkout } from "../data"
 import { redirect } from "next/navigation"
-import { toast } from "sonner"
 import { sendNotification } from "./notifications"
 import { generateFullWorkout, generateWorkoutDay } from "../ai-copilot"
 import { revalidatePath } from "next/cache"
@@ -169,7 +168,7 @@ type WorkoutDay = {
     }
   }
 
-  export const getUserWorkouts =async  (privacy:boolean,user:string) =>{
+  export const getUserWorkouts = async (privacy:boolean, user:string) => {
     try {
       const res = await fetchUserWorkouts(privacy,user)
       const muscleGroup = await getMuscleGroups();
@@ -224,12 +223,13 @@ type WorkoutDay = {
         };
       });
   
-      return data.map(async w => {
+      const responseToReturn = data.map(async w => {
         return {
           ...w,
           exercices: (await Promise.all(w.exercices)).filter(ex => ex.exerciseCount > 0)
         };
       });
+      return Promise.all(responseToReturn)
   
     } catch (err) {
       throw err;
@@ -296,12 +296,13 @@ type WorkoutDay = {
         };
       });
   
-      return data.map(async w => {
+      const response = data.map(async w => {
         return {
           ...w,
           exercices: (await Promise.all(w.exercices)).filter(ex => ex.exerciseCount > 0)
         };
       });
+      return Promise.all(response)
   
     } catch (err) {
       throw err;

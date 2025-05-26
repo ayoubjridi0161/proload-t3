@@ -16,8 +16,7 @@ import { getUserWorkouts } from '~/lib/actions/workout'
 
 async function Profile({user,isPublic}: {user: publicUser,isPublic:boolean}) {
   const isfollowed = isPublic ? await isFollowed(user.id) : null
-  const workoutsToShare = await getUserWorkouts(true,user.id)
-  const awaitedWorkouts = await Promise.all(workoutsToShare) 
+  const awaitedWorkouts = await getUserWorkouts(true,user.id)
   return (
     <div className='w-full max-w-full md:max-w-[90%] lg:max-w-[70%] '>
       {typeof isfollowed == 'boolean' ? 
