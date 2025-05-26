@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache"
 import { getProfileByID, updateUserProfile, editUserBio, editUserDetails, getFullUser, getFollows, getSideConnects, getUsersByName, getFriendList } from "../data"
 import { uploadToS3 } from "./s3Actions"
 import {type OnboardingData } from "~/lib/types"
+import { redirect } from "next/navigation"
 
 
   // export const getUserProfile = async (id:string)=>{
@@ -195,6 +196,7 @@ import {type OnboardingData } from "~/lib/types"
       if(res == "success") {
         console.log(res)
         revalidatePath('/dashboard')}
+        redirect("/dashboard")
     }catch(err){
       console.error(err)
       return "failure"

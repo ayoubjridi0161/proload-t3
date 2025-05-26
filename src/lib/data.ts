@@ -1058,3 +1058,116 @@ export async function makeCurrentWorkout(userId:string,workoutId:number){
 }catch(err){console.error(err);return "failed"}
 }
 
+// Add achievement to user
+export const addAchievement = async (userId: string, achievement: {
+  type: string;
+  value: number;
+  tier?: number;
+}) => {
+  try {
+    const result = await db.insert(userAchievements).values({
+      userId,
+      achievement: achievement.type,
+      description: `Achieved ${achievement.type} with value ${achievement.value}`,
+      tier: calculateTier(achievement.value), // You can implement tier logic
+    }).returning();
+    return result[0];
+  } catch (err) {
+    console.error('Error adding achievement:', err);
+    throw err;
+  }
+};
+
+// Fetch user achievements
+export const fetchUserAchievements = async (userId: string) => {
+  try {
+    const result = await db.query.userAchievements.findMany({
+      where: eq(userAchievements.userId, userId),
+      orderBy: desc(userAchievements.date),
+    });
+    return result;
+  } catch (err) {
+    console.error('Error fetching achievements:', err);
+    throw err;
+  }
+};
+
+// Helper function to calculate achievement tier
+const calculateTier = (value: number): number => {
+  if (value >= 1000) return 3; // Gold
+  if (value >= 500) return 2;  // Silver
+  return 1; // Bronze
+};
+
+// Complete the checkForAchievements function
+export async function checkForAchievements(userId: string) {
+  try {
+const achievements: string[] = [];
+    await db.transaction(async (tx) => {
+      // Check for weight milestones
+      const userPRs = await tx.query.users.findFirst({
+        where: eq(users.id, userId),
+        columns: { personalRecords:true}
+      });
+      const userTotalWeight = userPRs?.personalRecords?.find((pr: unknown): pr is {exercise: string, records: number[]} => {
+        return (pr as { exercise: string }).exercise === "totalWeight"
+      })
+      const userlogs = await tx.query.userLogs.findMany({
+        where: eq(userLogs.userId, userId),
+        columns: { date: true }
+      });
+      const session = userlogs.length
+    const totalWeight = userTotalWeight?.records[userTotalWeight.records.length-1] ?? 0
+        const weightMilestones = [1000, 5000, 10000, 25000, 50000];
+        for (const milestone of weightMilestones) {
+          if (totalWeight >= milestone) {
+            // Check if achievement already exists
+            const existing = await tx.query.userAchievements.findFirst({
+              where: and(
+                eq(userAchievements.userId, userId),
+                eq(userAchievements.achievement, `totalWeight_${milestone}`)
+              )
+            });
+            
+            if (!existing) {
+              await tx.insert(userAchievements).values({
+                userId,
+                achievement: `totalWeight_${milestone}`,
+                description: `Achieved Total Weight: ${milestone}kg`,
+                tier: weightMilestones.indexOf(milestone) + 1
+              })
+              achievements.push(`Total Weight: ${milestone}kg`);
+            }
+          }
+        }
+      // Check for workout count milestones
+        const workoutMilestones = [10, 25, 50, 100, 250];
+        for (const milestone of workoutMilestones) {
+          if (session >= milestone) {
+            const existing = await tx.query.userAchievements.findFirst({
+              where: and(
+                eq(userAchievements.userId, userId),
+                eq(userAchievements.achievement, `workoutCount_${milestone}`)
+              )
+            });
+            
+            if (!existing) {
+              await tx.insert(userAchievements).values({
+                userId,
+                achievement: `workoutCount_${milestone}`,
+                description: `Achieved Workouts Completed: ${milestone}`,
+                tier: workoutMilestones.indexOf(milestone) + 1
+              })
+              achievements.push(`Workouts Completed: ${milestone}`);
+            }
+          }
+        }
+      
+    }) 
+    return achievements;
+  } catch (err) {
+    console.error('Error checking achievements:', err);
+    return [];
+  }
+}
+

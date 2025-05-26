@@ -2,7 +2,7 @@
 
 import { auth } from "auth"
 import { revalidatePath } from "next/cache"
-import { getUserLogs, getWorkoutDates, updateUserPrs, getUserPrs, addLogs, updateUserTotalWeight } from "../data"
+import { getUserLogs, getWorkoutDates, updateUserPrs, getUserPrs, addLogs, updateUserTotalWeight,checkForAchievements } from "../data"
 import { type WorkoutLog } from "../types"
 import { redirect } from "next/navigation"
 
@@ -116,6 +116,8 @@ export const fetchUserLogs = async ()=>{
         const res = await addLogs(workoutID,userID,dayName,parsedExercises)
         await updateUserTotalWeight(userID,totalWeight)
         // await addAchievement(userID,{type:"totalWeight",value:totalWeight})
+        const achievementResults = await checkForAchievements(userID);
+        console.log(achievementResults);
         revalidatePath("/")
         return {message:res ? "success" : "failure"}
       }catch(err){
@@ -139,3 +141,4 @@ export const fetchUserLogs = async ()=>{
 //     return { message: "failure" };
 //    }
 // }
+

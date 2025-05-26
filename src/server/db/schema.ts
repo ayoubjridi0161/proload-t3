@@ -131,8 +131,7 @@ export const users = pgTable("user", {
   .$type<{
     exercise: string;
     records: number[];}>()
-  .array()
-  .$default(() => []),
+  .array().$default(()=>([])),
   connects:text("connects").array(),
   numberOfConnects:integer('number_of_connects').default(0).notNull()
 })
