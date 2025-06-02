@@ -27,6 +27,7 @@ const SearchBar = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [profiles, setProfiles] = useState<{ name: string | null, id: string, image: string | null }[]>([]);
   const [isFocused, setIsFocused] = useState(false);
+  const [isSearching, setSearching] = useState(true);
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,19 +36,22 @@ const SearchBar = () => {
 
   useEffect(() => {
     const searchHN = async () => {
+
       if (debouncedSearchTerm.trim() === "") {
         setProfiles([]);
       } else {
         const filteredProfiles = await searchUsers(debouncedSearchTerm.toLowerCase());
         setProfiles(filteredProfiles ?? []);
+        
       }
+
     };
 
     void searchHN();
   }, [debouncedSearchTerm]);
 
   return (
-    <div className="relative w-1/3">
+    <div className="relative w-1/3 z-40">
       <svg
         className="size-5 absolute top-2 left-2 dark:text-zinc-200 text-gray-500"
         stroke="currentColor"
@@ -77,7 +81,8 @@ const SearchBar = () => {
         }}
       />
       {isFocused && profiles.length > 0 && (
-        <ul className="absolute bg-white border border-gray-300 rounded-md mt-1 w-full z-10">
+        <ul className="absolute bg-white border border-gray-300 rounded-md mt-1 w-full z-[9999]">
+
           {profiles.map((profile, index) => (
             <Link
               href={`/profile/${profile.id}`}
@@ -94,6 +99,7 @@ const SearchBar = () => {
             </Link>
           ))}
         </ul>
+
       )}
     </div>
   );
@@ -102,9 +108,9 @@ const SearchBar = () => {
 function Header({ name, image, UUID }: Props) {
   const { setTheme } = useTheme()
   return (
-    <div className='sticky h-[--header-height] top-0 z-50 overflow-y-hidden w-full flex items-center border-b dark:border-xtraDarkAccent dark:bg-xtraDarkSecondary bg-dashboardBackground px-5'>
-      <div className=" mx-auto flex justify-between items-center w-full">
-        <Link href={"/home"}><Image src="https://s3.eu-north-1.amazonaws.com/proload.me/proloadV3.png" className="h-full mt-3 w-28" width={40} height={80} alt="logo" />
+    <div className='sticky h-14 top-0 z-50  w-full flex items-center border-b dark:border-xtraDarkAccent dark:bg-xtraDarkSecondary bg-dashboardBackground px-5'>
+      <div className=" mx-auto h-full flex justify-between items-center w-full">
+        <Link className="h-full overflow-hidden" href={"/home"}><Image src="https://s3.eu-north-1.amazonaws.com/proload.me/proloadV3.png" className=" h-28 w-28 -mt-[20px]" width={40} height={20} alt="logo" />
         </Link>
         <SearchBar />
         <div className="flex gap-2">

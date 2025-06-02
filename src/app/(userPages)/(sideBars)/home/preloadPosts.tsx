@@ -14,7 +14,7 @@ export default async function PreloadPosts({ UUID, userName }: Props) {
     return (
         <>
             {posts?.posts.map((post) => (
-                <Post key={post?.id} shares={post.shares} sharedWorkout={post.sharedWorkout} comments={post.comments} media={post.resources} sharedPost={post.sharedPost} time={timeAgo(post.createdAt ?? new Date())}  appUser={UUID} postContent={post.content} userImage={post.users.image ?? ""} userName={post.users.name ?? ""} id={post.id} likes={post.likes}  userId={post.userId} />
+                <Post  key={post?.id} shares={post.shares} sharedWorkout={post.sharedWorkout} comments={post.comments} media={post.resources} sharedPost={post.sharedPost} time={timeAgo(post.createdAt ?? new Date())}  appUser={userName} postContent={post.content} userImage={post.users.image ?? ""} userName={post.users.name ?? ""} id={post.id} likes={post.likes}  userId={post.userId} />
             ))}
         </>
     );

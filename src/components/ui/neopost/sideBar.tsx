@@ -51,7 +51,7 @@ const data = {
       items: [],
     },
     {
-      title: "Workouts",
+      title: "Community workouts",
       url: "/workouts",
       icon: Dumbbell,
       isActive: true,
@@ -68,12 +68,6 @@ const data = {
       title: "My profile",
       url: "/profile",
       icon: CircleUserRound,
-      items: [],
-    },
-    {
-      title: "My workouts",
-      url: "/dashboard/library",
-      icon: Dumbbell,
       items: [],
     },
     {
@@ -175,7 +169,7 @@ export function AppSidebar({className, user, ...props}: AppSidebarProps & React.
       <SidebarGroup>
         <SidebarGroupLabel>Profile</SidebarGroupLabel>
         <SidebarMenu>
-          {data.navMain.slice(3,7).map((item) => (
+          {data.navMain.slice(3,6).map((item) => (
             <Collapsible key={item.title} asChild defaultOpen={item.isActive}>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild tooltip={item.title}>
@@ -196,7 +190,7 @@ export function AppSidebar({className, user, ...props}: AppSidebarProps & React.
       <SidebarGroup>
         <SidebarGroupLabel>Analytics</SidebarGroupLabel>
         <SidebarMenu>
-          {data.navMain.slice(7).map((item) => (
+          {data.navMain.slice(6).map((item) => (
             <Collapsible key={item.title} asChild defaultOpen={item.isActive}>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild tooltip={item.title}>

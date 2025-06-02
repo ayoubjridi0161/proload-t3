@@ -1236,3 +1236,19 @@ export async function getAchievements(userID:string){
     }
 }
 
+export async function addExercise(exercise:{name:string,description:string,muscleGroup:string,musclesTargeted:string[],images:string[],equipment:string}){
+    try {
+        const res = await db.insert(exerciseLibrary).values({
+            name:exercise.name,
+            description:exercise.description,
+            muscleGroup:exercise.muscleGroup,
+            musclesTargeted:exercise.musclesTargeted,
+            images:exercise.images,
+            equipment:exercise.equipment
+        }).returning({name:exerciseLibrary.name})
+        return !!res
+    }catch(error){
+        console.error(error)
+        return false
+    }
+}
