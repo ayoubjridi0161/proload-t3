@@ -15,6 +15,7 @@ import { toast } from 'sonner'
 import { getSharedPost, sharePostAction } from '~/lib/actions/socialActions'
 import { likePost } from '~/lib/actions/userInteractions'
 import { WorkoutCard } from '../neoworkout/workout-card'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../dropdown-menu'
 type Comment = {
   content: string;
   id: number;
@@ -144,7 +145,21 @@ export default function Post({sharedPost,userImage,userName,userId,postContent,m
                 <p className='text-[#4a4a4a] text-[11px]'>{time}</p>
             </div>
             </Link>
-            <Ellipsis />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant={"ghost"} size="icon" className="relative h-10 w-10 p-2">
+                  <Ellipsis />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-44">
+                <DropdownMenuItem className="cursor-pointer">
+                  Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem className='text-red-500  cursor-pointer' onClick={()=> {console.log("deleted")}}>
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
         </div>
         <p>{postContent}</p>
         
