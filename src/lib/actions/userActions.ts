@@ -1,7 +1,7 @@
 "use server"
 import { auth } from "auth"
 import { revalidatePath } from "next/cache"
-import { getProfileByID, updateUserProfile, editUserBio, editUserDetails, getFullUser, getFollows, getSideConnects, getUsersByName, getFriendList } from "../data"
+import { getProfileByID, updateUserProfile, editUserBio, editUserDetails, getFullUser, getFollows, getSideConnects, getUsersByName, getFriendList, getAchievements } from "../data"
 import { uploadToS3 } from "./s3Actions"
 import {type OnboardingData } from "~/lib/types"
 import { redirect } from "next/navigation"
@@ -209,4 +209,12 @@ import { redirect } from "next/navigation"
     }
     // If update was not successful, "failure" would have already been returned.
     // If redirect is called, this part of the code is not reached.
+  }
+
+  export const getAchievementsAction = async ()=>{
+    const session = await auth()
+    const userID = session?.user?.id
+    if(!userID) return null
+    const res = await getAchievements(userID)
+    return res
   }

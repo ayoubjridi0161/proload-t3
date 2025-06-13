@@ -19,7 +19,7 @@ export default function RefreshButton({}: Props) {
 const ButtonPR = ()=>{
     const { pending } = useFormStatus()
   return (
-    <Button variant={"outline"} className='text-md text-xtraText' disabled={pending}>
+    <Button variant={"outline"} className='text-md text-xtraText dark:text-xtraDarkText' disabled={pending}>
       {pending ? 'Refreshing...' : 'Refresh PRs'}
     </Button>
   )

@@ -1,15 +1,14 @@
 "use client"
 import { use, useState } from "react"
 import { CalendarIcon, ChevronDown, Dumbbell, LineChart, TrendingUp, User, Weight } from "lucide-react"
-import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
-// import { Calendar } from "~/components/ui/calendar"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select"
 import {
   Bar,
   BarChart,
   CartesianGrid,
+  Legend,
   Line,
   LineChart as RechartsLineChart,
   ResponsiveContainer,
@@ -18,33 +17,34 @@ import {
 } from "recharts"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "~/components/ui/chart"
 import { andika } from "../font"
-import { type UserLog} from "~/lib/types"
-import { calculateOverallWeeklyProgress, calculateWeeklyProgressPerExercise, calculateWeeklyVolume, calculateWeeklyWeightProgress,  calculateWeeklyWorkoutVolume,  calculateWorkoutFrequencyPerDay,  getMainLiftsProgress } from "~/lib/analytics/analytics"
+import { type WorkoutLog, type UserLog } from "~/lib/types"
+import { calculateOverallWeeklyProgress, calculateWeeklyProgressPerExercise, calculateWeeklyVolume, calculateWeeklyWeightProgress, calculateWeeklyWorkoutVolume, calculateWorkoutFrequencyPerDay, getMainLiftsProgress, getWeeklySession } from "~/lib/analytics/analytics"
 type Props = {
   userLogs: UserLog[] | null;
 }
-export default function AthleteDashboard(props:Props) {
+export default function AthleteDashboard(props: Props) {
   const { userLogs } = props
   const [timeframe, setTimeframe] = useState("8weeks")
   const filterLogsByTimeframe = (logs: UserLog[], timeframe: string) => {
     if (!logs || logs.length === 0) return logs;
-    
+
     const now = new Date();
-    const lastLogDateString =logs[logs.length - 1]?.date
-    const lastLogDate = lastLogDateString ? new Date(lastLogDateString ) : now
+    const lastLogDateString = logs[logs.length - 1]?.date
+    const lastLogDate = lastLogDateString ? new Date(lastLogDateString) : now
     let weeksToSubtract = 8;
-    
-    switch(timeframe) {
+
+    switch (timeframe) {
       case "4weeks": weeksToSubtract = 4; break;
       case "8weeks": weeksToSubtract = 8; break;
       case "12weeks": weeksToSubtract = 12; break;
       case "6months": weeksToSubtract = 26; break;
       case "1year": weeksToSubtract = 52; break;
+      default: weeksToSubtract = 500; break;
     }
-    
-    const cutoffDate = new Date(lastLogDate);
+
+    const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - (weeksToSubtract * 7));
-    
+
     return logs.filter(log => new Date(log.date) >= cutoffDate);
   }
   const filteredLogs = filterLogsByTimeframe(userLogs ?? [], timeframe);
@@ -56,24 +56,30 @@ export default function AthleteDashboard(props:Props) {
   const weeklyVolume = calculateWeeklyWorkoutVolume(filteredLogs)
   const JSONB = calculateWeeklyWorkoutVolume(filteredLogs)
   const [selectedExercise, setSelectedExercise] = useState(weeklyProgressPerExercise[0]?.name ?? "")
-
-  // Filter userLogs based on selected timeframe
-  
-  
-  
-  
+  const benchRecords = userLogs ? userLogs.reduce((benchRecords, current) => {
+    const benchRecordLogs = (current.logs as WorkoutLog[]).filter(ex => ex.name === "Bench Press")
+    const flattedWeights = benchRecordLogs.map(ex => ex.sets.map(set => set.weight)).flat()
+    const parsedFlattedWeights = flattedWeights.map(weight => Number(weight))
+    if(flattedWeights.length > 0){
+      benchRecords.push(Math.max(...parsedFlattedWeights))
+    }
+    return benchRecords; // Added return statement for the accumulator
+}, [] as number[]) : []
+  const maxBench = Math.max(...benchRecords)
+  const startingBench = benchRecords[0] ?? 0
   const aux = weeklyVolumeData[weeklyVolumeData.length - 1]
   const aux2 = weeklyVolumeData[weeklyVolumeData.length - 2]
   let weeklyVolumeChange = 0
-  if(aux && aux2)
-  weeklyVolumeChange =  aux.volume - aux2.volume 
-  const lastWeekVolume : number =aux ? aux.volume : 0
+  if (aux && aux2)
+    weeklyVolumeChange = aux.volume - aux2.volume
+  const lastWeekVolume: number = aux ? aux.volume : 0
+  const weeklySessions = userLogs ? getWeeklySession(userLogs) : {weeklySession:0 , difference:0}
 
 
 
   return (
     <div className={`flex min-h-screen w-full flex-col ${andika.className}`}>
-      <main className="flex-1 p-4 md:p-6"> 
+      <main className="flex-1 p-4 md:p-6">
         {/* Stats */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {/* Current weight */}
@@ -111,10 +117,10 @@ export default function AthleteDashboard(props:Props) {
               <LineChart className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">120 kg</div>
+              <div className="text-2xl font-bold">{maxBench}</div>
               <p className="text-xs text-muted-foreground">
                 <TrendingUp className="mr-1 inline h-3 w-3 text-primary" />
-                +40 lbs from starting weight
+                {startingBench && `+${maxBench - startingBench} Kg from starting weight`}
               </p>
             </CardContent>
           </Card>
@@ -125,10 +131,10 @@ export default function AthleteDashboard(props:Props) {
               <User className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">4 sessions</div>
+              <div className="text-2xl font-bold">{weeklySessions.weeklySession}</div>
               <p className="text-xs text-muted-foreground">
                 <TrendingUp className="mr-1 inline h-3 w-3 text-primary" />
-                +1 from last week
+                +{weeklySessions.difference} from last week
               </p>
             </CardContent>
           </Card>
@@ -143,8 +149,8 @@ export default function AthleteDashboard(props:Props) {
               <TabsTrigger value="volume">Volume</TabsTrigger>
             </TabsList>
             {/* duration */}
-            <Select 
-              defaultValue="8weeks" 
+            <Select
+              defaultValue="8weeks"
               value={timeframe}
               onValueChange={setTimeframe}
             >
@@ -157,6 +163,7 @@ export default function AthleteDashboard(props:Props) {
                 <SelectItem value="12weeks">Last 12 weeks</SelectItem>
                 <SelectItem value="6months">Last 6 months</SelectItem>
                 <SelectItem value="1year">Last year</SelectItem>
+                <SelectItem value="all time">All time</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -182,11 +189,11 @@ export default function AthleteDashboard(props:Props) {
                       <RechartsLineChart data={weeklyWeightProgress}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} />
                         <XAxis dataKey="weekStart" />
-                        <YAxis 
+                        <YAxis
                           domain={['dataMin - 5', 'dataMax + 5']}
                           tickFormatter={(value: number) => Math.round(value).toString()}
                         />
-                        <ChartTooltip 
+                        <ChartTooltip
                           content={<ChartTooltipContent />}
                           formatter={(value) => Math.round(Number(value))}
                         />
@@ -206,14 +213,14 @@ export default function AthleteDashboard(props:Props) {
               {/* exercise volume */}
               <Card className="">
                 <CardHeader>
-                  <CardTitle>Exercise Volume</CardTitle>
-                  <CardDescription>Weekly training volume in pounds</CardDescription>
+                  <CardTitle>Total Weight</CardTitle>
+                  <CardDescription>total weight lifter per week</CardDescription>
                 </CardHeader>
                 <CardContent className="h-fit">
                   <ChartContainer
                     config={{
                       volume: {
-                        label: "Volume (lbs)",
+                        label: "Volume (Kg)",
                         color: "#1b512d",
                       },
                     }}
@@ -235,8 +242,8 @@ export default function AthleteDashboard(props:Props) {
               {/* workout Frequency */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Workout Frequency</CardTitle>
-                  <CardDescription>Number of sessions per day this week</CardDescription>
+                  <CardTitle>Training Frequency</CardTitle>
+                  <CardDescription>Weekly session distribution.</CardDescription>
                 </CardHeader>
                 <CardContent className="h-fit">
                   <ChartContainer
@@ -251,11 +258,11 @@ export default function AthleteDashboard(props:Props) {
                       <BarChart data={workoutFrequency}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} />
                         <XAxis dataKey="day" />
-                        <YAxis 
+                        <YAxis
                           domain={[0, 100]}
                           tickFormatter={(value) => `${value}%`}
                         />
-                        <ChartTooltip 
+                        <ChartTooltip
                           content={<ChartTooltipContent />}
                           formatter={(value: number) => `${value}%`}
                         />
@@ -272,82 +279,90 @@ export default function AthleteDashboard(props:Props) {
                   <CardDescription>Progress on main lifts over time</CardDescription>
                 </CardHeader>
                 <CardContent className="h-fit">
-<ChartContainer
-  config={{
-    bench: {
-      label: "Bench Press (kg)",
-      color: "hsl(var(--chart-1))",
-    },
-    squat: {
-      label: "Squat (kg)",
-      color: "hsl(var(--chart-2))",
-    },
-    deadlift: {
-      label: "Deadlift (kg)",
-      color: "hsl(var(--chart-3))",
-    },
-    overhead: {
-      label: "Overhead Press (kg)",
-      color: "hsl(var(--chart-4))",
-    },
-  }}
->
-  <ResponsiveContainer width="100%" height="100%">
-    <RechartsLineChart data={MainLiftsProgress}>
-      <CartesianGrid strokeDasharray="3 3" vertical={false} />
-      <XAxis dataKey="weekStart" />
-      <YAxis 
-        domain={['dataMin - 5', 'dataMax + 5']}
-        tickFormatter={(value: number) => Math.round(value).toString()}
-      />
-      <ChartTooltip 
-        content={<ChartTooltipContent />}
-        formatter={(value) => Math.round(Number(value))}
-      />
-      <Line
-        type="monotone"
-        dataKey="bench"
-        stroke="var(--color-bench)"
-        strokeWidth={2}
-        dot={{ r: 4 }}
-        activeDot={{ r: 6 }}
-        connectNulls={true}
-      />
-      <Line
-        type="monotone"
-        dataKey="squat"
-        stroke="var(--color-squat)"
-        strokeWidth={2}
-        dot={{ r: 4 }}
-        activeDot={{ r: 6 }}
-        connectNulls={true}
-      />
-      <Line
-        type="monotone"
-        dataKey="deadlift"
-        stroke="var(--color-deadlift)"
-        strokeWidth={2}
-        dot={{ r: 4 }}
-        activeDot={{ r: 6 }}
-        connectNulls={true}
-      />
-      <Line
-        type="monotone"
-        dataKey="overhead"
-        stroke="var(--color-overhead)"
-        strokeWidth={2}
-        dot={{ r: 4 }}
-        activeDot={{ r: 6 }}
-        connectNulls={true}
-      />
-    </RechartsLineChart>
-  </ResponsiveContainer>
-</ChartContainer>
+                  <ChartContainer
+                    config={{
+                      bench: {
+                        label: "Bench Press (kg)",
+                        color: "hsl(var(--chart-1))",
+                      },
+                      squat: {
+                        label: "Squat (kg)",
+                        color: "hsl(var(--chart-2))",
+                      },
+                      deadlift: {
+                        label: "Deadlift (kg)",
+                        color: "hsl(var(--chart-3))",
+                      },
+                      overhead: {
+                        label: "Overhead Press (kg)",
+                        color: "hsl(var(--chart-4))",
+                      },
+                    }}
+                  >
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RechartsLineChart data={MainLiftsProgress}>
+                      <Legend 
+                          payload={[
+                            { value: 'Bench Press', type: 'line', color: 'var(--color-bench)' },
+                            { value: 'Squat', type: 'line', color: 'var(--color-squat)' },
+                            { value: 'Deadlift', type: 'line', color: 'var(--color-deadlift)' },
+                            { value: 'Overhead Press', type: 'line', color: 'var(--color-overhead)' }
+                          ]}
+                        />
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                        <XAxis dataKey="weekStart" />
+                        <YAxis
+                          domain={['dataMin - 5', 'dataMax + 5']}
+                          tickFormatter={(value: number) => Math.round(value).toString()}
+                        />
+                        <ChartTooltip
+                          content={<ChartTooltipContent />}
+                          formatter={(value) => Math.round(Number(value))}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="bench"
+                          stroke="var(--color-bench)"
+                          strokeWidth={2}
+                          dot={{ r: 4 }}
+                          activeDot={{ r: 6 }}
+                          connectNulls={true}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="squat"
+                          stroke="var(--color-squat)"
+                          strokeWidth={2}
+                          dot={{ r: 4 }}
+                          activeDot={{ r: 6 }}
+                          connectNulls={true}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="deadlift"
+                          stroke="var(--color-deadlift)"
+                          strokeWidth={2}
+                          dot={{ r: 4 }}
+                          activeDot={{ r: 6 }}
+                          connectNulls={true}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="overhead"
+                          stroke="var(--color-overhead)"
+                          strokeWidth={2}
+                          dot={{ r: 4 }}
+                          activeDot={{ r: 6 }}
+                          connectNulls={true}
+                        />
+                      </RechartsLineChart>
+                    </ResponsiveContainer>
+                  </ChartContainer>
                 </CardContent>
               </Card>
             </div>
           </TabsContent>
-              {/* strength */}
+          {/* strength */}
           <TabsContent value="strength" className="mt-4 space-y-4">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
@@ -355,7 +370,7 @@ export default function AthleteDashboard(props:Props) {
                   <CardTitle>Strength Progress Details</CardTitle>
                   <CardDescription>Detailed view of your strength gains</CardDescription>
                 </div>
-                <Select 
+                <Select
                   value={selectedExercise}
                   onValueChange={setSelectedExercise}
                   defaultValue={weeklyProgressPerExercise[0]?.name ?? ""}
@@ -382,16 +397,16 @@ export default function AthleteDashboard(props:Props) {
                   }}
                 >
                   <ResponsiveContainer width="100%" height="100%">
-                    <RechartsLineChart 
+                    <RechartsLineChart
                       data={weeklyProgressPerExercise.find(ex => ex.name === selectedExercise)?.weeklyProgress ?? []}
                     >
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="weekStart" />
-                      <YAxis 
+                      <YAxis
                         domain={['dataMin - 5', 'dataMax + 5']}
                         tickFormatter={(value: number) => Math.round(value).toString()}
                       />
-                      <ChartTooltip 
+                      <ChartTooltip
                         content={<ChartTooltipContent />}
                         formatter={(value) => Math.round(Number(value))}
                       />
@@ -415,7 +430,7 @@ export default function AthleteDashboard(props:Props) {
             <Card>
               <CardHeader>
                 <CardTitle>Volume Breakdown</CardTitle>
-                <CardDescription>Detailed view of your training volume</CardDescription>
+                <CardDescription>Total sets per week</CardDescription>
               </CardHeader>
               <CardContent className="h-fit">
                 <ChartContainer

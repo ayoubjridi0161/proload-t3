@@ -2,11 +2,41 @@ import { andika, lalezar } from '../font'
 import Container from './Container'
 import {Table,TableBody,TableCell,TableHead,TableHeader, TableRow} from '~/components/ui/table'
 import RefreshButton from './RefreshButton'
+import Image from 'next/image'
+import { Card } from '../card'
+import { Medal } from 'lucide-react'
 type Props = {
     personalRecords : {
         exercise: string;
         records: number[];
     }[]
+    achievements: {
+        description: string | null;
+        name?: string | undefined;
+        tier?: number | undefined;
+        category?: string | undefined;
+    }[] | undefined
+}
+const tierColors = [
+    "#fff",
+    "#CD7F32",  // Tier 1 - Cool Gray (Weight Warrior)
+    "#4FD1C5",  // Tier 2 - Teal (Iron Challenger)
+    "#FFD700",  // Tier 3 - Orange (Steel Dominator)
+    "#e5e4e2",  // Tier 4 - Pink (Barbell Conqueror)
+    "#2B303E",  // Tier 5 - Purple (Limit Breaker)
+    "#F56565"   // Tier 6 - Fiery Red (Mythic Beast)
+]
+function getCategoryImage(cat: string | undefined): string {
+    switch (cat) {
+        case "totalWeight":
+            return "/total weight.png"
+        case "workoutCount":
+            return "/total sessions.png"
+        case "maxWeight":
+            return "/max weight.png"
+        default:
+            return "/defaultAch.jpg"
+    }
 }
 const PersonalRecords =(props: Props) => {
   return (
@@ -66,22 +96,34 @@ const PersonalRecords =(props: Props) => {
         </div>
         <div className='space-y-4 p-4 '>
         <h1 className='text-lg '>Achievements</h1>
-        <div className='grid grid-cols-4 gap-8 '>
-            <Container className='bg-white gap-3 flex items-center text-slate-700 '>
-                <Medal />
-                <div><h1 className='font-semibold'>Strength Builder</h1>
-                <p className='text-sm text-opacity-40'>No missed workouts</p></div>
-            </Container>
-            <Container className='bg-white gap-3 flex items-center text-slate-700 '>
-                <Medal />
-                <div><h1 className='font-semibold'>Strength Builder</h1>
-                <p className='text-sm text-opacity-40'>No missed workouts</p></div>
-            </Container>
-            <Container className='bg-white gap-3 flex items-center text-slate-700 '>
-                <Medal />
-                <div><h1 className='font-semibold'>Strength Builder</h1>
-                <p className='text-sm text-opacity-40'>No missed workouts</p></div>
-            </Container>
+        <div className='grid grid-cols-3 gap-4 '>
+            {props.achievements?.map((achievement,index)=> (
+                <Card
+                key={index}
+                className="flex items-center gap-4 p-4 w-full border-4 hover:bg-neutral-900/70 transition-all"
+                style={{borderColor:tierColors[achievement.tier ?? 1]}}                      
+                >
+                <div className="relative h-12 w-12 flex-shrink-0">
+                    <Image
+                        src={getCategoryImage(achievement.category)}
+                        alt={achievement.name ?? "alt"}
+                        fill
+                        className="object-cover rounded-lg"
+                    />
+                </div>
+                <div className="flex flex-col flex-grow">
+                    <div className="flex items-center gap-2">
+                        <Medal
+                        size={20}
+                            className="flex-shrink-0 text-xs"
+                            style={{ color: tierColors[achievement.tier ?? 1] }}
+                        />
+                        <span className="font-semibold text-lg" style={{color: tierColors[achievement.tier ?? 1]}}>{achievement.name}</span>
+                    </div>
+                    <p className="text-sm text-gray-400">{achievement.description}</p>
+                </div>
+            </Card>
+            ))}
         </div>
             
         </div>
@@ -98,10 +140,6 @@ const Dumbbell = ()=> {
         </g>
     </svg>)
 }
-const Medal = ()=>{
-    return(<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 256 256">
-        <path fill="#000" d="M220 96a92 92 0 1 0-152 69.69V240a12 12 0 0 0 17.37 10.73L128 229.42l42.64 21.31A12 12 0 0 0 188 240v-74.31A91.86 91.86 0 0 0 220 96M60 96a68 68 0 1 1 68 68a68.07 68.07 0 0 1-68-68m104 124.59l-30.64-15.32a12 12 0 0 0-10.74 0L92 220.58v-39.92a92 92 0 0 0 72 0ZM128 148a52 52 0 1 0-52-52a52.06 52.06 0 0 0 52 52m0-80a28 28 0 1 1-28 28a28 28 0 0 1 28-28" strokeWidth={6.5} stroke="#000"></path>
-    </svg>)
-}
+
 
 export default PersonalRecords

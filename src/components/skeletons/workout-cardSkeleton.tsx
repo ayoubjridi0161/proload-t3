@@ -8,7 +8,7 @@ export function WorkoutCardSkeleton() {
         <CardHeader className="pb-2">
           <div className="flex justify-between items-start">
             <div>
-              <Skeleton className="h-5 w-32 mb-1 dark:bg-xtraDarkPrimary" />
+              <Skeleton className="h-5 w-32 mb-1 bg-gradient-to-r from-green-400 to-green-600 animate-pulse" />
               <Skeleton className="h-4 w-20 dark:bg-xtraDarkPrimary" />
             </div>
           </div>

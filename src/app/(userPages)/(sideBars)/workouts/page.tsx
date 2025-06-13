@@ -9,6 +9,7 @@ import Footer from '~/components/ui/neoworkout/footer'
 import PerloadWorkouts from './perloadWorkouts'
 import { Suspense } from 'react'
 import { WorkoutCardSkeleton } from '~/components/skeletons/workout-cardSkeleton'
+import MockComp from './mockComp'
 export default async function page(props: {
   searchParams?: Promise<{
     search?: string;
@@ -27,12 +28,8 @@ export default async function page(props: {
   return (
 <>
     <div className="container py-8 space-y-4">
-      <Header/>
-      <Suspense fallback={<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-        {Array.from({length: 9}, (_, index) => (<WorkoutCardSkeleton key={index} />))}
-      </div>}>
+      <Header/>    
       <PerloadWorkouts order={order} page={page} search={search} sortFiled={sortFiled} />
-      </Suspense>
       <Footer currentPage={ page> 0 ?  page  : 1} hasNextPage/>
     </div>
     <Sidebar side='right'  className="border-left-1 dark:border-xtraDarkAccent px-3 top-[--header-height] !h-[calc(100svh-var(--header-height))]" >

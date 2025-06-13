@@ -346,3 +346,23 @@ export function calculateWeeklyWorkoutVolume(userLogs: UserLog[]) {
     }))
     .sort((a, b) => a.week.localeCompare(b.week));
 }
+
+export const getWeeklySession = (logs : UserLog[])=>{
+  if (!logs?.length) return {weeklySession:0 , difference:0};
+
+  const today = new Date();
+  const sevenDaysAgo = new Date(today);
+  const fourteenDaysAgo = new Date(today);
+  fourteenDaysAgo.setDate(today.getDate() - 14);
+  sevenDaysAgo.setDate(today.getDate() - 7);
+
+  const weeklySession = logs.filter(log => {
+    const logDate = new Date(log.date);
+    return logDate >= sevenDaysAgo && logDate <= today;
+  }).length;
+  const lastWeekSession = logs.filter(log => {
+    const logDate = new Date(log.date);
+    return logDate >= fourteenDaysAgo && logDate <= sevenDaysAgo;
+  }).length;
+  return {weeklySession, difference: weeklySession - lastWeekSession};
+}

@@ -18,20 +18,20 @@ import { Input } from "~/components/ui/input"
 import { WorkoutCard } from "./workout-card"
 // Remove workoutData import if it's no longer needed client-side
 // import { workoutData } from "./workout-data"
-import {type WorkoutDetail} from "~/lib/types"
+import { type WorkoutDetail } from "~/lib/types"
 
 type SortField = "name" | "days" | "likes"
 type SortOrder = "asc" | "desc"
 
-type Props = { 
-  
+type Props = {
+
 
 }
 
 
 
 
-export default function WorkoutCards({}:Props) {
+export default function WorkoutCards({ }: Props) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const pathname = usePathname()
@@ -114,7 +114,7 @@ export default function WorkoutCards({}:Props) {
     return `${fieldText} (${orderText})`
   }
   const handleSearchButton = () => {
-    const params = new URLSearchParams(searchParams?.toString() )
+    const params = new URLSearchParams(searchParams?.toString())
     if (localSearchQuery) {
       params.set("search", localSearchQuery)
     } else {
@@ -122,15 +122,15 @@ export default function WorkoutCards({}:Props) {
     }
     params.delete("page");
     router.push(`${pathname}?${params.toString()}`)
-    
-    
+
+
   }
   return (
     <div className="space-y-6">
       {isNavigating && (
         <div className="fixed top-0 left-0 w-full h-[2px] bg-gray-200 z-50">
-          <div 
-            className="h-full bg-blue-500 w-1/5 absolute transition-all duration-200 ease-linear" 
+          <div
+            className="h-full bg-blue-500 w-1/5 absolute transition-all duration-200 ease-linear"
             style={{ left: `${loadingProgress}%` }}
           />
         </div>
@@ -139,7 +139,7 @@ export default function WorkoutCards({}:Props) {
       <p className="text-muted-foreground mb-8">
         Browse workouts shared by the community. Find the perfect routine for your fitness goals.
       </p>
-    
+
       <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
         <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
           <div className="relative flex-grow max-w-md">
@@ -201,14 +201,40 @@ export default function WorkoutCards({}:Props) {
           </DropdownMenu>
         </div>
 
-        <Button onClick={()=>goToCreate()} className="w-full bg-xtraGreen hover:bg-xtraDarkAccent/50 sm:w-auto">
+        <Button onClick={() => goToCreate()} className="w-full bg-xtraGreen hover:bg-xtraDarkAccent/50 sm:w-auto">
           <Plus className="h-4 w-4 mr-2" />
           Create Workout
         </Button>
       </div>
 
-      
+
     </div>
   )
 }
 
+
+export function NeoWorkoutHeader() {
+  return (
+    <div className="space-y-5">
+      <h1 className="text-3xl font-bold mb-6">Workout Library</h1>
+      <p className="text-muted-foreground mb-8">
+        Browse workouts shared by the community. Find the perfect routine for your fitness goals.
+      </p>
+      <div className="flex justify-between">
+        <div className="relative w-10 flex-grow max-w-md">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground cursor-pointer z-10" />
+          <Input
+            type="search"
+            placeholder="Search workouts or users..."
+            className="pl-8 bg-white"
+          />
+        </div>
+        <Button className="w-full bg-xtraGreen hover:bg-xtraDarkAccent/50 sm:w-auto">
+          <Plus className="h-4 w-4 mr-2" />
+          Create Workout
+        </Button>
+      </div>
+    </div>
+
+  );
+}

@@ -12,12 +12,13 @@ import Container from "~/components/ui/userDashboard/Container";
 import { Input } from "@nextui-org/react";
 import { logWorkoutAction } from "~/lib/actions/userLogsActions"
 import { type WorkoutDetails } from "~/app/(userPages)/(sideBars)/dashboard/track/page";
-import { useFormState } from "react-dom";
+import { useFormState, useFormStatus } from "react-dom";
 import { Button } from "../button";
 import { useForm } from "react-hook-form"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 import { type WorkoutLog} from "~/lib/types";
+import { Separator } from "../separator";
 type Props = {
   workout: WorkoutDetails, totalSets: number, totalReps: number,
   lastSession:{
@@ -64,13 +65,15 @@ export default function Track({ workout, totalSets, totalReps,lastSession }: Pro
           </p>
         </div>
         <div className="md:col-start-4">
-          <h1 className="text-lg">Days: {workout?.numberOfDays}</h1>
+          <h1 className="text-lg">Workout Days: {workout?.days.length}</h1>
+          <h1 className="text-lg">Rest Days: {(workout?.numberOfDays ?? 10) - (workout?.days.length ?? 5)}</h1>
+
           <h1 className="text-lg">Sets: {totalSets} </h1>
-          <h1 className="text-lg">Weights: 555kg</h1>
+          
         </div>
         <div>
           <h1 className="text-lg">Reps: {totalReps}</h1>
-          <h1 className="text-lg">Rest: 2mn</h1>
+          <h1 className="text-lg">Recommended Rest: 2mn</h1>
           <h1 className="text-lg">Workout ID: {workout?.id} </h1>
         </div>
       </Container>
@@ -114,25 +117,21 @@ export default function Track({ workout, totalSets, totalReps,lastSession }: Pro
   </Container>
 ) : (
   <Container className=" border-0 border-green-600 dark:bg-xtraDarkPrimary bg-xtraLight/15  shadow-md">
+    <p className="px-7 pb-4 text-xl text-xtraText">workout Day:</p>
     <Tabs className="space-y-10 px-7" defaultValue="1">   
-      <p>Choose a workout</p>
       <TabsList className="bg-transparent gap-2 flex-wrap">
         {workout?.days.map((day, i) => (
           <TabsTrigger
             value={day.dayIndex.toString()}
             key={i}
-            className="space-y-2 border-1 dark:bg-xtraDarkAccent dark:text-xtraDarkText/70 dark:focus:text-xtraDarkText flex flex-col items-start bg-white p-5 text-[#03152d] focus:border-green-900 "
+            className="rounded-md border-1 dark:bg-xtraDarkAccent dark:text-xtraDarkText/70 dark:focus:text-xtraDarkText bg-white p-3 text-[#03152d] focus:border-green-900 "
           >
-            <h2 className="text-md font-semibold">day{day.dayIndex}: {day.name}</h2>
-            <p className="text-xs">
-              {day.exercices
-                .slice(0, 3)
-                .map((exercice) => exercice.name)
-                .join(", ")}
-            </p>
+            <h2 className=" text-lg font-semibold">{day.name}</h2>
+
           </TabsTrigger>
         ))}
       </TabsList>
+      <Separator className="w-full bg-xtraDark" />
       {workout?.days.map((day, i) => (
         <TabsContent value={day.dayIndex.toString()} key={i} className="space-y-5">
           <input type="hidden" name="dayName" value={day.name} />
@@ -179,9 +178,17 @@ export default function Track({ workout, totalSets, totalReps,lastSession }: Pro
         </TabsContent>
       ))}
     </Tabs>
-    <Button type="submit" className="relative left-7 top-4 bg-xtraGreen mt-3">Save</Button>
+    <SaveButton/>
   </Container>
 )}
     </form>
+  )
+}
+
+const SaveButton = ()=>{
+  const {pending} = useFormStatus()
+  return (
+    <Button type="submit" disabled={pending} className="relative left-7 top-4 bg-xtraGreen mt-3">Save</Button>
+    
   )
 }
