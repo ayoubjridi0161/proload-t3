@@ -2,8 +2,8 @@ import React from 'react'
 import './loading.css'
 const loading = () => {
   return (
-    <div className='bg-black h-full w-full grid place-items-center'>
-    <div className='traffic-loader'></div>
+    <div className='!h-[calc(100svh-var(--header-height))] grid place-items-center'>
+    <div className="loader "></div>
     </div>
   )
 }

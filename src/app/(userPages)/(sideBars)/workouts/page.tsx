@@ -9,7 +9,7 @@ import Footer from '~/components/ui/neoworkout/footer'
 import PerloadWorkouts from './perloadWorkouts'
 import { Suspense } from 'react'
 import { WorkoutCardSkeleton } from '~/components/skeletons/workout-cardSkeleton'
-import MockComp from './mockComp'
+
 export default async function page(props: {
   searchParams?: Promise<{
     search?: string;
