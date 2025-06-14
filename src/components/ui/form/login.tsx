@@ -1,17 +1,17 @@
 'use client'
-
 import { useFormState, useFormStatus } from "react-dom"
 import { GitBranch,Github } from "lucide-react"
 import { useActionState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "../button" 
-import Input from "../UIverse/Input"
+
 import LoginInput from "../UIverse/loginInput"
 import Link from "next/link"
 import LockIcon from "../svg/lockIcon"
 import MailIcon from "../svg/mailIcon"
 import { signIn } from "auth"
 import { githubSignIn, login } from "~/lib/actions/authentication"
+import { Input } from "../input"
 export const Login =  ()=>{
     // const [error,action,isPending] = useActionState(login,null);
     const [error,action] = useFormState(login,null)
@@ -21,22 +21,15 @@ export const Login =  ()=>{
         router.push('/workouts')
     }
     return (
-        <div>
-        <form action={action} className="flex flex-col w-9/12 mx-auto    items-stretch gap-4 h-[60vh]">
-  <div className="text-3xl font-bold text-center mb-16">Sign In</div>
-  <LoginInput Icon={<MailIcon/>}  name="email" placeholder="Email" type="email"/>
-  <LoginInput  name="password" placeholder="Password" type="password"/>
-  <Link href={"/"}  className=" self-end font-medium">Forgot password</Link >
-  <LocalButton />
-  <p className="text-black text-center">Dont have an account <a className="text-black font-semibold underline" href="/signup">Register!</a></p>
-   <p className="text-red-950">{error?.message}</p>
- </form>
-<form action={githubSignIn}>
-      <button type="submit">Github : <Github /></button>
-    </form>
-</div> 
-
-    )
+        <div className='flex flex-col items-center gap-6'>
+<form className='w-full flex flex-col items-center  gap-5 ' action={action}>
+    <Input placeholder='email' name='email '  />
+    <Button className='w-1/2 '>sing In with Resend</Button>
+</form>  
+<form className='w-full flex-col flex items-center ' action={githubSignIn}>
+    <Button className=''><Github /></Button>
+</form>
+</div>)
 }
 const LocalButton = ()=>{
     const {pending} = useFormStatus()

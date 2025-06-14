@@ -2,9 +2,10 @@ import React from 'react'
 import { andika } from '../font'
 import Container from './Container'
 import { Button } from '../button'
-import { PlusCircle, Dumbbell, Target } from 'lucide-react'
+import { PlusCircle, Dumbbell, Target, Info } from 'lucide-react'
 import { Sidebar, SidebarContent } from '../sidebar'
 import WorkoutCalendar from './workoutCalendar'
+import Link from 'next/link'
 
 export default function NewUser({userLogs}:{userLogs:
   {
@@ -18,14 +19,16 @@ export default function NewUser({userLogs}:{userLogs:
 }[]
 }) {
 const workoutDates = userLogs?.map(log => ({date:log.date,dayName:log.dayName}));
-
   return (
     <>
     <div className={`p-5 w-full ${andika.className}`}>
+      <div className='flex justify-between items-center'>
       <div className="text-[#4a4a4a] text-lg">
         <h1 className="font-bold">Welcome to Your Fitness Journey!</h1>
         <p className="text-sm">Let's start tracking your progress towards your fitness goals</p>
       </div>   
+      <p className='flex items-center text-xs font-extralight gap-1 text-red-500'><Info size={15}/> You have to track at least 5 sessions to unlock the dashboard</p>
+      </div>
 
       <div className="grid grid-cols-3 w-10/12 mx-auto p-5 gap-5">
         <Container className="border-1 border-[#de4e8d1] space-y-2 shadow-md">
@@ -35,7 +38,9 @@ const workoutDates = userLogs?.map(log => ({date:log.date,dayName:log.dayName}))
           <h2 className="text-md font-semibold">Start Tracking</h2>
           <h1 className="text-lg font-bold">Log Your First Workout</h1>
           <p className="text-sm">Begin your fitness journey today</p>
-          <Button className="bg-[#256279] text-white hover:bg-[#1a4456]">Create Workout</Button>
+          <div>
+          <Link href="/dashboard/track" className="bg-[#256279] rounded-md p-2 text-white hover:bg-[#1a4456]">Create Workout</Link>
+          </div>
         </Container>  
 
         <Container className="border-1 border-[#de4e8d1] space-y-2 shadow-md">
@@ -45,7 +50,9 @@ const workoutDates = userLogs?.map(log => ({date:log.date,dayName:log.dayName}))
           <h2 className="text-md font-semibold">Set Goals</h2>
           <h1 className="text-lg font-bold">Define Your Targets</h1>
           <p className="text-sm">What do you want to achieve?</p>
-          <Button className="bg-[#256279] text-white hover:bg-[#1a4456]">Set Goals</Button>
+          <div>
+          <Link href={"/home"} className="bg-[#256279] rounded-md p-2 text-white hover:bg-[#1a4456]">Set Goals</Link>
+          </div>
         </Container>
 
         <Container className="border-1 border-[#de4e8d1] space-y-2 shadow-md">
@@ -54,8 +61,9 @@ const workoutDates = userLogs?.map(log => ({date:log.date,dayName:log.dayName}))
           </div>
           <h2 className="text-md font-semibold">Explore Workouts</h2>
           <h1 className="text-lg font-bold">Browse Programs</h1>
-          <p className="text-sm">Find the perfect workout plan</p>
-          <Button className="bg-[#256279] text-white hover:bg-[#1a4456]">View Programs</Button>
+          <p className="text-sm">Find the perfect workout plan</p><div>
+          <Link href={"/workouts"} className="bg-[#256279] rounded-md p-2 text-white hover:bg-[#1a4456]">View Programs</Link>
+          </div>
         </Container>
       </div>
 

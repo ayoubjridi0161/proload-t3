@@ -135,6 +135,7 @@ type WorkoutDay = {
         await InsertExercice({name:exercice.name,sets:exercice.sets,reps:exercice.reps},dayID)
       }
     }
+    redirect('/workouts')
     
   }
 

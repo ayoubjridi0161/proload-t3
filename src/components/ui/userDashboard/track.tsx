@@ -1,10 +1,4 @@
 "use client"
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "~/components/ui/accordion";
 import Image from "next/image";
 import React from "react";
 import { andika, lalezar } from "~/components/ui/font";
@@ -19,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 import { type WorkoutLog} from "~/lib/types";
 import { Separator } from "../separator";
+import { useRouter } from "next/navigation";
 type Props = {
   workout: WorkoutDetails, totalSets: number, totalReps: number,
   lastSession:{
@@ -35,19 +30,21 @@ export default function Track({ workout, totalSets, totalReps,lastSession }: Pro
   const [state, action] = useFormState(logWorkoutAction, null);
   const { register, control, handleSubmit, watch, formState: { errors } } = useForm();
   const date = new Date()
-
+  const router = useRouter();
 
   return (
-    <form action={action}
-      className={`${andika.className} w-full space-y-5 p-5 text-[#707877]`}
+    <section className="p-5 text-[#707877] w-full"><div>
+    <h1 className="text-lg font-semibold">Track my workout</h1>
+    <p className="mb-3 text-sm opacity-70">Today, {date.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</p>
+    
+  </div>
+  {workout ? 
+  <form action={action}
+      className={`${andika.className} w-full space-y-5 `}
     >
       <input type="hidden" name="workoutID" value={workout?.id}/>
       <input type="hidden" name="date" value={date.toISOString()}/>
-      <div>
-        <h1 className="text-lg font-semibold">Track my workout</h1>
-        <p className="mb-3 text-sm opacity-70">Today, {date.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</p>
-        
-      </div>
+      
       <Container className="grid w-full grid-cols-1 content-around justify-center gap-5 bg-xtraDark/40 dark:bg-xtraDarkPrimary text-[#fcfcfc] md:grid-cols-6 ">
         <Image
           src={"https://s3.eu-north-1.amazonaws.com/proload.me/proloadV2.png"}
@@ -181,7 +178,25 @@ export default function Track({ workout, totalSets, totalReps,lastSession }: Pro
     <SaveButton/>
   </Container>
 )}
-    </form>
+  </form>
+  : <div>
+<div className="flex flex-col items-center justify-center p-8 text-center space-y-6">
+  <h2 className="text-2xl font-semibold text-gray-700 dark:text-gray-300">
+    No Workout Plan Selected
+  </h2>
+  <p className="text-gray-600 dark:text-gray-400 max-w-md">
+    To start tracking your progress, you'll need to choose a workout plan first. Browse our community workouts to find the perfect plan for your fitness goals.
+  </p>
+  <Button 
+    onClick={() => router.push('/workouts')}
+    className="bg-xtraGreen hover:bg-xtraGreen/90 text-white"
+  >
+    Browse Workouts
+  </Button>
+</div>
+  </div> }
+  </section>
+    
   )
 }
 

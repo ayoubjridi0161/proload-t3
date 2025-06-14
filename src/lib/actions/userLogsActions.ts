@@ -72,6 +72,8 @@ export const fetchUserLogs = async ()=>{
 
   export const logWorkoutAction = async (prev:any , formdata:FormData)=> {
     try {
+      const duration = formdata.get("duration") as unknown as number
+      
       const session = await auth();
       const userID = session?.user?.id;
       if (!userID) throw new Error("no user found");
@@ -115,7 +117,7 @@ export const fetchUserLogs = async ()=>{
       
       try{
         await updateUserPrs(userID,maxWeight)
-        const res = await addLogs(workoutID,userID,dayName,parsedExercises)
+        const res = await addLogs(duration,workoutID,userID,dayName,parsedExercises)
         await updateUserTotalWeight(userID,totalWeight)
         // await addAchievement(userID,{type:"totalWeight",value:totalWeight})
         revalidatePath("/")

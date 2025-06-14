@@ -21,6 +21,7 @@ const HeaderNav = async () => {
             <Link className='hover:underline text-lg font-semibold active:text-red-500' href={'/workouts'}>Workouts</Link>
             <Link className='hover:underline text-lg font-semibold active:text-red-500' href={'/exercices'}>Exercices</Link>
           </div>
+          
           <div className='cursor-pointer'>
           {image && <DropDown image={image} UUID={UUID ?? ""} userName={userName ?? "Lifter"}/>}
           </div>

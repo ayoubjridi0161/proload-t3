@@ -62,8 +62,7 @@ export default function CreateWorkout({exerciseNames}:{
     },[dayRest])
     // submit form
     React.useEffect(()=>{
-      console.log("submit");
-      
+     
       if( typeof isPublished === 'boolean' )
         formRef.current?.requestSubmit()
         // router.push('/workouts')

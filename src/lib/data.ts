@@ -527,6 +527,7 @@ export const getPosts = async ( page: number = 1, limit: number = 10,userId?: st
                 desc(Posts.createdAt)
             ],
             offset: (page - 1) * limit,
+            limit: limit
         })
         
         // Use Promise.all to wait for all async map operations to complete
@@ -636,9 +637,9 @@ export const getUsers = async ()=>{
     }
 }
 
-export const addLogs= async (workoutID:number,userID:string,dayName:string,logs:{ name: string; sets: { setIndex: string; weight: string }[] }[])=>{
+export const addLogs= async (duration:number,workoutID:number,userID:string,dayName:string,logs:{ name: string; sets: { setIndex: string; weight: string }[] }[])=>{
     try{
-        const res = await db.insert(userLogs).values({userId:userID,logs:logs,workoutId:workoutID,dayName:dayName}).returning()
+        const res = await db.insert(userLogs).values({userId:userID,logs:logs,workoutId:workoutID,dayName:dayName,duration:duration}).returning()
         return res
     }catch(err){
         throw err
