@@ -163,7 +163,7 @@ const ChartData = (props: Props) => {
   return (
     <Container className="space-y-2 w-full">
       <div className="flex min-w-72 flex-1 flex-col gap-2 rounded-xl border border-[#d0e7d1] p-6">
-        <p className="text-[#0e1b0e] text-base font-medium leading-normal">Workout frequency per week</p>
+        <p className="text-[#0e1b0e] dark:text-xtraDarkText text-base font-medium leading-normal">Workout frequency per week</p>
         <div className="flex min-h-[180px] flex-1 flex-col gap-8 py-4">
           <div 
             className="relative h-48 w-full" 

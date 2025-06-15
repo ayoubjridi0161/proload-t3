@@ -85,7 +85,7 @@ const SearchBar = () => {
 
           {profiles.map((profile, index) => (
             <Link
-              href={`/profile/${profile.id}`}
+              href={`/profile?id=${profile.id}`}
               key={index}
               className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 cursor-pointer"
               onClick={() => {

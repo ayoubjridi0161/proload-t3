@@ -138,7 +138,7 @@ export default function Post({sharedPost,userImage,userName,userId,postContent,m
   return (
     <div className={ `p-5 mt-4 space-y-4 bg-xtraContainer dark:bg-xtraDarkPrimary dark:border-xtraDarkAccent rounded-md shadow-md` }>
         <div className='flex items-center justify-between'>
-            <Link href={`/profile/${userId}`} className='flex items-center gap-3'>
+            <Link href={`/profile?id=${userId}`} className='flex items-center gap-3'>
             <Avatar image={userImage} />
             <div >
                 <h1 className={`text-md hover:underline`}>{userName}</h1>

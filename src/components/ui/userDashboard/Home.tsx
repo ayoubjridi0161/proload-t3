@@ -8,8 +8,9 @@ import { fetchUserLogs, fetchWorkoutDates } from '~/lib/actions/userLogsActions'
 import { calculateExerciseProgress } from '~/lib/analytics/analytics'
 import {type UserLog} from "~/lib/types"
 import { Sidebar, SidebarContent } from '../sidebar'
+import Link from 'next/link'
 
-export default function Home({userLogs}:{userLogs:
+export default function Home({userLogs,PRs}:{userLogs:
   {
     date: Date;
     id: number;
@@ -18,12 +19,18 @@ export default function Home({userLogs}:{userLogs:
     logs: unknown;
     duration: number | null;
     dayName:string|null
-}[]
+}[], PRs: 
+  {
+    exercise: string;
+    records: number[];
+}[] | null | undefined
+
 }) {
   
   
 const workoutDates = userLogs?.map(log => ({date:log.date,dayName:log.dayName}));
 const progressResults = calculateExerciseProgress(userLogs  );
+const latestPR = PRs ? PRs.pop() : null
   return (
     <>
     <div className={ `    w-full p-5 ${andika.className}`}>
@@ -38,18 +45,25 @@ const progressResults = calculateExerciseProgress(userLogs  );
         </div>
         <h2 className="text-md font-semibold">Weekly progress</h2>
         <h1 className="text-lg font-bold">+15% Strength Gain</h1>
-        <p className="text-sm">Your bench improved significantly</p>
-        <Button className="bg-[#256279] text-[#63949E] ">View Details</Button>
+        <p className="text-sm">You improved significantly</p>
+        <Button className="bg-[#256279] dark:bg-xtraDarkSecondary text-white ">
+          <Link href={"/dashboard/progress"}>
+          View Details
+          </Link></Button>
       </Container>  
-      <Container className="border-1 border-[#de4e8d1] space-y-2 shadow-md"> 
+      {latestPR && <Container className="border-1 border-[#de4e8d1] space-y-2 shadow-md"> 
         <div className="rounded-full p-3 w-fit bg-[#d4fae0]">
         <ProgressIcon />
         </div>
         <h2 className="text-md font-semibold">Latest PR</h2>
-        <h1 className="text-lg font-bold">Deadlift: 315 lbs</h1>
+        <h1 className="text-lg font-bold">{latestPR.exercise}: {latestPR.records.pop()} Kg</h1>
         <p className="text-sm">New personal record achieved today!</p>
-        <Button className="bg-[#256279] text-[#63949E]">See All PRs</Button>
-      </Container>
+        <Button className="bg-[#256279] dark:bg-xtraDarkSecondary text-white ">
+          <Link href={"/dashboard/personalRecords"}>
+          See All PRs
+          </Link>
+        </Button>
+      </Container>}
       <Container className="border-1 border-[#de4e8d1] space-y-2 shadow-md">
         <div className="rounded-full p-3 w-fit bg-[#d4fae0]">
         <ProgressIcon />
@@ -57,7 +71,7 @@ const progressResults = calculateExerciseProgress(userLogs  );
         <h2 className="text-md font-semibold">Streak</h2>
         <h1 className="text-lg font-bold">12 Days!</h1>
         <p className="text-sm">Keep up the consistency</p>
-        <Button className="bg-[#256279] text-[#63949E]">View Calendar</Button>
+        <Button className="bg-[#256279] dark:bg-xtraDarkSecondary text-white ">View Calendar</Button>
       </Container>
       </div>
         <div className="col-span-2 w-full space-y-5">
@@ -74,8 +88,8 @@ const progressResults = calculateExerciseProgress(userLogs  );
               }
             </div>
             <h1 className="text-lg font-bold mb-3 mt-5">Quick Actions</h1>
-            <Button className="mx-3 bg-[#21c55d] text-[#bfbfbf]">Check Workouts</Button>
-            <Button className="mx-2 text-[#bfbfbf]">Track Progress</Button>
+            <Button className="mx-3 bg-[#21c55d] dark:bg-green-200 text-xtraDark"><Link href="/workouts">Check Workouts </Link></Button>
+            <Button className="mx-2 text-xtraLight dark:bg-black"><Link href="/dashboard/track"> Track Progress</Link></Button>
           </Container>
         </div>
         

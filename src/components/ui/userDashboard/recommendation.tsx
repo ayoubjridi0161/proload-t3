@@ -280,7 +280,7 @@ export function Recommendations({details}: Props) {
               {recom.recommendation.split('.')
                 .filter(item => item.trim())
                 .sort(() => 0.5 - Math.random())
-                .slice(0, 3)
+                .slice(0, 8)
                 .map((item, index) => (
                   <li key={index} className="text-base">{item.trim()}</li>
                 ))}
