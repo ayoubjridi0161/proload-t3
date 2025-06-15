@@ -21,7 +21,7 @@ export const Home = () => {
                         <Button variant="outline" className='hover:bg-slate-50/80 rounded-[30px] text-black'>get started</Button>
                     </div>
                 </section>
-                <Container className="w-2/3 mt-5 bg-transparent dark:bg-transparent mx-auto text-center p-8 text-[#4a4a4a]">
+                <Container className="w-2/3 mt-5 bg-transparent dark:bg-transparent mx-auto text-center p-8 text-[#fff]">
                 <h1 className="text-xl font-bold mb-4">Getting Started Guide</h1>
                 <div className="space-y-4 text-left">
                     <div className="p-4 bg-transparent dark:border-xtraDark border-1 rounded-lg shadow-sm">

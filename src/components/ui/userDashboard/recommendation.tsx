@@ -25,30 +25,44 @@ export function Recommendation({details}: Props) {
   const [recommendations, setRecommendations] = React.useState(null);
   const [localDetails, setLocalDetails] = React.useState(details);
   const fitnessLevels = [
-    { value: 'beginner', label: 'Beginner' },
-    { value: 'intermediate', label: 'Intermediate' },
-    { value: 'advanced', label: 'Advanced' }
+    { value: 'Underweight', label: 'Underweight' },
+    { value: 'Normal', label: 'Normal' },
+    { value: 'Overweight', label: 'Overweight' },
+    { value: 'Obuse', label: 'Obuse' },
   ];
   const fitnessGoals = [
-    { value: 'weight_loss', label: 'Weight Loss' },
-    { value: 'muscle_gain', label: 'Muscle Gain' },
-    { value: 'endurance', label: 'Endurance' }
+    { value: 'Weight Gain', label: 'Weight Gain' },
+    { value: 'Weight Loss', label: 'Weight Loss' },
   ];
-  console.log(localDetails);
-  
-  
+  const FitnessTypes =[
+    { value: 'Muscular Fitness', label: 'Mascular Fitness' },
+    { value: 'Cardio Fitness', label: 'Cardio Fitness' },
+  ]
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       // Save details first
     //   await saveDetails();
-    await addProfileDetails(localDetails)
+    await addProfileDetails({...localDetails,experience:"beginner"})
 
     
     } catch (error) {
       console.error('Error:', error);
     }
   };
+  useEffect(() => {
+  if (localDetails.height && localDetails.weight) {
+    const heightInMeters = parseFloat(localDetails.height) / 100;
+    const weight = parseFloat(localDetails.weight);
+    const calculatedBMI = weight / (heightInMeters * heightInMeters);
+    const roundedBMI = calculatedBMI.toFixed(1);
+    if (localDetails.bmi !== roundedBMI) {
+      setLocalDetails((prev) => ({ ...prev, bmi: roundedBMI }));
+    }
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [localDetails.height, localDetails.weight]);
+  
 
     return (
       <div className="p-6 w-full">
@@ -94,16 +108,7 @@ export function Recommendation({details}: Props) {
           </div>
           <div>
             <Label>Body Mass Index (BMI)</Label>
-            <Input type="number" name="bmi" required value={details.bmi || '22'} 
-            onClick={(e) => {
-                const height = parseFloat(localDetails.height) / 100; // Convert height to meters
-                const weight = parseFloat(localDetails.weight);
-                const calculatedBMI = weight / (height * height);
-                const roundedBMI = calculatedBMI.toFixed(1);
-            setLocalDetails((prev) => ({...prev, bmi: roundedBMI}));
-            }}
-            readOnly
-            />
+            <Input type="number" name="bmi" required value={localDetails.bmi || '22'} readOnly/>
           </div>
           <div>
             <Label>Fitness Level</Label>
@@ -135,6 +140,21 @@ export function Recommendation({details}: Props) {
               ))}
             </RadioGroup>
           </div>
+          <div>
+            <Label>Fitness Type</Label>
+            <RadioGroup 
+              defaultValue={localDetails.experience ?? ''}
+              onValueChange={value => setLocalDetails(prev => ({...prev, experience: value}))}
+              className="flex gap-4"
+            >
+              {FitnessTypes.map(level => (
+                <div key={level.value} className="flex items-center space-x-2">
+                  <RadioGroupItem value={level.value} id={level.value} />
+                  <Label htmlFor={level.value}>{level.label}</Label>
+                </div>
+              ))}
+            </RadioGroup>
+          </div>
           
           <Button type="submit">Save Profile</Button>
         </form>
@@ -144,8 +164,6 @@ export function Recommendation({details}: Props) {
 
 
 type RecommendationData = {
-  exercises: string;
-  equipment: string;
   diet: string;
   recommendation: string;
 };
@@ -156,26 +174,27 @@ export function Recommendations({details}: Props) {
   console.log(details);
   useEffect(() => {
     const getData = async () => {
-      
-      const response = await fetch('http://localhost:8000/recommend', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          Sex: details.gender === 'male' ? 0 : 1,
+      const parsedData = {Sex: details.gender === 'male' ? 0 : 1,
           Age: parseInt(details.age) || 0,
           Height: parseInt(details.height) || 0,
           Weight: parseInt(details.weight) || 0,
           Hypertension: 0,
           Diabetes: 0,
           BMI: parseFloat(details.bmi) || 0,
-          Level: details.fitnessLevel === 'beginner' ? 0 : 
-                 details.fitnessLevel === 'intermediate' ? 1 : 2,
-          FitnessGoal: details.fitnessGoal === 'weight_loss' ? 0 : 
-                      details.fitnessGoal === 'muscle_gain' ? 1 : 2,
-          FitnessType: 0,
-        })
+          Level: details.fitnessLevel === 'Underweight' ? 0 : 
+                 details.fitnessLevel === 'Normal' ? 1 : 
+                 details.fitnessLevel === 'Overweight' ? 2 : 3,
+          FitnessGoal: details.fitnessGoal === 'Weight Gain' ? 0 : 
+                      details.fitnessGoal === 'Weight Loss' ? 1 : 2,
+          FitnessType: details.experience === 'Mascualar Fitness' ? 0 : 1,
+        }
+        console.log("Parsed Data: ", parsedData);
+      const response = await fetch('https://recommendationmodel-production.up.railway.app/decisionTree', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(parsedData)
       });
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -227,17 +246,14 @@ export function Recommendations({details}: Props) {
           <h3 className="text-sm font-medium text-gray-500">Fitness Goal</h3>
           <p className="text-lg font-semibold capitalize">{details.fitnessGoal}</p>
         </div>
-        <div className="bg-xtraContainer dark:bg-xtraDarkAccent p-4 rounded-lg shadow">
+        {/* <div className="bg-xtraContainer dark:bg-xtraDarkAccent p-4 rounded-lg shadow">
           <h3 className="text-sm font-medium text-gray-500">Experience</h3>
           <p className="text-lg font-semibold capitalize">{details.experience}</p>
-        </div>
+        </div> */}
       </div>
       {recom && (typeof recom !== "string") ? (
         <div className="space-y-4">
           <div className="bg-xtraContainer dark:bg-xtraDarkAccent p-4 rounded">
-            <h2 className="font-bold text-xl mb-2 text-emerald-700">Recommended Exercises:</h2>
-            <p className="text-gray-800">{recom.exercises}</p>
-            
             <h2 className="font-bold text-xl mt-4 mb-2 text-emerald-700">Diet Plan:</h2>
             <table className="min-w-full border border-gray-200">
               <thead className="bg-gray-50">
@@ -259,7 +275,7 @@ export function Recommendations({details}: Props) {
               </tbody>
             </table>
             
-            <h2 className="font-bold text-xl mt-4 mb-2 text-emerald-700">General Recommendations:</h2>
+            <h2 className="font-bold text-xl mt-4 mb-2 text-emerald-700">Tips:</h2>
             <ul className="list-disc pl-5 text-gray-800 space-y-2">
               {recom.recommendation.split('.')
                 .filter(item => item.trim())

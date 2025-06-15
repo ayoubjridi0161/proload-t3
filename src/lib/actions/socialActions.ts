@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createPost, createComment, sharePost, getSharedPostByID, createReply, createWorkoutComment } from "../data";
 import { sendNotification } from "./notifications";
 import { uploadToS3 } from "./s3Actions";
+import { redirect } from "next/navigation";
 
 export const addPostAction = async (formData:FormData) => {
     const session = await auth()
@@ -68,7 +69,8 @@ export const addPostAction = async (formData:FormData) => {
    export const shareWorkoutAction = async (workoutId:number,shareText:string,proprietairy:string)=>{
     const session = await auth()
     const userID = session?.user?.id
-    if(!userID) return null
+    if(!userID)
+      redirect("/login")
     const res = await sharePost({workout:workoutId},userID,shareText) 
     await sendNotification(proprietairy,"new Share",`${session.user?.name} just shared your workout`)
     return res 

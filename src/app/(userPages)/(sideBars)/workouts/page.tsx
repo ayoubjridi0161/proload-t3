@@ -9,6 +9,7 @@ import Footer from '~/components/ui/neoworkout/footer'
 import PerloadWorkouts from './perloadWorkouts'
 import { Suspense } from 'react'
 import { WorkoutCardSkeleton } from '~/components/skeletons/workout-cardSkeleton'
+import { auth } from 'auth'
 
 export default async function page(props: {
   searchParams?: Promise<{
@@ -24,6 +25,7 @@ export default async function page(props: {
   const sortFiled = searchParams?.sort ;
   const order = searchParams?.order;
   const dates = await fetchWorkoutDates()
+  const session = await auth()
   
   return (
 <>
@@ -32,12 +34,13 @@ export default async function page(props: {
       <PerloadWorkouts order={order} page={page} search={search} sortFiled={sortFiled} />
       <Footer currentPage={ page> 0 ?  page  : 1} hasNextPage/>
     </div>
-    <Sidebar side='right'  className="border-left-1 dark:border-xtraDarkAccent px-3 top-[--header-height] !h-[calc(100svh-var(--header-height))]" >
+    {session &&<Sidebar side='right'  className="border-left-1 dark:border-xtraDarkAccent px-3 top-[--header-height] !h-[calc(100svh-var(--header-height))]" >
     <SidebarContent className='space-y-3'>
   <WorkoutCalendar workoutDates={dates} />
   <Separator className='w-2/3 mx-auto'/>
   <SideConnets />
   </SidebarContent>
-  </Sidebar></>
+  </Sidebar>}
+  </>
   )
 }

@@ -8,7 +8,7 @@ import Link from "next/link"
 import { useState, useEffect } from "react";
 import { useDebounce } from "@uidotdev/usehooks";
 import Avatar from "~/components/component/Avatar"
-import { Moon, Sun } from "lucide-react"
+import { LogIn, Moon, Sun } from "lucide-react"
 import { searchUsers } from "~/lib/actions/userActions"
 import { useTheme } from "next-themes"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../dropdown-menu"
@@ -114,7 +114,7 @@ function Header({ name, image, UUID }: Props) {
         </Link>
         <SearchBar />
         <div className="flex gap-2">
-          <Notifs />
+          {UUID && <Notifs />}
           <DropdownMenu >
             <DropdownMenuTrigger asChild>
               <Button variant={"ghost"} style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 0.8)' }} size="icon" className="relative h-10 w-10  rounded-none border-black border-1 p-2">
@@ -135,41 +135,9 @@ function Header({ name, image, UUID }: Props) {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          {/* <label
-  htmlFor="themeToggle"
-  className="themeToggle st-sunMoonThemeToggleBtn"
->
-  <input type="checkbox" id="themeToggle" className="themeToggleInput" />
-  <svg
-    width="18"
-    height="18"
-    viewBox="0 0 20 20"
-    fill="currentColor"
-    stroke="none"
-  >
-    <mask id="moon-mask">
-      <rect x="0" y="0" width="20" height="20" fill="white"></rect>
-      <circle cx="11" cy="3" r="8" fill="black"></circle>
-    </mask>
-    <circle
-      className="sunMoon"
-      cx="10"
-      cy="10"
-      r="8"
-      mask="url(#moon-mask)"
-    ></circle>
-    <g>
-      <circle className="sunRay sunRay1" cx="18" cy="10" r="1.5"></circle>
-      <circle className="sunRay sunRay2" cx="14" cy="16.928" r="1.5"></circle>
-      <circle className="sunRay sunRay3" cx="6" cy="16.928" r="1.5"></circle>
-      <circle className="sunRay sunRay4" cx="2" cy="10" r="1.5"></circle>
-      <circle className="sunRay sunRay5" cx="6" cy="3.1718" r="1.5"></circle>
-      <circle className="sunRay sunRay6" cx="14" cy="3.1718" r="1.5"></circle>
-    </g>
-  </svg>
-</label> */}
-
-          <DropDown image={image} UUID={UUID ?? ""} userName={name} />
+          {UUID ? <DropDown image={image} UUID={UUID ?? ""} userName={name} />:
+          <Link href={"/login"}><Button variant={"ghost"} style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 0.8)' }} size="icon" className="relative h-10 w-10  rounded-none border-black border-1 p-2 text-xs"><LogIn /></Button></Link>
+          }
         </div>
       </div>
 

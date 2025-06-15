@@ -14,7 +14,7 @@ export default async function RootLayout({
   return (
     <div className="[--header-height:calc(theme(spacing.14))] ">
     <SidebarProvider className="flex flex-col ">
-    <Header name={userName  ?? ""} image={image ?? ""} UUID={UUID}/>
+     <Header name={userName  ?? ""} image={image ?? ""} UUID={UUID}/>
       <div className="flex flex-1">
         <SidebarInset>
           {children}

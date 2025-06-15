@@ -392,7 +392,8 @@ type WorkoutDay = {
 
 export const cloneAndUseWorkoutAction = async (workoutId:number)=>{
   const session = await auth()
-  if(!session?.user?.id) return "failed"
+  if(!session?.user?.id) 
+    redirect('/login')
   try{
     const response = await cloneWorkout(workoutId,session?.user?.id)
     await makeCurrentWorkout(session?.user?.id,workoutId)

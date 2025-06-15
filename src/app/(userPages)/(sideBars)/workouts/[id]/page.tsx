@@ -10,6 +10,7 @@ import { fetchWorkoutById, getUserReactions, getUserWorkoutsShortVersion } from 
 import RightSidebar from "~/components/ui/sidebars/rightAside";
 import Container from "~/components/ui/userDashboard/Container";
 import { WorkoutCard } from "~/components/ui/neoworkout/workout-side-card";
+import { redirect } from "next/navigation";
 
 
 const page = async ({params} : {params:{id:string}}) => {
@@ -17,7 +18,8 @@ const page = async ({params} : {params:{id:string}}) => {
     const user = session?.user
     const workout = await fetchWorkoutById(parseInt(params.id))
     if(!workout ) return (<div>no workout found!</div>)
-    if(!user?.id) return (<div>no user found!</div>)
+    if(!user?.id) 
+      redirect("/login")
     const userWorkouts = await getUserWorkoutsShortVersion(workout?.userId ?? "")
     const UserReactions = await getUserReactions(workout?.id,user?.id)
     const isOwner = user?.id === workout?.userId

@@ -19,11 +19,12 @@ export default async function RecommendationsPage() {
     fitnessLevel: string,
     fitnessGoal: string,
   }}
+  console.log("User Profile Details: ", userProfile.details);
   console.log(userProfile.details);
-  let check = false
+  let check = true
   for (const key in userProfile.details) {
     if (userProfile.details[key as keyof typeof userProfile.details] === undefined || userProfile.details[key as keyof typeof userProfile.details] === null || userProfile.details[key as keyof typeof userProfile.details] === '') {
-      check = true
+      check = false
       break
     }
   }

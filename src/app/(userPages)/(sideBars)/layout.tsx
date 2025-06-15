@@ -18,10 +18,8 @@ export default async function RootLayout({
     
   return (
     <main className='flex justify-between '>
-      <AppSidebar className=" pt-5" user={{name:userName ?? "",email:email,image:image,id:UUID ?? ""}} />
+      {UUID && <AppSidebar className=" pt-5" user={{name:userName ?? "",email:email,image:image,id:UUID ?? ""}} />}
         {children} 
-        
-      {/* <SideConnets className="" /> */}
     </main>
   );
 }
