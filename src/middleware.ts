@@ -4,7 +4,7 @@ import { type NextRequest, NextResponse } from "next/server";
 
 
 
-const protectedRoutes = ["/profile","/neopost","/neoworkout","dashboard","home"]
+const protectedRoutes = ["/profile","/dashboard","/home"]
 
 export default async function middleware(request: NextRequest){
     const session = await auth()
