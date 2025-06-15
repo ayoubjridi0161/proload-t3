@@ -9,8 +9,11 @@ import { calculateExerciseProgress } from '~/lib/analytics/analytics'
 import {type UserLog} from "~/lib/types"
 import { Sidebar, SidebarContent } from '../sidebar'
 import Link from 'next/link'
+import {type WorkoutDetails } from '~/app/(userPages)/(sideBars)/dashboard/track/page'
+import { WorkoutCard } from '../neoworkout/workout-side-card'
 
-export default function Home({userLogs,PRs}:{userLogs:
+
+export default function Home({userLogs,PRs,currentWorkout}:{userLogs:
   {
     date: Date;
     id: number;
@@ -23,9 +26,9 @@ export default function Home({userLogs,PRs}:{userLogs:
   {
     exercise: string;
     records: number[];
-}[] | null | undefined
-
-}) {
+}[] | null | undefined,
+currentWorkout: WorkoutDetails}
+) {
   
   
 const workoutDates = userLogs?.map(log => ({date:log.date,dayName:log.dayName}));
@@ -94,7 +97,7 @@ const latestPR = PRs ? PRs.pop() : null
         </div>
         
     </div>
-    <LocalSideBar workoutDates = {workoutDates} />
+    <LocalSideBar currentWorkout={currentWorkout} workoutDates = {workoutDates} />
     </>
   )
 }
@@ -139,15 +142,31 @@ const ProgressIcon =()=>{
   };
 
 
-  const LocalSideBar = ({workoutDates}:{workoutDates:{
+  const LocalSideBar = ({workoutDates ,currentWorkout}:{workoutDates:{
     date: Date;
     dayName: string | null;
-}[]
+}[], 
+currentWorkout: WorkoutDetails | null | undefined
 })=>{
     return(
       <Sidebar side='right'  className="border-left-1 px-3 top-[--header-height] !h-[calc(100svh-var(--header-height))]" >
       <SidebarContent className=''>
           <WorkoutCalendar workoutDates = {workoutDates}/>
+          {currentWorkout && (
+            <>
+            <p>Current Workout:</p>
+            <WorkoutCard
+              workout={{
+                id: currentWorkout.id,
+                name: currentWorkout.name,
+                description: currentWorkout.description,
+                numberOfDays: currentWorkout.numberOfDays,
+                days:currentWorkout.days.map((day, index) => ({name:day.name,dayIndex:day.dayIndex}))
+              }}
+            />
+            </>
+          )}
+          
       </SidebarContent>
     </Sidebar>
     )
