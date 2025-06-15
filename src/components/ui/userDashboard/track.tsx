@@ -14,6 +14,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~
 import { type WorkoutLog} from "~/lib/types";
 import { Separator } from "../separator";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 type Props = {
   workout: WorkoutDetails, totalSets: number, totalReps: number,
   lastSession:{
@@ -188,10 +189,9 @@ export default function Track({ workout, totalSets, totalReps,lastSession }: Pro
     To start tracking your progress, you'll need to choose a workout plan first. Browse our community workouts to find the perfect plan for your fitness goals.
   </p>
   <Button 
-    onClick={() => router.push('/workouts')}
     className="bg-xtraGreen hover:bg-xtraGreen/90 text-white"
   >
-    Browse Workouts
+    <Link href="/workouts">Browse Workouts</Link>
   </Button>
 </div>
   </div> }
