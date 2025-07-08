@@ -104,7 +104,7 @@ void handleSubmit()
             setIsGenerating(false);
             return
         }
-        const parsedResponse = JSON.parse(response?.message) as WorkoutPlan;
+        const parsedResponse = JSON.parse(response?.message ?? '{}') as WorkoutPlan;
         if(parsedResponse.name) store.setWorkoutName(parsedResponse.name);
         if(parsedResponse.description) store.setDescription(parsedResponse.description);
         
