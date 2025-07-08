@@ -27,6 +27,7 @@ import { sendNotification } from "./notifications"
 import { generateFullWorkout, generateWorkoutDay } from "../ai-copilot"
 import { revalidatePath } from "next/cache"
 import { mainMuscleGroups, mapToMainMuscleGroup } from "~/lib/utils"
+import { generateWorkoutProgram } from "../ai-copilot/groqAPI"
 type WorkoutDay = {
   id: number;
   type: 'workout' | 'rest';
@@ -347,19 +348,14 @@ type WorkoutDay = {
   ) => {
     switch (type) {
       case "workout": {
-        const prompt = `You are an expert fitness trainer AI that creates optimized workout plans. 
-        Your responses must:
-        1. Use only exercises from the provided library
-        2. Include balanced muscle group targeting
-        3. Specify sets (3-5) and reps (8-15) for each exercise
-        4. Format as valid JSON matching the required schema
-        5. Include rest days where appropriate
-        6. Provide clear workout names and descriptions
+        const prompt = `
         Generate a workout plan for ${payload.workout?.name?? "a new workout"}
+        use this description to generate a workout program:
+        ${payload.workout?.description ?? "no description provided"}\n
         follow up on this workout : ${JSON.stringify(payload.workout)}
         `;
         try{
-        const response =await generateFullWorkout(exerciseLibrary,prompt)
+        const response =await generateWorkoutProgram(exerciseLibrary,prompt)
         return {status:200,message:response}
       }catch(err){
         console.error(err)
